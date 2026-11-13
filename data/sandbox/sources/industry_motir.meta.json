@@ -1,0 +1,79 @@
+{
+ "key": "industry_motir",
+ "count": 59,
+ "saved_at": "2026-11-13T17:43:24+00:00",
+ "source_name": "산업통상부 산업융합 규제샌드박스 규제특례 승인 공고(motir.go.kr)",
+ "search": "https://www.motir.go.kr/kor/article/ATCL2826a2625?searchKeyword=규제특례 승인",
+ "notices": [
+  {
+   "url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/71401/view",
+   "title": "2026년 제6차 산업융합 규제샌드박스 규제특례 승인 공고",
+   "notice_no": "2026-680",
+   "notice_date": "2026-11-02",
+   "n_items": 8,
+   "no_range": [
+    879,
+    890
+   ],
+   "missing_in_range": [
+    885,
+    886,
+    888,
+    889
+   ]
+  },
+  {
+   "url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/71307/view",
+   "title": "2026년 제5차 산업융합 규제샌드박스 규제특례 승인 공고",
+   "notice_no": "2026-585",
+   "notice_date": "2026-09-07",
+   "n_items": 3,
+   "no_range": [
+    876,
+    878
+   ],
+   "missing_in_range": []
+  },
+  {
+   "url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/71267/view",
+   "title": "2026년도 제4차 산업융합 규제샌드박스 규제특례 승인 공고",
+   "notice_no": "2026-544",
+   "notice_date": "2026-08-11",
+   "n_items": 3,
+   "no_range": [
+    873,
+    875
+   ],
+   "missing_in_range": []
+  },
+  {
+   "url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/71039/view",
+   "title": "2026년도 제1차 산업융합 규제샌드박스 규제특례 승인 공고",
+   "notice_no": "2026-304",
+   "notice_date": "2026-04-22",
+   "n_items": 18,
+   "no_range": [
+    831,
+    849
+   ],
+   "missing_in_range": [
+    834
+   ]
+  },
+  {
+   "url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/70776/view",
+   "title": "2025년도 제4차 산업융합 규제샌드박스 규제특례 승인 공고",
+   "notice_no": "2026-053",
+   "notice_date": "2026-01-23",
+   "n_items": 27,
+   "no_range": [
+    800,
+    828
+   ],
+   "missing_in_range": [
+    803,
+    807
+   ]
+  }
+ ]
+}

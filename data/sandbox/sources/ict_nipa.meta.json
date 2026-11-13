@@ -1,0 +1,14 @@
+{
+ "key": "ict_nipa",
+ "count": 303,
+ "saved_at": "2026-11-13T17:27:24+00:00",
+ "source_name": "ICT 규제샌드박스 승인사례(sandbox.or.kr, 과기정통부·NIPA)",
+ "list_urls": [
+  "https://www.sandbox.or.kr/board/designated_case.do?applyFormCode=FORM_002&pageNumber=1",
+  "https://www.sandbox.or.kr/board/designated_case.do?applyFormCode=FORM_003&pageNumber=1"
+ ],
+ "portal_totals": {
+  "임시허가": 75,
+  "실증특례": 228
+ }
+}
