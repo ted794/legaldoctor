@@ -1,0 +1,90 @@
+"""Liner Model 클라이언트 (OpenAI 호환 chat/completions).
+
+liner-mark-1.0은 짧은 JSON 추출에서도 reasoning 토큰이 출력의 대부분을 차지한
+실측이 있다. 그래서 max_tokens 기본값을 넉넉히 둔다.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from typing import Any
+
+import httpx
+
+from regpang.config import Settings
+
+DEFAULT_MAX_TOKENS = 8000
+
+
+class LinerModelError(RuntimeError):
+    pass
+
+
+class LinerModel:
+    def __init__(self, settings: Settings, timeout: float = 180.0):
+        self._settings = settings
+        self._client = httpx.Client(
+            base_url=settings.liner_base_url,
+            timeout=timeout,
+            headers={
+                "Authorization": f"Bearer {settings.liner_api_key}",
+                "Content-Type": "application/json",
+            },
+        )
+
+    def chat(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        max_tokens: int = DEFAULT_MAX_TOKENS,
+        temperature: float | None = None,
+    ) -> str:
+        body: dict[str, Any] = {
+            "model": self._settings.liner_model,
+            "messages": messages,
+            "max_tokens": max_tokens,
+        }
+        if temperature is not None:
+            body["temperature"] = temperature
+        resp = self._client.post("/chat/completions", json=body)
+        if resp.status_code != 200:
+            raise LinerModelError(f"HTTP {resp.status_code}: {resp.text[:500]}")
+        data = resp.json()
+        try:
+            choice = data["choices"][0]
+        except (KeyError, IndexError) as e:
+            raise LinerModelError(f"응답 형식 오류: {str(data)[:500]}") from e
+        content = (choice.get("message") or {}).get("content") or ""
+        if not content and choice.get("finish_reason") == "length":
+            raise LinerModelError("max_tokens 부족으로 본문이 비었음(reasoning 토큰 소진)")
+        return content
+
+    def chat_json(self, messages: list[dict[str, str]], **kw: Any) -> Any:
+        return extract_json(self.chat(messages, **kw))
+
+    def close(self) -> None:
+        self._client.close()
+
+
+_FENCE = re.compile(r"```(?:json)?\s*(.*?)```", re.S)
+
+
+def extract_json(text: str) -> Any:
+    """모델 출력에서 JSON 본문을 뽑는다. 코드 펜스와 앞뒤 설명문을 허용한다."""
+    m = _FENCE.search(text)
+    candidate = m.group(1) if m else text
+    candidate = candidate.strip()
+    try:
+        return json.loads(candidate)
+    except json.JSONDecodeError:
+        pass
+    starts = [i for i in (candidate.find("{"), candidate.find("[")) if i >= 0]
+    if not starts:
+        raise LinerModelError(f"JSON을 찾지 못함: {text[:300]}")
+    start = min(starts)
+    end = max(candidate.rfind("}"), candidate.rfind("]"))
+    try:
+        return json.loads(candidate[start : end + 1])
+    except json.JSONDecodeError as e:
+        raise LinerModelError(f"JSON 파싱 실패: {text[:300]}") from e

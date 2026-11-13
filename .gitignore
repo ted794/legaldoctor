@@ -1,0 +1,22 @@
+# 비밀값
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+uv.lock
+
+# 실행 산출물
+out/
+
+# 편집기·OS
+.vscode/
+.idea/
+.DS_Store
