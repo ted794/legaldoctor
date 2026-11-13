@@ -41,6 +41,28 @@ regpang run --case demo
 
 `regpang run "사업 설명"`처럼 직접 설명을 넣을 수도 있습니다.
 
+### 웹 화면
+
+```bash
+uv run regpang web      # http://127.0.0.1:8000
+```
+
+법을 모르는 창업자가 편한 방법으로 사업을 알려 줄 수 있게 네 가지 입력을 받습니다. 어느 것으로 시작해도 되고 섞어 써도 됩니다.
+
+- 스무고개: 쉬운 질문을 하나씩 던지고 보기를 줍니다. "잘 모르겠어요"를 늘 고를 수 있고 최대 20문항입니다.
+- 글: 한두 줄 설명이어도 됩니다.
+- 사업소개서: PDF, PPTX, DOCX, HWPX, TXT. PDF는 도식을 읽도록 앞쪽 몇 쪽을 그림으로도 넘깁니다.
+- 그림: 화면에서 직접 그린 서비스 흐름도, 사진이나 스크린샷.
+
+규제팡이 이해한 사업 모델은 항목별로 보여 주고, 항목마다 어느 자료에서 읽었는지 출처를 붙입니다. 출처를 댈 수 없는 내용은 프로필에 넣지 않습니다. 창업자가 내용을 고치거나 "이대로 맞아요"를 누르면 규제 검토로 넘어갑니다.
+
+명령행으로도 같은 접수를 할 수 있습니다.
+
+```bash
+uv run regpang intake --file 소개서.pdf --image 구성도.png --text "사업 설명"
+uv run regpang run --profile out/profile.json
+```
+
 ### 환경변수
 
 | 이름 | 설명 |
@@ -54,7 +76,9 @@ regpang run --case demo
 
 | API | 쓰는 곳 | 상태 |
 |---|---|---|
-| Liner Model (`liner-mark-1.0`) | 사업 분해, 규제 유형 판정, 신청서·상담 준비서 초안 작성 | 클라이언트 구현, 단계 구현 예정 |
+| Liner Model (`liner-mark-1.0`) | 글·문서·그림에서 BM 프로필 추출(이미지 입력 포함), 스무고개 질문 생성 | 구현 |
+| Liner Model (`liner-mark-1.0`) | ① 사업 분해 | 구현 |
+| Liner Model (`liner-mark-1.0`) | 규제 유형 판정, 신청서·상담 준비서 초안 작성 | 구현 예정 |
 | Liner Search (`/agents/search`) | 규제 단서 탐색, 승인 사례·보도자료·유권해석 수집 | 클라이언트 구현, 단계 구현 예정 |
 
 Liner Search가 찾은 단서는 그대로 쓰지 않습니다. 조문 번호와 내용은 국가법령정보 원문으로 한 번 더 대조한 뒤에만 결과물에 넣습니다.
@@ -65,7 +89,7 @@ Liner Search가 찾은 단서는 그대로 쓰지 않습니다. 조문 번호와
 
 외부에서 가져다 쓰는 것은 다음뿐입니다.
 
-- 오픈소스 라이브러리: httpx, python-dotenv, pytest
+- 오픈소스 라이브러리(모두 MIT·BSD·Apache 계열): httpx, python-dotenv, FastAPI, uvicorn, python-multipart, pypdf, pypdfium2, python-pptx, python-docx, Pillow, pytest
 - 공개 데이터: 국가법령정보센터 법령 원문, 공개된 규제샌드박스 승인 사례
 
 시연 사례(아파트 단지 안 자율주행 로봇 편의점 배달)는 가상 사례입니다.
@@ -77,8 +101,10 @@ regpang/
   config.py        환경변수 읽기
   disclaimer.py    고지 문구
   liner/           Liner Model, Liner Search 클라이언트
+  intake/          BM 접수(글·문서·그림·스무고개)와 BM 프로필
   law/             국가법령정보 DRF 클라이언트와 원문 캐시
   pipeline/        판단 점검표 6단계와 근거 확인 관문
+  web/             웹 화면
 data/
   cases/           가상 시연 사례
   law_cache/       법령 원문 캐시

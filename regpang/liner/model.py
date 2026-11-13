@@ -35,7 +35,7 @@ class LinerModel:
 
     def chat(
         self,
-        messages: list[dict[str, str]],
+        messages: list[dict[str, Any]],
         *,
         max_tokens: int = DEFAULT_MAX_TOKENS,
         temperature: float | None = None,
@@ -60,7 +60,7 @@ class LinerModel:
             raise LinerModelError("max_tokens 부족으로 본문이 비었음(reasoning 토큰 소진)")
         return content
 
-    def chat_json(self, messages: list[dict[str, str]], **kw: Any) -> Any:
+    def chat_json(self, messages: list[dict[str, Any]], **kw: Any) -> Any:
         return extract_json(self.chat(messages, **kw))
 
     def close(self) -> None:
