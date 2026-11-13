@@ -39,15 +39,27 @@ def _acts_text(activities) -> str:
     return "\n".join(f"{a.id}. {a.action}" for a in activities)
 
 
-def hypothesize(model, business: str, activities) -> list[Candidate]:
-    data = model.chat_json(
-        [
-            {"role": "system", "content": HYPO_SYSTEM},
-            {"role": "user", "content": f"사업 설명:\n{business}\n\n행위 목록:\n{_acts_text(activities)}"},
-        ],
-        max_tokens=12000,
-    )
-    return parse_hypotheses(data, {a.id for a in activities})
+def hypothesize(model, business: str, activities, batch: int = 3, workers: int = 4) -> list[Candidate]:
+    """행위를 몇 개씩 묶어 나눠 묻는다. 한 번에 많이 물으면 응답이 길어져 실패가 잦다."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    groups = [activities[i : i + batch] for i in range(0, len(activities), batch)]
+
+    def ask(group):
+        data = model.chat_json(
+            [
+                {"role": "system", "content": HYPO_SYSTEM},
+                {"role": "user", "content": f"사업 설명:\n{business}\n\n행위 목록:\n{_acts_text(group)}"},
+            ],
+            max_tokens=8000,
+        )
+        return parse_hypotheses(data, {a.id for a in group})
+
+    out: list[Candidate] = []
+    with ThreadPoolExecutor(workers) as ex:
+        for cands in ex.map(ask, groups):
+            out += cands
+    return out
 
 
 def parse_hypotheses(data: Any, ids: set[str]) -> list[Candidate]:

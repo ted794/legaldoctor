@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from typing import Any
 
 import httpx
@@ -22,8 +23,9 @@ class LinerModelError(RuntimeError):
 
 
 class LinerModel:
-    def __init__(self, settings: Settings, timeout: float = 180.0):
+    def __init__(self, settings: Settings, timeout: float = 180.0, retries: int = 3):
         self._settings = settings
+        self.retries = retries
         self._client = httpx.Client(
             base_url=settings.liner_base_url,
             timeout=timeout,
@@ -47,7 +49,18 @@ class LinerModel:
         }
         if temperature is not None:
             body["temperature"] = temperature
-        resp = self._client.post("/chat/completions", json=body)
+        resp = None
+        for attempt in range(self.retries + 1):
+            try:
+                resp = self._client.post("/chat/completions", json=body)
+            except httpx.TransportError as e:
+                if attempt == self.retries:
+                    raise LinerModelError(f"연결 실패: {e}") from e
+                time.sleep(2 * (attempt + 1))
+                continue
+            if resp.status_code not in (429, 500, 502, 503, 504) or attempt == self.retries:
+                break
+            time.sleep(2 * (attempt + 1))
         if resp.status_code != 200:
             raise LinerModelError(f"HTTP {resp.status_code}: {resp.text[:500]}")
         data = resp.json()

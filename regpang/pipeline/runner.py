@@ -44,6 +44,9 @@ def run(
         except NotImplementedError as e:
             state.halted_at, state.halt_reason = stage.name, str(e)
             break
+        except Exception as e:  # noqa: BLE001  외부 API 오류 등은 멈추고 사유를 남긴다
+            state.halted_at, state.halt_reason = stage.name, f"오류: {type(e).__name__}: {str(e)[:200]}"
+            break
         state.results[stage.name] = result
         if on_stage:
             on_stage(stage, result)
