@@ -178,3 +178,22 @@ def test_parse_hypotheses_and_clues():
         {"https://x.go.kr/a"},
     )
     assert c[0].article == "제3조" and [l.url for l in leads] == ["https://x.go.kr/a"]
+
+
+def test_precedent_layer_pulls_in_law_and_attaches_cases():
+    from regpang.explore.precedent import CaseIndex
+
+    class NoHypoModel(ScriptedModel):
+        def chat_json(self, messages, **kw):
+            if "후보 법령을 고른다" in messages[0]["content"]:
+                return {}  # 모델은 아무 법령도 내지 않음
+            return super().chat_json(messages, **kw)
+
+    ix = CaseIndex.from_records(
+        [{"id": "c1", "field": "industry", "type": "실증특례", "title": "배달로봇 보도 주행", "regulation": "가상로봇법 제10조의2", "source_url": "u"}]
+    )
+    eng = Explore(NoHypoModel(), None, LawSource(FakeDrf()), cases=ix, use_search=False, workers=1)
+    r = eng(state_with([ACTS[0]]))
+    f = next(f for f in r.payload["findings"] if f.locator == "제10조의2")
+    assert f.grade == "명시 규제" and f.precedents == ["c1"]
+    assert r.payload["similar"]["A1"][0][0].id == "c1"

@@ -42,7 +42,18 @@ class Explore:
     name = "explore"
     label = "② 규제 탐색"
 
-    def __init__(self, model, search, laws: LawSource, *, workers: int = 4, per_activity: int = 6, use_search: bool = True):
+    def __init__(
+        self,
+        model,
+        search,
+        laws: LawSource,
+        *,
+        cases=None,
+        workers: int = 4,
+        per_activity: int = 8,
+        use_search: bool = True,
+    ):
+        self.cases = cases  # precedent.CaseIndex | None
         self.model = model
         self.search = search
         self.laws = laws
@@ -71,6 +82,8 @@ class Explore:
                         leads += l
                     except Exception as e:  # noqa: BLE001
                         notes.append(f"{a.id} 검색 실패: {str(e)[:120]}")
+        similar = self._similar(acts)
+        cands += self._precedent_candidates(similar)
         cands = self._dedupe(cands)
 
         findings: list[Finding] = []
@@ -85,6 +98,7 @@ class Explore:
         findings += self._chain(findings)
         findings += self._shadow(findings, act_by_id)
         findings += self._gaps(acts, cands, findings)
+        self._attach_precedents(findings)
         findings = self._dedupe_findings(findings)
         findings.sort(key=lambda f: (f.activity_id, GRADE_ORDER[f.grade], f.law, f.locator))
 
@@ -96,7 +110,12 @@ class Explore:
         return StageResult(
             stage=self.name,
             summary=self._summary(acts, findings),
-            payload={"findings": findings, "leads": [l for l in leads if is_gov(l.url)], "rejected": rejected},
+            payload={
+                "findings": findings,
+                "leads": [l for l in leads if is_gov(l.url)],
+                "rejected": rejected,
+                "similar": similar,
+            },
             evidence=[
                 Evidence(kind="law_cache" if f.from_cache else "law_drf", title=f.law, locator=f.locator, url=f.url, quote=f.quote, from_cache=f.from_cache)
                 for f in verified
@@ -109,7 +128,7 @@ class Explore:
         seen: set[tuple] = set()
         per: dict[str, int] = {}
         out = []
-        order = {"관련 법령": 0, "의제 가설": 1, "검색 단서": 2}
+        order = {"관련 법령": 0, "선례": 1, "의제 가설": 2, "검색 단서": 3}
         for c in sorted(cands, key=lambda c: order[c.origin]):
             key = (c.activity_id, _norm(c.law), _norm(c.term), parse_article_ref(c.article) or "")
             if key in seen or per.get(c.activity_id, 0) >= self.per_activity:
@@ -118,6 +137,33 @@ class Explore:
             per[c.activity_id] = per.get(c.activity_id, 0) + 1
             out.append(c)
         return out
+
+    # 5층: 부품 단위 선례 ----------------------------------------------------
+    def _similar(self, acts) -> dict[str, list]:
+        if not self.cases:
+            return {}
+        return {a.id: self.cases.similar(a.action, k=5) for a in acts}
+
+    def _precedent_candidates(self, similar: dict[str, list]) -> list[Candidate]:
+        """닮은 승인 사례가 문제 삼은 규정을 후보로. 사례마다 앞쪽 규정 2개만 쓴다."""
+        out = []
+        for aid, hits in similar.items():
+            for case, score in hits[:3]:
+                for law, art in case.laws[:2]:
+                    out.append(
+                        Candidate(aid, law, "", article_label(art) if art else "", f"유사 승인 사례 '{case.label}'에서 문제 된 규정", "선례")
+                    )
+        return out
+
+    def _attach_precedents(self, findings: list[Finding]) -> None:
+        if not self.cases:
+            return
+        for f in findings:
+            if f.grade in ("규정 공백", "원문 확인 불가"):
+                continue
+            key = parse_article_ref(f.locator) if f.locator.startswith("제") else None
+            hits = self.cases.citing(f.law, key) or (self.cases.citing(f.law) if not key else [])
+            f.precedents = [c.id for c in hits[:20]]
 
     # 1·3층: 정의·조문 대조 -------------------------------------------------
     def _verify(self, c: Candidate, action: str) -> tuple[list[Finding], list[Rejected]]:
@@ -273,7 +319,15 @@ def build_explore(model, settings, *, use_search: bool = True) -> Explore:
     from regpang.law import DrfClient
     from regpang.liner import LinerSearch
 
-    return Explore(model, LinerSearch(settings) if use_search else None, LawSource(DrfClient(settings)), use_search=use_search)
+    from .precedent import load_index
+
+    return Explore(
+        model,
+        LinerSearch(settings) if use_search else None,
+        LawSource(DrfClient(settings)),
+        cases=load_index(),
+        use_search=use_search,
+    )
 
 
 __all__ = ["Explore", "build_explore", "article_label"]

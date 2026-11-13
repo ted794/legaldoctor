@@ -22,8 +22,19 @@ def build_stages(model, settings=None, *, use_search: bool = True) -> list[S.Sta
 
     from .decompose import Decompose
 
+    from regpang.explore.precedent import load_index
+
+    from .rules import Classify, Jurisdiction, Precedent, Track
+
     settings = settings or load_settings()
-    return [Decompose(model), build_explore(model, settings, use_search=use_search), *STAGES[2:]]
+    return [
+        Decompose(model),
+        build_explore(model, settings, use_search=use_search),
+        Classify(),
+        Jurisdiction(),
+        Precedent(),
+        Track(load_index()),
+    ]
 
 
 def run(

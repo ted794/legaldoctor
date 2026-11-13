@@ -16,7 +16,7 @@ class Candidate:
     term: str = ""  # 정의 조항에서 찾을 용어
     article: str = ""  # '제10조의2' 등
     point: str = ""
-    origin: Literal["의제 가설", "관련 법령", "검색 단서"] = "관련 법령"
+    origin: Literal["의제 가설", "관련 법령", "검색 단서", "선례"] = "관련 법령"
 
 
 @dataclass
@@ -32,6 +32,7 @@ class Finding:
     ministry: str = ""
     chain: list[str] = field(default_factory=list)  # 상위에서 하위까지 위치 경로
     from_cache: bool = False
+    precedents: list[str] = field(default_factory=list)  # 같은 법령·조문으로 특례를 받은 사례 id
 
 
 @dataclass
