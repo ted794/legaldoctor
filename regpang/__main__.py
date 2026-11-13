@@ -66,7 +66,8 @@ def _load_case(name: str) -> str:
 
 
 def cmd_run(args: argparse.Namespace) -> int:
-    from regpang.pipeline import run
+    from regpang.liner import LinerModel
+    from regpang.pipeline.runner import build_stages, run
 
     business = _load_case(args.case) if args.case else args.business
     if not business:
@@ -74,8 +75,10 @@ def cmd_run(args: argparse.Namespace) -> int:
 
     def show(stage, result):
         print(f"\n== {stage.label} ==\n{result.summary}")
+        for n in result.notes:
+            print(f"  - {n}")
 
-    state = run(business, on_stage=show)
+    state = run(business, stages=build_stages(LinerModel(load_settings())), on_stage=show)
     if state.halted_at:
         print(f"\n[멈춤] {state.halted_at}: {state.halt_reason}")
     print(f"\n※ {DISCLAIMER}")

@@ -6,13 +6,20 @@ from . import stages as S
 from .types import CaseState, EvidenceGateError, StageResult
 
 STAGES: Sequence[S.Stage] = (
-    S.decompose,
+    S.decompose,  # 모델 없이 돌리는 기본값(미구현 자리)
     S.explore,
     S.classify,
     S.jurisdiction,
     S.precedent,
     S.track,
 )
+
+
+def build_stages(model) -> list[S.Stage]:
+    """실제 실행용 단계 목록. 구현된 단계부터 차례로 바꿔 끼운다."""
+    from .decompose import Decompose
+
+    return [Decompose(model), *STAGES[1:]]
 
 
 def run(
