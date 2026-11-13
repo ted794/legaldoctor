@@ -14,7 +14,7 @@ from .types import Candidate, Lead
 HYPO_SYSTEM = """너는 한국 규제 전문가다. 창업자의 사업 행위 목록을 보고 원문을 대조해 볼 후보 법령을 고른다.
 
 행위마다 두 가지를 낸다.
-1. 관련법령: 이 행위를 직접 규율할 법령. 정의 조항에서 확인할 용어가 있으면 용어에 적는다(예: "실외이동로봇", "통신판매중개").
+1. 관련법령: 이 행위를 직접 규율할 법령. 정의 조항에서 확인할 용어가 있으면 용어에 적는다(예: "실외이동로봇", "통신판매중개"). 여러 개면 쉼표로 구분한다.
 2. 의제후보: 행정청이 이 새 사업을 기존의 어느 업종이나 개념으로 보고 규제할 위험이 있는지. 혁신 사업은 가장 가까운 기존 업종으로 의제되어 막히는 일이 많다.
    예: 승차 공유 → 여객자동차운송사업, 배달 로봇 → 화물자동차 운송사업, 원격 상담 → 의료행위.
 
@@ -76,7 +76,7 @@ def parse_hypotheses(data: Any, ids: set[str]) -> list[Candidate]:
                 )
         for r in body.get("의제후보") or []:
             if isinstance(r, dict) and r.get("법령"):
-                point = f"{r.get('업종') or r.get('용어') or ''}으로 볼 위험: {r.get('이유') or ''}".strip()
+                point = f"기존 업종 '{r.get('업종') or r.get('용어') or ''}'에 해당한다고 볼 위험: {r.get('이유') or ''}".strip()
                 out.append(Candidate(aid, str(r["법령"]).strip(), str(r.get("용어") or r.get("업종") or ""), "", point, "의제 가설"))
     return out
 

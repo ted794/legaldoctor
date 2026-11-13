@@ -134,9 +134,9 @@ class Explore:
             if not art:
                 return [], [Rejected(c.activity_id, f"{doc.meta.name} {c.article}", "원문에 그 조문이 없음(허위 조문 의심)")]
             targets.append((art.label, art.text, "조문"))
-        if c.term:
-            hit = self._definition(doc, c.term)
-            if hit:
+        for term in [t.strip() for t in re.split(r"[,，/·]", c.term) if t.strip()][:3]:
+            hit = self._definition(doc, term)
+            if hit and hit[0:2] not in [t[0:2] for t in targets]:
                 targets.append(hit)
         if not targets:
             for k in self._pick_articles(doc, action):
