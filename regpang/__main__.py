@@ -149,7 +149,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         for n in result.notes:
             print(f"  - {n}")
 
-    state = run(business, stages=build_stages(LinerModel(load_settings())), on_stage=show)
+    state = run(business, stages=build_stages(LinerModel(load_settings()), load_settings()), on_stage=show)
     if state.halted_at:
         print(f"\n[멈춤] {state.halted_at}: {state.halt_reason}")
     print(f"\n※ {DISCLAIMER}")

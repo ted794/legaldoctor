@@ -15,11 +15,15 @@ STAGES: Sequence[S.Stage] = (
 )
 
 
-def build_stages(model) -> list[S.Stage]:
+def build_stages(model, settings=None, *, use_search: bool = True) -> list[S.Stage]:
     """실제 실행용 단계 목록. 구현된 단계부터 차례로 바꿔 끼운다."""
+    from regpang.config import load_settings
+    from regpang.explore import build_explore
+
     from .decompose import Decompose
 
-    return [Decompose(model), *STAGES[1:]]
+    settings = settings or load_settings()
+    return [Decompose(model), build_explore(model, settings, use_search=use_search), *STAGES[2:]]
 
 
 def run(
