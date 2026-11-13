@@ -1,0 +1,148 @@
+{
+  "_note": "공식 누계(정부·전담기관이 공개한 숫자). 모두 2026-11-13에 이 저장소의 수집기 또는 curl로 직접 받은 페이지에서 읽은 값이다. fetched=false 항목은 검색 결과 요약으로만 확인돼 원문을 받지 못한 것(참고용).",
+  "items": [
+    {
+      "field": "all",
+      "type": "전체",
+      "count": 2787,
+      "as_of": "2026-11-13",
+      "source": "규제샌드박스 통합포털 현황(국무조정실)",
+      "url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSlPL",
+      "fetched": true,
+      "detail": "실증특례 2590, 임시허가 129, 적극해석 68"
+    },
+    {
+      "field": "ict",
+      "type": "실증특례",
+      "count": 228,
+      "as_of": "2026-11-13",
+      "source": "ICT 규제샌드박스 승인사례 목록(NIPA) 실증특례 탭 총건수",
+      "url": "https://www.sandbox.or.kr/board/designated_case.do?applyFormCode=FORM_003&pageNumber=1",
+      "fetched": true,
+      "detail": "[적극행정] 표기 과제 포함"
+    },
+    {
+      "field": "ict",
+      "type": "임시허가",
+      "count": 75,
+      "as_of": "2026-11-13",
+      "source": "ICT 규제샌드박스 승인사례 목록(NIPA) 임시허가 탭 총건수",
+      "url": "https://www.sandbox.or.kr/board/designated_case.do?applyFormCode=FORM_002&pageNumber=1",
+      "fetched": true,
+      "detail": "[적극행정] 표기 과제 포함"
+    },
+    {
+      "field": "ict",
+      "type": "전체",
+      "count": 300,
+      "as_of": "2026-05-06",
+      "source": "국무조정실 블로그 'ICT 규제샌드박스, 누적 규제특례 지정 300건 달성'(제44차 심의위)",
+      "url": "https://m.blog.naver.com/koreareg/224284362133",
+      "fetched": true
+    },
+    {
+      "field": "industry",
+      "type": "실증특례",
+      "count": 855,
+      "as_of": "2026-11-13",
+      "source": "산업융합 규제샌드박스 특례부여현황(KIAT)",
+      "url": "https://sandbox.kiat.or.kr/front/pstmng/selectCtlExeLibPage.do?MenuId=403995cd1cfb4dbbbd97839c08a8c3fb",
+      "fetched": true,
+      "detail": "목록 최신 승인일 2026-05-26 (통합포털에는 2026-07-30까지 있음)"
+    },
+    {
+      "field": "industry",
+      "type": "임시허가",
+      "count": 56,
+      "as_of": "2026-11-13",
+      "source": "산업융합 규제샌드박스 특례부여현황(KIAT)",
+      "url": "https://sandbox.kiat.or.kr/front/pstmng/selectCtlExeLibPage.do?MenuId=403995cd1cfb4dbbbd97839c08a8c3fb",
+      "fetched": true
+    },
+    {
+      "field": "industry",
+      "type": "적극해석",
+      "count": 21,
+      "as_of": "2026-11-13",
+      "source": "산업융합 규제샌드박스 특례부여현황(KIAT) '기타'",
+      "url": "https://sandbox.kiat.or.kr/front/pstmng/selectCtlExeLibPage.do?MenuId=403995cd1cfb4dbbbd97839c08a8c3fb",
+      "fetched": true
+    },
+    {
+      "field": "industry",
+      "type": "전체",
+      "count": 829,
+      "as_of": "2025-06-30",
+      "source": "월간인물 인터뷰(산업부 규제샌드박스팀장) — 2025년 6월까지 총 829건 승인",
+      "url": "https://www.monthlypeople.com/news/articleView.html?idxno=701365",
+      "fetched": true
+    },
+    {
+      "field": "finance",
+      "type": "혁신금융서비스",
+      "count": 1168,
+      "as_of": "2026-10-21",
+      "source": "금융위 보도자료 '보증금 기반 비대면 신용카드 발급 서비스 등 혁신금융서비스 4건 신규 지정 의결' — 현재까지 총 1,168건",
+      "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=4002&pageIndex=1",
+      "fetched": true,
+      "detail": "회차별 누계 46개 시점은 data/sandbox/raw/finance_press_rounds.json"
+    },
+    {
+      "field": "mobility",
+      "type": "실증특례",
+      "count": 107,
+      "as_of": "2026-11-13",
+      "source": "모빌리티 규제샌드박스 '실증특례 승인과제 현황' 게시판(TS) 총건수, 제1~9차 모빌리티 혁신위원회",
+      "url": "https://sandbox.kotsa.or.kr/front/board/boardContentsListPage.do?board_id=47&MenuId=e9274d23c3fd40a881cdc6e75be79893",
+      "fetched": true
+    },
+    {
+      "field": "smartcity",
+      "type": "실증특례",
+      "count": 58,
+      "as_of": "2026-11-13",
+      "source": "스마트도시 규제샌드박스 사업별 승인사례(KAIA)",
+      "url": "https://smartcity.kaia.re.kr/sandbox/apply/applyCase.do",
+      "fetched": true,
+      "detail": "임시허가 0, 적극해석 8"
+    },
+    {
+      "field": "smartcity",
+      "type": "적극해석",
+      "count": 8,
+      "as_of": "2026-11-13",
+      "source": "스마트도시 규제샌드박스 사업별 승인사례(KAIA)",
+      "url": "https://smartcity.kaia.re.kr/sandbox/apply/applyCase.do",
+      "fetched": true
+    },
+    {
+      "field": "circular",
+      "type": "실증특례",
+      "count": 38,
+      "as_of": "2026-05-05",
+      "source": "기후에너지환경부 보도자료 '플라스틱 감량 및 고품질 순환이용, 순환경제 규제특례로 지원한다' — 현재까지 38개 과제 실증특례 부여(과제 단위), 이번 심의 12건 승인",
+      "url": "https://mcee.go.kr/home/web/board/read.do?pagerOffset=0&maxPageItems=10&maxIndexPages=10&searchKey=&searchValue=&menuId=10598&orgCd=&boardId=1861750&boardMasterId=939&boardCategoryId=&decorator",
+      "fetched": true,
+      "detail": "과제 단위 집계. 통합포털은 기업(참여자) 단위로 레코드를 나눔"
+    },
+    {
+      "field": "rnd",
+      "type": "실증특례",
+      "count": null,
+      "as_of": "2026-10-14",
+      "source": "과기정통부 공고 제2026-1016호(제59차 연구개발특구위원회) — 실증특례 2026-04~07호 신규 지정, 누계 숫자는 공고에 없음",
+      "url": "https://www.msit.go.kr/bbs/view.do?sCode=user&mPid=121&mId=310&bbsSeqNo=96&nttSeqNo=3186630",
+      "fetched": true
+    },
+    {
+      "field": "rfz",
+      "type": "특구특례",
+      "count": null,
+      "as_of": "2026-08-31",
+      "source": "중기부: 2019년부터 총 57개 규제자유특구 지정(특구 단위; 특례 항목 수는 미확인)",
+      "url": "https://m.blog.naver.com/bizinfo1357/224396289762",
+      "fetched": true,
+      "detail": "rfz.go.kr·mss.go.kr 접속 차단으로 원문 미확인"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+ "key": "sandbox_go_kr",
+ "count": 2787,
+ "saved_at": "2026-11-13T18:01:17+00:00",
+ "source_name": "규제샌드박스 통합포털(sandbox.go.kr, 국무조정실)",
+ "list_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskAjax",
+ "portal_counts": {
+  "exception_03": 68,
+  "exception_02": 129,
+  "exception_01": 2590,
+  "total": 2787
+ },
+ "detail_failed_task_seq": []
+}
