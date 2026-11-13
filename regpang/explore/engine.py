@@ -34,6 +34,10 @@ PICK_SYSTEM = """너는 법령 목차를 보고 특정 행위와 관련된 조�
 JSON 하나만 출력한다. {"조문":["제2조","제10조의2"]}"""
 
 
+def _ymd(d: str) -> str:
+    return f"{d[:4]}.{d[4:6]}.{d[6:8]}." if re.fullmatch(r"\d{8}", d or "") else d
+
+
 def _norm(s: str) -> str:
     return re.sub(r"\s+", "", s or "")
 
@@ -275,7 +279,7 @@ class Explore:
                 v = judge(self.model, action, f"법령해석례 {it['case_no']}", text, "해석")
                 if v and v.result in ("예", "불명확"):
                     out.append(
-                        Finding(aid, "해석 리스크", "해석례", law, f"법령해석례 {it['case_no']} ({it['date']})", v.point or d["title"], v.quote, d["url"], it.get("agency", ""), [law, f"법령해석례 {it['case_no']}"])
+                        Finding(aid, "해석 리스크", "해석례", law, f"법령해석례 {it['case_no']} ({_ymd(it['date'])})", v.point or d["title"], v.quote, d["url"], it.get("agency", ""), [law, f"법령해석례 {it['case_no']}"])
                     )
         return out
 
@@ -288,11 +292,13 @@ class Explore:
                 continue
             laws = sorted({c.law for c in cands if c.activity_id == a.id})
             unavailable = [l for l in laws if self.laws.status.get(l) == "unavailable"]
-            if unavailable or not laws:
-                out.append(Finding(a.id, "원문 확인 불가", "조문 대조", ", ".join(unavailable) or "-", "-", "법령 원문을 조회하지 못해 판단을 보류함"))
+            checked = [l for l in laws if self.laws.status.get(l) == "ok"]
+            if unavailable:
+                out.append(Finding(a.id, "원문 확인 불가", "조문 대조", ", ".join(unavailable), "-", "법령 원문을 조회하지 못해 판단을 보류함"))
             else:
+                what = f"후보 법령({', '.join(checked)}) 원문을 대조했지만" if checked else "후보 법령을 찾지 못했고"
                 out.append(
-                    Finding(a.id, "규정 공백", "조문 대조", ", ".join(laws), "-", "후보 법령 원문을 대조했지만 이 행위를 직접 다루는 조문을 찾지 못함. 신속확인으로 규제 여부를 물어볼 대상")
+                    Finding(a.id, "규정 공백", "조문 대조", "-", "-", f"{what} 이 행위를 직접 다루는 조문이 없음. 신속확인으로 규제 여부를 물어볼 대상")
                 )
         return out
 

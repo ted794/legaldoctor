@@ -152,6 +152,20 @@ def cmd_run(args: argparse.Namespace) -> int:
     state = run(business, stages=build_stages(LinerModel(load_settings()), load_settings()), on_stage=show)
     if state.halted_at:
         print(f"\n[멈춤] {state.halted_at}: {state.halt_reason}")
+    if "decompose" in state.results:
+        from pathlib import Path
+
+        from regpang.outputs import build_report, html_to_pdf, write_all
+
+        paths = write_all(build_report(state, prof if args.profile else None), Path(args.out))
+        if args.pdf:
+            for name in ("consult.html", "regmap.html"):
+                pdf = paths[name].with_suffix(".pdf")
+                if html_to_pdf(paths[name], pdf):
+                    paths[pdf.name] = pdf
+        print("\n결과물:")
+        for name, path in paths.items():
+            print(f"  {name}: {path}")
     print(f"\n※ {DISCLAIMER}")
     return 0
 
@@ -164,6 +178,8 @@ def main(argv: list[str] | None = None) -> int:
     pr.add_argument("business", nargs="?", help="사업 설명")
     pr.add_argument("--case", help="data/cases의 사례 이름(예: demo)")
     pr.add_argument("--profile", help="intake로 만든 BM 프로필 JSON")
+    pr.add_argument("--out", default="out/report", help="결과물을 저장할 폴더")
+    pr.add_argument("--pdf", action="store_true", help="Playwright가 있으면 PDF도 만든다")
     pr.set_defaults(func=cmd_run)
     pi = sub.add_parser("intake", help="자료와 스무고개 질문으로 BM 파악")
     pi.add_argument("--text", help="사업 설명 글")

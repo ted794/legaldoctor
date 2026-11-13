@@ -20,7 +20,7 @@ TYPE_RULES: list[tuple[str, tuple[str, ...]]] = [
     ("기준·규격", ("기준", "규격", "시설", "장비", "인력", "요건", "별표")),
     ("행위 의무", ("하여야 한다", "해야 한다", "준수", "의무", "표시", "고지", "동의")),
 ]
-TYPE_ORDER = [t for t, _ in TYPE_RULES] + ["해석상 제한", "근거 불명확", "판단 보류"]
+TYPE_ORDER = [t for t, _ in TYPE_RULES] + ["적용 범위(정의)", "해석상 제한", "근거 불명확", "판단 보류"]
 
 
 def classify_finding(f) -> str:
@@ -30,6 +30,8 @@ def classify_finding(f) -> str:
         return "판단 보류"
     if f.grade == "해석 리스크":
         return "해석상 제한"
+    if f.layer == "정의 대조":
+        return "적용 범위(정의)"
     text = f"{f.quote} {f.point} {f.locator}"
     for t, kws in TYPE_RULES:
         if any(k in text for k in kws):

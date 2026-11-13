@@ -185,7 +185,10 @@ $('#okBtn').onclick=async()=>{await session();const edits={};
   try{editing=false;$('#editBtn').textContent='고칠 곳 있어요';
     render(await api(`/api/sessions/${sid}/confirm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}));
     const r=await api(`/api/sessions/${sid}/analyze`,{method:'POST'});
-    $('#result').innerHTML=r.stages.map(s=>`<h3>${esc(s.stage)}</h3><pre>${esc(s.summary)}</pre>`).join('')+(r.halted_at?`<p class="hint">다음 단계 준비 중: ${esc(r.halt_reason)}</p>`:'');
+    const out=n=>`/api/sessions/${sid}/out/${n}`;
+    const links=r.outputs.length?`<div class="row"><a class="btn" href="${out('regmap.html')}" target="_blank">규제 지도</a><a class="btn ghost" href="${out('consult.html')}" target="_blank">변호사 상담 준비서</a><a class="btn ghost" href="${out('application.html')}" target="_blank">신속확인 신청서 초안</a><a class="btn ghost" href="${out('application.docx')}">신청서 Word</a></div><p class="hint">열린 문서에서 인쇄(Ctrl+P)를 누르면 PDF로 저장됩니다.</p>`:'';
+    const counts=Object.entries(r.counts||{}).map(([k,v])=>`${esc(k)} ${v}`).join(' · ');
+    $('#result').innerHTML=`<h3>권하는 길: ${esc(r.track||'')}</h3><p class="hint">${counts}</p>`+links+(r.halted_at?`<p class="warn">분석이 멈춘 단계: ${esc(r.halt_reason)}</p>`:'')+r.stages.map(s=>`<details><summary>${esc(s.stage)}</summary><pre>${esc(s.summary)}</pre></details>`).join('');
   }catch(e){$('#msg').textContent=e.message}finally{busy(false)}};
 api('/api/sessions',{method:'POST'}).then(r=>{sid=r.id;return api('/api/sessions/'+sid)}).then(render).catch(()=>{});
 </script>

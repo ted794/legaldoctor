@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from pydantic import BaseModel
 
 from regpang.config import load_settings
@@ -42,6 +42,7 @@ class Session:
     materials: list[Material] = field(default_factory=list)
     drawings: int = 0
     edits: int = 0
+    outputs: dict[str, Any] = field(default_factory=dict)
 
     @property
     def profile(self) -> BMProfile:
@@ -167,6 +168,7 @@ def confirm(sid: str, body: ConfirmIn) -> dict[str, Any]:
 
 @app.post("/api/sessions/{sid}/analyze")
 def analyze(sid: str) -> dict[str, Any]:
+    from regpang.outputs import application_docx, application_html, build_report, consult_html, regmap_html
     from regpang.pipeline.runner import build_stages, run
 
     s = get(sid)
@@ -175,6 +177,13 @@ def analyze(sid: str) -> dict[str, Any]:
     stages = build_stages(model())
     labels = {st.name: st.label for st in stages}
     state = run(s.profile.to_business_text(), stages=stages)
+    report = build_report(state, s.profile)
+    s.outputs = {
+        "regmap.html": regmap_html(report),
+        "consult.html": consult_html(report),
+        "application.html": application_html(report),
+        "application.docx": application_docx(report),
+    }
     return {
         "stages": [
             {"stage": labels.get(r.stage, r.stage), "summary": r.summary, "notes": r.notes}
@@ -182,5 +191,23 @@ def analyze(sid: str) -> dict[str, Any]:
         ],
         "halted_at": state.halted_at,
         "halt_reason": state.halt_reason,
+        "track": report.track,
+        "counts": report.counts,
+        "outputs": list(s.outputs),
         "disclaimer": DISCLAIMER,
     }
+
+
+@app.get("/api/sessions/{sid}/out/{name}")
+def output(sid: str, name: str):
+    s = get(sid)
+    if name not in s.outputs:
+        raise HTTPException(404, "결과물이 없음")
+    data = s.outputs[name]
+    if name.endswith(".docx"):
+        return Response(
+            data,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            headers={"Content-Disposition": "attachment; filename*=UTF-8''regpang_application.docx"},
+        )
+    return HTMLResponse(data)
