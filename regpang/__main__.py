@@ -121,6 +121,23 @@ def _print_profile(profile) -> None:
         print("- 아직 모르는 것: " + ", ".join(SLOT_LABEL[k] for k in profile.missing()))
 
 
+def cmd_eval(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from regpang.evaluate import evaluate, to_markdown
+    from regpang.liner import LinerModel
+
+    s = load_settings()
+    res = evaluate(LinerModel(s), s, only=args.only, baseline=not args.no_baseline, use_search=not args.no_search)
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "results.json").write_text(json.dumps(res, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
+    md = to_markdown(res)
+    (out / "report.md").write_text(md, encoding="utf-8")
+    print(md)
+    return 0
+
+
 def cmd_web(args: argparse.Namespace) -> int:
     import uvicorn
 
@@ -188,6 +205,12 @@ def main(argv: list[str] | None = None) -> int:
     pi.add_argument("--max-questions", type=int, default=20, help="스무고개 최대 질문 수(0이면 생략)")
     pi.add_argument("--out", default="out/profile.json")
     pi.set_defaults(func=cmd_intake)
+    pe = sub.add_parser("eval", help="공개 승인 사례로 정답 대조 평가")
+    pe.add_argument("--only", help="사례 id 하나만")
+    pe.add_argument("--no-baseline", action="store_true", help="범용 프롬프트 비교 생략")
+    pe.add_argument("--no-search", action="store_true", help="Liner Search 단서 생략(빠름)")
+    pe.add_argument("--out", default="out/eval")
+    pe.set_defaults(func=cmd_eval)
     pw = sub.add_parser("web", help="웹 화면 실행")
     pw.add_argument("--host", default="127.0.0.1")
     pw.add_argument("--port", type=int, default=8000)
