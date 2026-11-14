@@ -2,7 +2,7 @@
 
 1. 자료(계약서·설명)에서 범주별 조항·사실을 뽑는다. 원문 구절이 자료에 그대로 있어야 받는다
 2. 뽑은 항목을 '행위'로 바꿔 규제 탐색 엔진(원문 대조)에 넣는다. 범주별 고정 대조 법령을 함께 준다
-3. 범주 기본 위험도와 원문 대조 결과로 항목별 위험도를 정하고 지금 할 일과 변호사 연결 여부를 붙인다
+3. 범주 기본 위험도와 원문 대조 결과로 항목별 위험도를 정하고 변호사 권장조치를 붙인다
 """
 
 from __future__ import annotations
@@ -150,36 +150,79 @@ def grade_item(item: CheckItem, module: Module) -> None:
     item.lawyer = risk == "높음"
 
 
-def run_checkup(model, module: Module, text: str, explore) -> CheckupResult:
-    """explore: legaldoctor.explore.Explore (cases=None 권장). 테스트에서는 가짜를 넣는다."""
+MAX_ITEMS = 14  # 한 번에 고를 수 있는 기본 상한(웹은 이용자가 고름)
+BATCH = 3  # 검진은 항목 3개씩 묶어 돌린다. 묶음마다 결과를 화면에 바로 보이고 중단할 수 있게
+
+
+def category_risk(module: Module, item: CheckItem) -> str:
+    c = module.category(item.category)
+    return c.risk if c else "중간"
+
+
+def extract_items(model, module: Module, text: str) -> tuple[list[CheckItem], list[str], list[str]]:
+    """조항·사실만 뽑아 범주 위험도 순으로 정렬한다(법령 대조 전). 이용자가 검진할 항목을 고르는 데 쓴다."""
     items, questions, dropped = extract(model, module, text)
+    items.sort(key=lambda i: (RISK_ORDER.get(category_risk(module, i), 9), i.id))
+    return items, questions, dropped
+
+
+def check_items(module: Module, text: str, items: list[CheckItem], explore, on_item=None, cancelled=None, batch: int = BATCH, parallel: int = 4) -> str | None:
+    """고른 항목을 묶음 단위로 법령과 대조하고 판정한다. 묶음은 동시에 돌리고 끝나는 대로 on_item(item)을 부른다.
+    cancelled()가 참이면 아직 시작하지 않은 묶음은 돌리지 않는다. 돌려주는 값은 멈춘 사유(없으면 None)."""
+    import copy
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    groups = [items[b : b + batch] for b in range(0, len(items), batch)]
+    halted: list[str] = []
+
+    def one(group):
+        if cancelled and cancelled():
+            return group, None, "이용자가 중단함"
+        ex = copy.copy(explore)  # 묶음마다 고정 대조 후보가 달라 엔진 설정을 나눠 씀(법령 원문 캐시는 공유)
+        ex.hint = module.hint
+        extra: list[Candidate] = []
+        for i in group:
+            cat = module.category(i.category)
+            for a in (cat.anchors if cat else []):
+                law, term, art = (a + ("",))[:3]  # (법령, 용어[, 조문]) — 조문을 주면 그 조문을 바로 대조
+                extra.append(Candidate(i.id, law, term, art, f"{cat.label} 고정 대조", "고정 대조"))
+        ex.extra_candidates = extra
+        acts = [Activity(i.id, f"{i.label}: {i.summary or i.quote}", i.quote) for i in group]
+        state = CaseState(business=text[:6000])
+        state.results["decompose"] = StageResult("decompose", "", {"activities": acts}, [])
+        try:
+            return group, ex(state).payload.get("findings") or [], None
+        except EvidenceGateError as e:
+            return group, [], e.reason
+
+    with ThreadPoolExecutor(max(1, parallel)) as pool:
+        for fut in as_completed([pool.submit(one, g) for g in groups]):
+            group, findings, why = fut.result()
+            if why:
+                halted.append(why)
+            if findings is None:
+                continue
+            for i in group:
+                i.findings = [f for f in findings if f.activity_id == i.id]
+                grade_item(i, module)
+                if on_item:
+                    on_item(i)
+    return halted[0] if halted else None
+
+
+def run_checkup(model, module: Module, text: str, explore, on_phase=None) -> CheckupResult:
+    """명령행용: 조항을 뽑아 위험도 높은 범주부터 MAX_ITEMS개를 검진한다."""
+    phase = on_phase or (lambda _p: None)
+    phase("조항·사실 뽑기")
+    items, questions, dropped = extract_items(model, module, text)
     causes = [c for c in load_causes() if c["no"] in module.causes]
     if not items:
         return CheckupResult(module, [], questions, causes, dropped, halted="검진할 조항·사실을 자료에서 찾지 못함")
-
-    acts = [Activity(i.id, f"{i.label}: {i.summary or i.quote}", i.quote) for i in items]
-    extra: list[Candidate] = []
-    for i in items:
-        cat = module.category(i.category)
-        for a in (cat.anchors if cat else []):
-            law, term, art = (a + ("",))[:3]  # (법령, 용어[, 조문]) — 조문을 주면 그 조문을 바로 대조
-            extra.append(Candidate(i.id, law, term, art, f"{cat.label} 고정 대조", "고정 대조"))
-    explore.hint = module.hint
-    explore.extra_candidates = extra
-
-    state = CaseState(business=text[:6000])
-    state.results["decompose"] = StageResult("decompose", "", {"activities": acts}, [])
-    findings: list[Finding] = []
-    halted = None
-    leads: list[Any] = []
-    try:
-        r = explore(state)
-        findings = r.payload.get("findings") or []
-        leads = r.payload.get("leads") or []
-    except EvidenceGateError as e:
-        halted = e.reason
-    for i in items:
-        i.findings = [f for f in findings if f.activity_id == i.id]
-        grade_item(i, module)
+    if len(items) > MAX_ITEMS:
+        dropped = list(dropped) + [f"검진 항목이 많아 위험도가 높은 범주부터 {MAX_ITEMS}개만 봄(뺀 항목 {len(items) - MAX_ITEMS}개)"]
+        items = items[:MAX_ITEMS]
+    phase("법령 찾기와 원문 대조")
+    halted = check_items(module, text, items, explore)
+    phase("검진표 만들기")
     items.sort(key=lambda i: (RISK_ORDER.get(i.risk, 9), i.id))
-    return CheckupResult(module, items, questions, causes, dropped, halted, leads)
+    return CheckupResult(module, items, questions, causes, dropped, halted, [])

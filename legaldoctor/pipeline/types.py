@@ -35,6 +35,7 @@ class CaseState:
     results: dict[str, StageResult] = field(default_factory=dict)
     halted_at: str | None = None
     halt_reason: str | None = None
+    timings: dict[str, float] = field(default_factory=dict)  # 단계별 소요 초(성능 기록용)
 
 
 class EvidenceGateError(RuntimeError):

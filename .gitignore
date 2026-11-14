@@ -22,3 +22,5 @@ out/
 .DS_Store
 .claude/worktrees/
 docs/figures/*.html
+data/law_cache/_answers/
+data/law_cache/_metrics/

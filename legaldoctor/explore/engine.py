@@ -15,6 +15,7 @@ import re
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeout
 from typing import Any
 
 from legaldoctor.law.model import LawDoc, article_label, parse_article_ref
@@ -60,6 +61,9 @@ class Explore:
         workers: int = 8,
         per_activity: int = 8,
         use_search: bool = True,
+        use_hypotheses: bool = True,
+        use_shadow: bool = True,
+        search_timeout: float | None = None,
         hint: str = "",
         extra_candidates: list[Candidate] | None = None,
     ):
@@ -72,6 +76,9 @@ class Explore:
         self.workers = workers
         self.per_activity = per_activity
         self.use_search = use_search and search is not None
+        self.use_hypotheses = use_hypotheses  # 모델이 후보 법령·의제 가설을 세움(검진은 고정 대조 법령만으로 빠르게 볼 수 있음)
+        self.use_shadow = use_shadow  # 법령해석례 대조
+        self.search_timeout = search_timeout  # 이 시간 안에 온 검색 단서만 씀(늦은 결과는 기다리지 않음)
         self._lock = threading.Lock()
 
     # 진입점 --------------------------------------------------------------
@@ -87,17 +94,23 @@ class Explore:
         cands = list(self.extra_candidates)
         leads: list[Lead] = []
         # 모델 가설과 Liner Search 단서 수집은 서로 기다릴 이유가 없으므로 함께 돌린다
-        with ThreadPoolExecutor(self.workers + 1) as ex:
-            hypo = ex.submit(hypothesize, self.model, state.business, acts, hint=self.hint, workers=self.workers)
-            searches = [(a, ex.submit(search_clues, self.model, self.search, a)) for a in acts] if self.use_search else []
-            for a, fut in searches:
-                try:
-                    c, l = fut.result()
-                    cands += c
-                    leads += l
-                except Exception as e:  # noqa: BLE001
-                    notes.append(f"{a.id} 검색 실패: {str(e)[:120]}")
+        ex = ThreadPoolExecutor(self.workers + 1)
+        hypo = ex.submit(hypothesize, self.model, state.business, acts, hint=self.hint, workers=self.workers) if self.use_hypotheses else None
+        searches = [(a, ex.submit(search_clues, self.model, self.search, a)) for a in acts] if self.use_search else []
+        if hypo is not None:
             cands += hypo.result()
+        deadline = (time.perf_counter() + self.search_timeout) if self.search_timeout else None
+        for a, fut in searches:
+            try:
+                left = None if deadline is None else max(0.5, deadline - time.perf_counter())
+                c, l = fut.result(timeout=left)
+                cands += c
+                leads += l
+            except FutureTimeout:
+                notes.append(f"{a.id} 검색 단서가 늦어 이번 결과에는 넣지 않음")
+            except Exception as e:  # noqa: BLE001
+                notes.append(f"{a.id} 검색 실패: {str(e)[:120]}")
+        ex.shutdown(wait=False, cancel_futures=True)  # 늦은 검색은 뒤에서 끝나도록 두고 기다리지 않음
         t1 = time.perf_counter()
         similar = self._similar(acts)
         cands += self._precedent_candidates(similar)
@@ -116,9 +129,11 @@ class Explore:
         t3 = time.perf_counter()
 
         findings += self._chain(findings)
-        findings += self._shadow(findings, act_by_id)
+        if self.use_shadow:
+            findings += self._shadow(findings, act_by_id)
         t4 = time.perf_counter()
         notes.append(f"소요: 가설·검색 {t1 - t0:.0f}초, 원문 조회 {t2 - t1:.0f}초, 원문 대조 {t3 - t2:.0f}초, 위임·해석례 {t4 - t3:.0f}초")
+        timings = {"hypothesis_search": t1 - t0, "law_fetch": t2 - t1, "verify": t3 - t2, "chain_shadow": t4 - t3}
         findings += self._gaps(acts, cands, findings)
         self._attach_precedents(findings)
         findings = self._dedupe_findings(findings)
@@ -137,6 +152,7 @@ class Explore:
                 "leads": [l for l in leads if is_gov(l.url)],
                 "rejected": rejected,
                 "similar": similar,
+                "timings": timings,
                 "search_stats": {
                     "clues": sum(1 for c in cands if c.origin == "검색 단서"),
                     "verified": sum(1 for f in findings if "Liner Search" in f.found_by),
@@ -375,7 +391,7 @@ class Explore:
         return "\n".join(lines)
 
 
-def build_explore(model, settings, *, use_search: bool = True, cases=None) -> Explore:
+def build_explore(model, settings, *, use_search: bool = True, cases=None, **opts) -> Explore:
     from legaldoctor.law import DrfClient
     from legaldoctor.liner import LinerSearch
 
@@ -389,6 +405,7 @@ def build_explore(model, settings, *, use_search: bool = True, cases=None) -> Ex
         LawSource(DrfClient(settings), web=WebLaw()),
         cases=None if cases is False else (cases if cases is not None else load_index()),
         use_search=use_search,
+        **opts,
     )
 
 

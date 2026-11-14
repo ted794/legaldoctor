@@ -44,10 +44,16 @@ def run(
     on_stage: Callable[[S.Stage, StageResult], None] | None = None,
 ) -> CaseState:
     """단계를 차례로 돌린다. 근거가 없는 단계에서 멈추고 그 이유를 상태에 남긴다."""
+    import time
+
     state = CaseState(business=business)
     for stage in stages:
+        t0 = time.perf_counter()
         try:
             result = stage(state)
+            state.timings[stage.name] = time.perf_counter() - t0
+            for k, v in (result.payload.get("timings") or {}).items() if isinstance(result.payload, dict) else []:
+                state.timings[f"{stage.name}.{k}"] = v  # 단계 안의 세부 시간(예: 규제 탐색의 가설·검색, 원문 대조)
             if not result.evidence:
                 raise EvidenceGateError(stage.label)
         except EvidenceGateError as e:

@@ -57,6 +57,15 @@ class SearchResult:
     finished: bool = False
 
 
+def _result_to_dict(r: "SearchResult") -> dict[str, Any]:
+    return {"answer": r.answer, "follow_ups": r.follow_ups, "finished": r.finished,
+            "references": [{"title": x.title, "url": x.url, "hostname": x.hostname, "description": x.description, "date": x.date} for x in r.references]}
+
+
+def _result_from_dict(d: dict[str, Any]) -> "SearchResult":
+    return SearchResult(d.get("answer", ""), [Reference(**x) for x in d.get("references", [])], d.get("follow_ups", []), d.get("finished", True))
+
+
 def iter_sse_events(lines: Iterable[str]) -> Iterator[dict[str, Any]]:
     """SSE 줄 묶음에서 data JSON 이벤트를 꺼낸다. 주석(:ping)과 event: 줄은 건너뛴다."""
     for line in lines:
@@ -108,7 +117,19 @@ class LinerSearch:
         self.retries = retries
 
     def search(self, query: str, *, mode: str = "general") -> SearchResult:
-        """429·5xx는 잠시 기다렸다 다시 묻는다(서버가 retryable이라고 알려 줌)."""
+        """429·5xx는 잠시 기다렸다 다시 묻는다(서버가 retryable이라고 알려 줌). 같은 검색어는 7일간 캐시."""
+        from legaldoctor import cache
+
+        ck = cache.key("search", query, mode)
+        hit = cache.get("search", ck)
+        if hit is not None:
+            cache.HITS["search"] += 1
+            return _result_from_dict(hit)
+        res = self._search_retry(query, mode)
+        cache.put("search", ck, _result_to_dict(res))
+        return res
+
+    def _search_retry(self, query: str, mode: str) -> SearchResult:
         for attempt in range(self.retries + 1):
             try:
                 with _SLOTS:
