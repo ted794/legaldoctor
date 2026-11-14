@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>규제팡</title>
+<title>스타트업 법률닥터</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--ink:#1b1f24;--sub:#5b6573;--line:#e3e6ea;--accent:#e8590c;--accent-soft:#fff1e8;--ok:#2b8a3e;--chip:#eef1f4}
 @media (prefers-color-scheme:dark){:root{--bg:#121417;--card:#1b1f24;--ink:#e9ecef;--sub:#9aa4b1;--line:#2c323a;--accent:#ff8a3d;--accent-soft:#2a1d14;--ok:#51cf66;--chip:#262b33}}
@@ -19,8 +19,12 @@ main{max-width:1120px;margin:0 auto;padding:8px 16px 40px;display:grid;grid-temp
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .tabs button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer;font:inherit}
 .tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.tabs button.alt{border-style:dashed}
-main.single{grid-template-columns:1fr;max-width:900px}
+.en{font-size:14px;font-weight:500;color:var(--sub);letter-spacing:0}
+.menu{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.menu button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 14px;text-align:left;cursor:pointer;font:inherit}
+.menu button span{display:block;font-size:12px;color:var(--sub)}
+.menu button.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+main.single{grid-template-columns:1fr}
 .choices button.pick{border-color:var(--accent);background:var(--accent-soft)}
 .ck-item{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:6px}
 .risk{display:inline-block;padding:0 7px;border-radius:4px;color:#fff;font-size:12px;margin-right:6px}
@@ -58,8 +62,12 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
 </head>
 <body>
 <header>
-  <h1>규제<span>팡</span></h1>
-  <p>막힌 규제, 팡! 뚫어 드려요. 편한 방법으로 사업을 알려 주세요.</p>
+  <h1>스타트업 법률<span>닥터</span> <small class="en">Startup Legal Doctor</small></h1>
+  <p>스타트업이 죽는 28가지 사인을 죽기 전에 검진합니다.</p>
+  <nav class="menu" id="menu">
+    <button data-m="reg" class="on"><b>규제팡</b> · 막힌 규제, 팡! 뚫어 드려요<span>BM 적법성 · 규제샌드박스</span></button>
+    <button data-m="ops"><b>계약·노무 검진</b><span>투자계약 · 노무</span></button>
+  </nav>
 </header>
 <main>
   <section class="card">
@@ -68,7 +76,6 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
       <button data-p="text">글로 설명하기</button>
       <button data-p="file">사업소개서 올리기</button>
       <button data-p="draw">그림으로 보여 주기</button>
-      <button data-p="check" class="alt">운영 단계 검진</button>
     </div>
 
     <div class="pane on" id="p-talk">
@@ -98,7 +105,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
       <p class="hint">서비스 흐름을 네모와 화살표로 그려 보세요. 고객, 회사, 돈, 물건이 어디로 가는지 보이면 충분합니다.</p>
     </div>
     <div class="pane" id="p-check">
-      <p class="hint">회사를 운영하면서 생기는 법률 위험을 검진합니다. 스타트업이 죽는 28가지 사인 가운데 지금은 두 가지를 볼 수 있어요.</p>
+      <p class="hint">회사를 운영하면서 생기는 계약·노무 위험을 검진합니다. 28가지 사인 가운데 지금은 투자계약과 노무를 볼 수 있어요.</p>
       <div class="choices" id="ckMods">
         <button data-m="invest" class="pick">투자계약 검진 <span class="hint">· 13장 창업자 개인 상환책임, 14장 경영권, 27장 보호 공백</span></button>
         <button data-m="labor">노무 검진 <span class="hint">· 21장 노무 리스크, 10장 인재 이탈, 16장 IP 공백</span></button>
@@ -117,7 +124,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
 
   <aside class="card">
     <div class="row" style="margin-top:0;justify-content:space-between">
-      <strong>규제팡이 이해한 사업</strong><span class="badge" id="state">아직 정보 없음</span>
+      <strong>법률닥터가 이해한 사업</strong><span class="badge" id="state">아직 정보 없음</span>
     </div>
     <div class="summary" id="summary"></div>
     <div id="slots"></div>
@@ -182,7 +189,17 @@ cv.onpointerup=()=>drawing=false;
 $('#clearDraw').onclick=()=>{dirty=false;fitCanvas()};
 $('#sendDraw').onclick=()=>{if(!dirty)return;const fd=new FormData();fd.append('drawing',cv.toDataURL('image/png'));sendForm(fd,'그림을 보고 있어요...')};
 
-// 운영 단계 검진
+// 메뉴: 규제팡(규제 사인) / 계약·노무 검진
+document.querySelectorAll('#menu button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#menu button').forEach(x=>x.classList.toggle('on',x===b));
+  const ops=b.dataset.m==='ops';
+  $('#tabs').style.display=ops?'none':'';
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',ops?p.id==='p-check':p.id==='p-talk'));
+  if(!ops)document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.p==='talk'));
+  document.querySelector('aside').hidden=ops;document.querySelector('main').classList.toggle('single',ops);
+});
+
+// 계약·노무 검진
 let ckModule='invest';
 document.querySelectorAll('#ckMods button').forEach(b=>b.onclick=()=>{ckModule=b.dataset.m;document.querySelectorAll('#ckMods button').forEach(x=>x.classList.toggle('pick',x===b))});
 $('#ckFile').onchange=e=>{$('#ckFiles').textContent=[...e.target.files].map(f=>f.name).join(', ')};

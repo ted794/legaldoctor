@@ -5,7 +5,7 @@
   </defs>
   <rect width="1920" height="1080" fill="#ffffff"/>
 
-  <text x="60" y="92" font-size="46" font-weight="700" fill="#1b1f24">규제팡은 범용 AI와 무엇이 다른가</text>
+  <text x="60" y="92" font-size="46" font-weight="700" fill="#1b1f24">스타트업 법률닥터는 범용 AI와 무엇이 다른가</text>
   <text x="62" y="138" font-size="24" fill="#5b6573">창업에서 운영까지, 같은 원문 대조 엔진으로 검진함</text>
 
   <!-- 왼쪽: 범용 AI -->
@@ -31,8 +31,8 @@
 
   <!-- 오른쪽: 규제팡 -->
   <rect x="600" y="175" width="1260" height="770" rx="24" fill="#fff6ef" stroke="#ffd8bf" stroke-width="2"/>
-  <text x="640" y="232" font-size="30" font-weight="700" fill="#e8590c">규제팡</text>
-  <text x="752" y="232" font-size="22" fill="#5b6573">후보는 AI가 내고, 확정은 원문이 함</text>
+  <text x="640" y="232" font-size="30" font-weight="700" fill="#e8590c">스타트업 법률닥터</text>
+  <text x="905" y="232" font-size="22" fill="#5b6573">후보는 AI가 내고, 확정은 원문이 함</text>
 
   <!-- 열 머리 -->
   <g font-size="18" font-weight="700" fill="#868e96">
@@ -43,14 +43,14 @@
 
   <!-- A: 입구 -->
   <rect x="640" y="292" width="300" height="196" rx="16" fill="#ffffff" stroke="#e8590c" stroke-width="2.5"/>
-  <text x="664" y="334" font-size="24" font-weight="700" fill="#1b1f24">창업 단계</text>
+  <text x="664" y="334" font-size="24" font-weight="700" fill="#1b1f24">규제팡 <tspan font-size="17" fill="#e8590c">창업 단계</tspan></text>
   <text x="664" y="368" font-size="19" fill="#343a40">BM 적법성 검토</text>
   <text x="664" y="396" font-size="19" fill="#343a40">규제샌드박스 신청</text>
   <text x="664" y="436" font-size="16" fill="#868e96">금지 · 진입장벽 · 직역 · 인증 지연</text>
   <text x="664" y="460" font-size="16" fill="#868e96">특례 만료 · AI 규제 미대응</text>
 
   <rect x="640" y="510" width="300" height="196" rx="16" fill="#ffffff" stroke="#dee2e6" stroke-width="2"/>
-  <text x="664" y="552" font-size="24" font-weight="700" fill="#1b1f24">운영 단계</text>
+  <text x="664" y="552" font-size="24" font-weight="700" fill="#1b1f24">계약·노무 검진 <tspan font-size="17" fill="#868e96">운영 단계</tspan></text>
   <text x="664" y="586" font-size="19" fill="#343a40">투자계약 검진</text>
   <text x="664" y="614" font-size="19" fill="#343a40">노무 검진</text>
   <text x="664" y="654" font-size="16" fill="#868e96">창업자 개인 상환책임 · 보호 공백</text>
@@ -129,5 +129,5 @@
 
   <!-- 하단 한 줄 -->
   <rect x="60" y="975" width="1800" height="72" rx="18" fill="#1b1f24"/>
-  <text x="960" y="1021" font-size="28" text-anchor="middle" fill="#ffffff">범용 AI는 그럴듯한 답을, 규제팡은 <tspan fill="#ffa94d" font-weight="700">원문으로 확인한 근거</tspan>와 <tspan fill="#74c0fc" font-weight="700">확인하지 못한 공백</tspan>을 나눠 줌</text>
+  <text x="960" y="1021" font-size="28" text-anchor="middle" fill="#ffffff">범용 AI는 그럴듯한 답을, 법률닥터는 <tspan fill="#ffa94d" font-weight="700">원문으로 확인한 근거</tspan>와 <tspan fill="#74c0fc" font-weight="700">확인하지 못한 공백</tspan>을 나눠 줌</text>
 </svg>

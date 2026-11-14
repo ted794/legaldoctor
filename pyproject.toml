@@ -1,7 +1,7 @@
 [project]
 name = "regpang"
 version = "0.1.0"
-description = "규제팡: 법알못 창업자를 위한 규제 사전상담 에이전트"
+description = "스타트업 법률닥터: 스타트업이 죽는 28가지 사인을 미리 검진하는 규제·법률 사전상담 에이전트"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -1,4 +1,4 @@
-"""규제팡 명령행.
+"""스타트업 법률닥터 명령행(저장소·명령 이름은 regpang).
 
   regpang doctor            Liner Model·Liner Search·국가법령정보 연결 점검
   regpang run "사업 설명"     판단 점검표 실행
@@ -215,7 +215,7 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(prog="regpang", description="규제팡: 규제 사전상담 에이전트")
+    p = argparse.ArgumentParser(prog="regpang", description="스타트업 법률닥터: 규제·법률 사전상담 에이전트")
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("doctor", help="API 연결 점검").set_defaults(func=cmd_doctor)
     pr = sub.add_parser("run", help="판단 점검표 실행")

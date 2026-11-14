@@ -1,4 +1,4 @@
-"""규제팡 웹 화면 API.
+"""스타트업 법률닥터 웹 화면 API.
 
 세션은 메모리에만 둔다(시연용). 업로드한 자료는 디스크에 저장하지 않는다.
 """
@@ -33,7 +33,7 @@ from regpang.liner import LinerModel
 STATIC = Path(__file__).parent / "static"
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
 
-app = FastAPI(title="규제팡")
+app = FastAPI(title="스타트업 법률닥터")
 
 
 @dataclass
