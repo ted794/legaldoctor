@@ -211,3 +211,57 @@ def output(sid: str, name: str):
             headers={"Content-Disposition": "attachment; filename*=UTF-8''regpang_application.docx"},
         )
     return HTMLResponse(data)
+
+
+# 운영 단계 검진 -------------------------------------------------------------
+CHECKUPS: dict[str, str] = {}  # 검진 id → 검진표 HTML(메모리에만 둠)
+
+
+@app.get("/api/checkup/demo/{module}")
+def checkup_demo(module: str) -> dict[str, str]:
+    from regpang.config import DATA_DIR
+
+    p = DATA_DIR / "checkup" / f"demo_{module}.md"
+    if module not in ("invest", "labor") or not p.exists():
+        raise HTTPException(404, "예시가 없음")
+    return {"text": p.read_text(encoding="utf-8")}
+
+
+@app.post("/api/checkup")
+async def checkup(module: str = Form(...), text: str = Form(""), files: list[UploadFile] = File(default=[])) -> dict[str, Any]:
+    from regpang.checkup import MODULES, checkup_html, run_checkup
+    from regpang.explore.engine import build_explore
+
+    if module not in MODULES:
+        raise HTTPException(400, "검진 종류를 고르세요")
+    texts = [text]
+    skipped = []
+    for f in files:
+        data = await f.read()
+        try:
+            texts += [m.text for m in from_file(data, f.filename or "파일") if m.text]
+        except UnsupportedFile as e:
+            skipped.append(str(e))
+    body = "\n".join(t for t in texts if t.strip()).strip()
+    if not body:
+        raise HTTPException(400, "계약서나 설명을 넣어 주세요")
+    res = run_checkup(model(), MODULES[module], body, build_explore(model(), load_settings(), cases=False))
+    cid = secrets.token_urlsafe(10)
+    CHECKUPS[cid] = checkup_html(res)
+    return {
+        "id": cid,
+        "title": res.module.title,
+        "causes": [f"{c['no']}. {c['name']}" for c in res.causes],
+        "items": [{"risk": i.risk, "label": i.label, "verdict": i.verdict, "quote": i.quote[:120], "lawyer": i.lawyer} for i in res.items],
+        "questions": res.questions,
+        "halted": res.halted,
+        "skipped": skipped,
+        "disclaimer": DISCLAIMER,
+    }
+
+
+@app.get("/api/checkup/{cid}")
+def checkup_page(cid: str) -> HTMLResponse:
+    if cid not in CHECKUPS:
+        raise HTTPException(404, "검진표가 없음")
+    return HTMLResponse(CHECKUPS[cid])

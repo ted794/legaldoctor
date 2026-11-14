@@ -19,6 +19,11 @@ main{max-width:1120px;margin:0 auto;padding:8px 16px 40px;display:grid;grid-temp
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .tabs button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 12px;border-radius:999px;cursor:pointer;font:inherit}
 .tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tabs button.alt{border-style:dashed}
+main.single{grid-template-columns:1fr;max-width:900px}
+.choices button.pick{border-color:var(--accent);background:var(--accent-soft)}
+.ck-item{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:6px}
+.risk{display:inline-block;padding:0 7px;border-radius:4px;color:#fff;font-size:12px;margin-right:6px}
 .pane{display:none}.pane.on{display:block}
 textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;background:transparent;color:var(--ink);resize:vertical}
 .btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
@@ -63,6 +68,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
       <button data-p="text">글로 설명하기</button>
       <button data-p="file">사업소개서 올리기</button>
       <button data-p="draw">그림으로 보여 주기</button>
+      <button data-p="check" class="alt">운영 단계 검진</button>
     </div>
 
     <div class="pane on" id="p-talk">
@@ -90,6 +96,21 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
         <label class="btn ghost">사진·스크린샷 올리기<input type="file" id="imgIn" accept="image/*" hidden></label>
       </div>
       <p class="hint">서비스 흐름을 네모와 화살표로 그려 보세요. 고객, 회사, 돈, 물건이 어디로 가는지 보이면 충분합니다.</p>
+    </div>
+    <div class="pane" id="p-check">
+      <p class="hint">회사를 운영하면서 생기는 법률 위험을 검진합니다. 스타트업이 죽는 28가지 사인 가운데 지금은 두 가지를 볼 수 있어요.</p>
+      <div class="choices" id="ckMods">
+        <button data-m="invest" class="pick">투자계약 검진 <span class="hint">· 13장 창업자 개인 상환책임, 14장 경영권, 27장 보호 공백</span></button>
+        <button data-m="labor">노무 검진 <span class="hint">· 21장 노무 리스크, 10장 인재 이탈, 16장 IP 공백</span></button>
+      </div>
+      <textarea id="ckText" placeholder="투자계약서·텀시트 조항을 붙여 넣거나, 인력을 어떻게 쓰는지 적어 주세요."></textarea>
+      <div class="row">
+        <label class="btn ghost">계약서 올리기<input type="file" id="ckFile" multiple hidden accept=".pdf,.docx,.hwpx,.txt,.md"></label>
+        <button class="btn ghost" id="ckDemo">가상 예시 불러오기</button>
+        <button class="btn" id="ckRun">검진하기</button>
+      </div>
+      <div class="hint" id="ckFiles"></div>
+      <div id="ckResult"></div>
     </div>
     <p class="warn" id="msg"></p>
   </section>
@@ -120,6 +141,7 @@ document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+b.dataset.p));
   if(b.dataset.p==='draw')fitCanvas();
+  const ck=b.dataset.p==='check';document.querySelector('aside').hidden=ck;document.querySelector('main').classList.toggle('single',ck);
 });
 
 function render(v){
@@ -159,6 +181,23 @@ cv.onpointermove=e=>{if(!drawing)return;cx.lineTo(...pos(e));cx.stroke()};
 cv.onpointerup=()=>drawing=false;
 $('#clearDraw').onclick=()=>{dirty=false;fitCanvas()};
 $('#sendDraw').onclick=()=>{if(!dirty)return;const fd=new FormData();fd.append('drawing',cv.toDataURL('image/png'));sendForm(fd,'그림을 보고 있어요...')};
+
+// 운영 단계 검진
+let ckModule='invest';
+document.querySelectorAll('#ckMods button').forEach(b=>b.onclick=()=>{ckModule=b.dataset.m;document.querySelectorAll('#ckMods button').forEach(x=>x.classList.toggle('pick',x===b))});
+$('#ckFile').onchange=e=>{$('#ckFiles').textContent=[...e.target.files].map(f=>f.name).join(', ')};
+$('#ckDemo').onclick=async()=>{try{$('#ckText').value=(await api('/api/checkup/demo/'+ckModule)).text}catch(e){$('#msg').textContent=e.message}};
+const RC={'높음':'#c92a2a','중간':'#e8590c','낮음':'#2b8a3e'};
+$('#ckRun').onclick=async()=>{
+  const fd=new FormData();fd.append('module',ckModule);fd.append('text',$('#ckText').value);[...$('#ckFile').files].forEach(f=>fd.append('files',f));
+  busy(true,'조항을 뽑고 법령 원문과 대조하고 있어요. 몇 분 걸릴 수 있어요...');
+  try{const r=await api('/api/checkup',{method:'POST',body:fd});
+    const hi=r.items.filter(i=>i.risk==='높음').length, lw=r.items.filter(i=>i.lawyer).length;
+    $('#ckResult').innerHTML=`<h3>${esc(r.title)} · ${esc(r.causes.join(', '))}</h3><p class="hint">검진 항목 ${r.items.length} · 위험 높음 ${hi} · 변호사 심화자문 권함 ${lw}</p>`+
+      `<div class="row"><a class="btn" href="/api/checkup/${r.id}" target="_blank">검진표 열기</a></div>`+
+      r.items.map(i=>`<div class="ck-item"><span class="risk" style="background:${RC[i.risk]||'#495057'}">${esc(i.risk)}</span><b>${esc(i.label)}</b> · ${esc(i.verdict)}<div class="hint">“${esc(i.quote)}”</div>${i.lawyer?'<div class="hint" style="color:#1971c2">변호사 심화자문 권함</div>':''}</div>`).join('')+
+      (r.halted?`<p class="warn">${esc(r.halted)}</p>`:'')+`<p class="hint">※ ${esc(r.disclaimer)}</p>`;
+  }catch(e){$('#msg').textContent=e.message}finally{busy(false)}};
 
 // 스무고개
 function showQ(v){
