@@ -15,7 +15,7 @@ STAGES: Sequence[S.Stage] = (
 )
 
 
-def build_stages(model, settings=None, *, use_search: bool = True) -> list[S.Stage]:
+def build_stages(model, settings=None, *, use_search: bool = True, cases=None) -> list[S.Stage]:
     """실제 실행용 단계 목록. 구현된 단계부터 차례로 바꿔 끼운다."""
     from regpang.config import load_settings
     from regpang.explore import build_explore
@@ -27,13 +27,14 @@ def build_stages(model, settings=None, *, use_search: bool = True) -> list[S.Sta
     from .rules import Classify, Jurisdiction, Precedent, Track
 
     settings = settings or load_settings()
+    cases = cases if cases is not None else load_index()
     return [
         Decompose(model),
-        build_explore(model, settings, use_search=use_search),
+        build_explore(model, settings, use_search=use_search, cases=cases),
         Classify(),
         Jurisdiction(),
         Precedent(),
-        Track(load_index()),
+        Track(cases),
     ]
 
 

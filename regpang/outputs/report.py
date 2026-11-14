@@ -31,6 +31,7 @@ class MapRow:
     chain: list[str]
     precedents: int
     from_cache: bool
+    reg_status: str = ""
 
 
 @dataclass
@@ -111,6 +112,7 @@ def build_report(state: CaseState, profile=None) -> Report:
             f.chain,
             len(f.precedents),
             f.from_cache,
+            f.reg_status,
         )
         for f in findings
     ]

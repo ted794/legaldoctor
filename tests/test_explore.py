@@ -197,3 +197,33 @@ def test_precedent_layer_pulls_in_law_and_attaches_cases():
     f = next(f for f in r.payload["findings"] if f.locator == "제10조의2")
     assert f.grade == "명시 규제" and f.precedents == ["c1"]
     assert r.payload["similar"]["A1"][0][0].id == "c1"
+
+
+def test_reg_status_after_special():
+    from regpang.casedb.law_status import collect_targets, judge_status
+    from regpang.law.model import LawDoc, LawMeta, Article
+
+    doc = LawDoc(LawMeta("가상법", "법률", effective="20200101"), [Article("3", "", "본문", effective="20210101"), Article("4", "", "본문")])
+    assert judge_status(doc, "3", "2022-05-01")[0] == "현존 규제"
+    assert judge_status(doc, "3", "2020-05-01")[0] == "특례 이후 개정"
+    assert judge_status(doc, "4", "2022-05-01") == ("현존 규제", "20200101", "법령 시행일")
+    assert judge_status(doc, "9", "2022-05-01")[0] == "조문 없음"
+    assert judge_status(None, "3", "2022-05-01")[0] == "법령 확인 불가"
+    t = collect_targets([
+        {"id": "a", "type": "실증특례", "approved_date": "2021-01-01", "regulation": "가상법 제3조"},
+        {"id": "b", "type": "실증특례", "approved_date": "2023-01-01", "regulation": "가상법 제3조"},
+        {"id": "c", "type": "적극해석", "approved_date": "2024-01-01", "regulation": "가상법 제3조"},
+    ])
+    assert t[("가상법", "3")] == {"latest": "2023-01-01", "ids": ["a", "b"]}
+
+
+def test_engine_marks_existing_regulation():
+    from regpang.explore.precedent import CaseIndex
+
+    ix = CaseIndex.from_records(
+        [{"id": "c1", "field": "industry", "type": "실증특례", "title": "배달로봇 보도 주행", "regulation": "가상로봇법 제10조의2", "source_url": "u", "approved_date": "2027-01-01"}]
+    )
+    eng = Explore(ScriptedModel(), None, LawSource(FakeDrf()), cases=ix, use_search=False, workers=1)
+    r = eng(state_with([ACTS[0]]))
+    f = next(f for f in r.payload["findings"] if f.locator == "제10조의2")
+    assert f.reg_status.startswith("현존 규제")

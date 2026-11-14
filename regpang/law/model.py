@@ -42,6 +42,7 @@ class Article:
     key: str  # '10의2'
     title: str
     text: str  # 조문 본문 전체(항·호·목 포함)
+    effective: str = ""  # 조문시행일자 YYYYMMDD(국가법령정보 제공 시)
 
     @property
     def label(self) -> str:

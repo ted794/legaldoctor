@@ -104,7 +104,9 @@ def parse_law_service(data: Any, meta: LawMeta | None = None) -> LawDoc:
             key = article_key(u.get("조문번호"), u.get("조문가지번호"))
         except (TypeError, ValueError):
             continue
-        arts.append(Article(key=key, title=_text(u.get("조문제목")), text=_article_text(u)))
+        arts.append(
+            Article(key=key, title=_text(u.get("조문제목")), text=_article_text(u), effective=str(u.get("조문시행일자") or ""))
+        )
     annexes = []
     for b in _list((root.get("별표") or {}).get("별표단위")):
         if not isinstance(b, dict):

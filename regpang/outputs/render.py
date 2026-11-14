@@ -85,6 +85,8 @@ def regmap_html(r: Report) -> str:
             quote = f"<div class='q'>“{e(x.quote)}”</div>" if x.quote else ""
             chain = f"<div class='chain'>{' → '.join(e(c) for c in x.chain)}</div>" if len(x.chain) > 1 else ""
             prec = f"<div class='chain'>같은 규정 특례 선례 {x.precedents}건</div>" if x.precedents else ""
+            if x.reg_status:
+                prec += f"<div class='chain'><b>{e(x.reg_status)}</b></div>"
             mins = f"<div class='chain'>소관 {e(x.ministry)}</div>" if x.ministry else ""
             parts.append(f"<tr><td>{_grade(x.grade)}</td><td>{e(x.type)}</td><td>{_law_cell(x)}{mins}</td><td>{e(x.point)}{quote}{chain}{prec}</td></tr>")
         parts.append("</table>")

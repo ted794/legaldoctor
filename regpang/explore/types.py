@@ -33,6 +33,7 @@ class Finding:
     chain: list[str] = field(default_factory=list)  # 상위에서 하위까지 위치 경로
     from_cache: bool = False
     precedents: list[str] = field(default_factory=list)  # 같은 법령·조문으로 특례를 받은 사례 id
+    reg_status: str = ""  # 선례 특례 이후 개정 여부: 현존 규제 | 특례 이후 개정 | ...
 
 
 @dataclass

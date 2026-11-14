@@ -20,6 +20,8 @@ from regpang.law.model import LawDoc, article_label, parse_article_ref
 from regpang.law.source import LawSource
 from regpang.pipeline.types import CaseState, Evidence, EvidenceGateError, StageResult
 
+from regpang.casedb.law_status import SPECIAL_TYPES, judge_status
+
 from .hypotheses import hypothesize, is_gov, search_clues
 from .judge import judge
 from .types import Candidate, Finding, Lead, Rejected
@@ -167,7 +169,15 @@ class Explore:
                 continue
             key = parse_article_ref(f.locator) if f.locator.startswith("제") else None
             hits = self.cases.citing(f.law, key) or (self.cases.citing(f.law) if not key else [])
+            special = [c for c in hits if c.type in SPECIAL_TYPES]
             f.precedents = [c.id for c in hits[:20]]
+            if special:
+                latest = max((c.date for c in special), default="")
+                status, eff, basis = judge_status(self.laws.load(f.law), key, latest)
+                if status == "현존 규제":
+                    f.reg_status = f"현존 규제: 특례(최근 {latest}) 이후 미개정"
+                elif status == "특례 이후 개정":
+                    f.reg_status = f"특례 이후 개정({eff[:4]}.{eff[4:6]}.{eff[6:8]}.): 해소 여부 대조 필요"
 
     # 1·3층: 정의·조문 대조 -------------------------------------------------
     def _verify(self, c: Candidate, action: str) -> tuple[list[Finding], list[Rejected]]:
@@ -321,7 +331,7 @@ class Explore:
         return "\n".join(lines)
 
 
-def build_explore(model, settings, *, use_search: bool = True) -> Explore:
+def build_explore(model, settings, *, use_search: bool = True, cases=None) -> Explore:
     from regpang.law import DrfClient
     from regpang.liner import LinerSearch
 
@@ -331,7 +341,7 @@ def build_explore(model, settings, *, use_search: bool = True) -> Explore:
         model,
         LinerSearch(settings) if use_search else None,
         LawSource(DrfClient(settings)),
-        cases=load_index(),
+        cases=cases if cases is not None else load_index(),
         use_search=use_search,
     )
 
