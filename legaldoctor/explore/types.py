@@ -34,6 +34,7 @@ class Finding:
     from_cache: bool = False
     precedents: list[str] = field(default_factory=list)  # 같은 법령·조문으로 특례를 받은 사례 id
     reg_status: str = ""  # 선례 특례 이후 개정 여부: 현존 규제 | 조문 개정 이력 | 법령 개정 이력
+    found_by: list[str] = field(default_factory=list)  # 후보를 낸 출처: Liner Search, 모델 가설, 사례 DB, 고정 대조
 
 
 @dataclass

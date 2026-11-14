@@ -1,0 +1,24 @@
+# systemd 서비스(Docker를 쓰지 않는 서버용). /etc/systemd/system/legaldoctor.service 로 복사
+# 전용 계정 legaldoctor, 코드 위치 /srv/legaldoctor, 가상환경 /srv/legaldoctor/.venv 기준
+[Unit]
+Description=Startup Legal Doctor (FastAPI)
+After=network.target
+
+[Service]
+User=legaldoctor
+Group=legaldoctor
+WorkingDirectory=/srv/legaldoctor
+EnvironmentFile=/srv/legaldoctor/.env
+# 세션을 메모리에 두므로 워커는 하나. 127.0.0.1에만 엶(앞단 nginx가 연결)
+ExecStart=/srv/legaldoctor/.venv/bin/uvicorn legaldoctor.web.app:app --host 127.0.0.1 --port 8100 --workers 1 --proxy-headers
+Restart=always
+RestartSec=3
+# 기존 서비스와 격리
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/srv/legaldoctor/data/law_cache
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

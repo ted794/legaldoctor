@@ -99,7 +99,7 @@ def count_false(laws_src, cited: list[tuple[str, str | None]]) -> int | None:
     return false if checked else None
 
 
-def run_doctor(item: dict, model, settings, records, use_search=True) -> tuple[Score, dict]:
+def run_doctor(item: dict, model, settings, records, use_search=True, state_dir: Path | None = None) -> tuple[Score, dict]:
     from legaldoctor.outputs import build_report
     from legaldoctor.pipeline.runner import build_stages, run
 
@@ -111,7 +111,12 @@ def run_doctor(item: dict, model, settings, records, use_search=True) -> tuple[S
     laws = [(f.law, parse_article_ref(f.locator) if f.locator.startswith("제") else None) for f in findings if f.grade not in ("규정 공백", "원문 확인 불가") and "해석례" not in f.locator]
     blocked = sum(1 for r in ((ex.payload.get("rejected") if ex else None) or []) if "허위 조문" in r.reason)
     s = score(item["gold"], laws, rep.track, rep.window.field, time.time() - t, 0 if ex else None, state.halted_at)
-    return s, {"blocked_false_articles": blocked, "halt_reason": state.halt_reason}
+    if state_dir is not None:
+        import pickle
+
+        state_dir.mkdir(parents=True, exist_ok=True)
+        (state_dir / f"{item['id']}.pkl").write_bytes(pickle.dumps(state))  # 창구·순위 규칙을 다시 채점할 때 씀
+    return s, {"blocked_false_articles": blocked, "halt_reason": state.halt_reason, "field": rep.window.field, "window_reason": rep.window_reason}
 
 
 def run_baseline(item: dict, model, laws_src) -> Score:
@@ -123,7 +128,7 @@ def run_baseline(item: dict, model, laws_src) -> Score:
     return score(item["gold"], cited, str(data.get("트랙") or ""), str(data.get("창구") or ""), secs, count_false(laws_src, cited))
 
 
-def evaluate(model, settings, *, only: str | None = None, baseline: bool = True, use_search: bool = True, set_path: Path = SET_PATH) -> dict[str, Any]:
+def evaluate(model, settings, *, only: str | None = None, baseline: bool = True, use_search: bool = True, set_path: Path = SET_PATH, state_dir: Path | None = None) -> dict[str, Any]:
     from legaldoctor.law import DrfClient
     from legaldoctor.law.source import LawSource
 
@@ -138,7 +143,7 @@ def evaluate(model, settings, *, only: str | None = None, baseline: bool = True,
     for it in items:
         row: dict[str, Any] = {"id": it["id"], "title": it["title"], "gold": it["gold"]}
         try:
-            s, extra = run_doctor(it, model, settings, records, use_search)
+            s, extra = run_doctor(it, model, settings, records, use_search, state_dir)
             row["doctor"] = asdict(s) | extra
         except Exception as e:  # noqa: BLE001
             row["doctor"] = {"error": f"{type(e).__name__}: {e}"[:300]}
@@ -202,3 +207,26 @@ def to_markdown(res: dict[str, Any]) -> str:
         )
     lines += ["", "누설 방지: 평가 사례와 제목이 같은 사례와 승인일이 같거나 늦은 사례는 선례 색인에서 뺐다. 입력에서는 법령명·조문·특례 결과를 지웠다."]
     return "\n".join(lines) + "\n"
+
+
+def rescore_windows(state_dir: Path, set_path: Path = SET_PATH) -> list[tuple[str, str, str, str]]:
+    """저장한 평가 상태로 창구 판정만 다시 계산한다(모델·API 호출 없음). (id, 정답, 판정, 사유)"""
+    import pickle
+
+    from legaldoctor.pipeline.rules import choose_window
+
+    items = json.loads(set_path.read_text(encoding="utf-8"))["items"]
+    records = [json.loads(l) for l in CASES_PATH.read_text(encoding="utf-8").splitlines() if l.strip()]
+    out = []
+    for it in items:
+        path = state_dir / f"{it['id']}.pkl"
+        if not path.exists():
+            continue
+        st = pickle.loads(path.read_bytes())
+        ex, prec, jur = (st.results.get(k) for k in ("explore", "precedent", "jurisdiction"))
+        findings = (ex.payload.get("findings") if ex else None) or []
+        approved = (prec.payload.get("approved") if prec else None) or []
+        ministries = (jur.payload.get("ministries") if jur else None) or {}
+        w, why = choose_window(approved, ministries, findings, holdout_index(it, records))
+        out.append((it["id"], it["gold"]["field"], w.field, why))
+    return out

@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from pydantic import BaseModel
 
@@ -34,6 +34,49 @@ STATIC = Path(__file__).parent / "static"
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
 
 app = FastAPI(title="스타트업 리걸닥터")
+
+# 남용 방지 -------------------------------------------------------------------
+# 분석·검진은 Liner 유료 API를 수십 번 부른다. IP별 시간당 한도와 서버 전체 하루 한도를 둔다.
+# 앞단 nginx가 X-Real-IP를 넣어 준다(앱은 127.0.0.1에만 열어 둠). 값은 환경변수로 바꿀 수 있음
+import os
+import threading
+import time
+from collections import deque
+
+LIMITS = {
+    "heavy": int(os.getenv("LD_HEAVY_PER_HOUR", "6")),  # 규제 분석·계약 검진
+    "light": int(os.getenv("LD_LIGHT_PER_HOUR", "60")),  # 자료 읽기·스무고개
+}
+DAILY_HEAVY = int(os.getenv("LD_HEAVY_PER_DAY", "150"))  # 서버 전체 하루 분석·검진 상한(비용 상한)
+_hits: dict[tuple[str, str], deque] = {}
+_daily: deque = deque()
+_rl_lock = threading.Lock()
+
+
+def _client_ip(request: Request) -> str:
+    return request.headers.get("x-real-ip") or (request.client.host if request.client else "-")
+
+
+def rate_limit(kind: str):
+    def dep(request: Request) -> None:
+        now = time.time()
+        key = (kind, _client_ip(request))
+        with _rl_lock:
+            q = _hits.setdefault(key, deque())
+            while q and now - q[0] > 3600:
+                q.popleft()
+            if len(q) >= LIMITS[kind]:
+                raise HTTPException(429, "요청이 많아 잠시 쉬어 갑니다. 한 시간쯤 뒤에 다시 시도해 주세요")
+            if kind == "heavy":
+                while _daily and now - _daily[0] > 86400:
+                    _daily.popleft()
+                if len(_daily) >= DAILY_HEAVY:
+                    raise HTTPException(429, "오늘 준비한 무료 분석 분량이 모두 소진됐습니다. 내일 다시 이용해 주세요")
+                _daily.append(now)
+            q.append(now)
+
+    return Depends(dep)
+
 
 
 @dataclass
@@ -95,6 +138,17 @@ def index() -> FileResponse:
     return FileResponse(STATIC / "index.html")
 
 
+@app.get("/privacy")
+def privacy() -> FileResponse:
+    return FileResponse(STATIC / "privacy.html")
+
+
+@app.get("/api/info")
+def info() -> dict[str, str]:
+    """운영자 표시. 값은 배포 서버의 .env(LD_OPERATOR, LD_CONTACT)에서 읽어 저장소에 운영 정보를 남기지 않는다."""
+    return {"operator": os.getenv("LD_OPERATOR", ""), "contact": os.getenv("LD_CONTACT", "")}
+
+
 @app.post("/api/sessions")
 def create_session() -> dict[str, str]:
     sid = secrets.token_urlsafe(12)
@@ -107,7 +161,7 @@ def read_session(sid: str) -> dict[str, Any]:
     return profile_view(get(sid))
 
 
-@app.post("/api/sessions/{sid}/materials")
+@app.post("/api/sessions/{sid}/materials", dependencies=[rate_limit("light")])
 async def add_materials(
     sid: str,
     text: str = Form(""),
@@ -142,7 +196,7 @@ class AnswerIn(BaseModel):
     answer: str | None = None
 
 
-@app.post("/api/sessions/{sid}/interview")
+@app.post("/api/sessions/{sid}/interview", dependencies=[rate_limit("light")])
 def interview_step(sid: str, body: AnswerIn) -> dict[str, Any]:
     s = get(sid)
     q = s.interview.step(body.answer)
@@ -166,7 +220,7 @@ def confirm(sid: str, body: ConfirmIn) -> dict[str, Any]:
     return profile_view(s)
 
 
-@app.post("/api/sessions/{sid}/analyze")
+@app.post("/api/sessions/{sid}/analyze", dependencies=[rate_limit("heavy")])
 def analyze(sid: str) -> dict[str, Any]:
     from legaldoctor.outputs import application_docx, application_html, build_report, consult_html, regmap_html
     from legaldoctor.pipeline.runner import build_stages, run
@@ -227,7 +281,7 @@ def checkup_demo(module: str) -> dict[str, str]:
     return {"text": p.read_text(encoding="utf-8")}
 
 
-@app.post("/api/checkup")
+@app.post("/api/checkup", dependencies=[rate_limit("heavy")])
 async def checkup(module: str = Form(...), text: str = Form(""), files: list[UploadFile] = File(default=[])) -> dict[str, Any]:
     from legaldoctor.checkup import MODULES, checkup_html, run_checkup
     from legaldoctor.explore.engine import build_explore

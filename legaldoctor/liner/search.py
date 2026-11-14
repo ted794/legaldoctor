@@ -10,6 +10,10 @@ POST {base}/agents/search, 헤더 x-api-key. 응답은 SSE이고 각 data 줄이
 
 from __future__ import annotations
 
+import random
+import threading
+import time
+
 import json
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Iterator
@@ -93,12 +97,30 @@ def collect(events: Iterable[dict[str, Any]]) -> SearchResult:
     return result
 
 
+# Liner Search는 동시 호출이 많으면 429(RATE_LIMITED)를 낸다. 프로세스 전체에서 동시 호출 수를 제한한다
+_SLOTS = threading.BoundedSemaphore(3)
+
+
 class LinerSearch:
-    def __init__(self, settings: Settings, timeout: float = 180.0):
+    def __init__(self, settings: Settings, timeout: float = 180.0, retries: int = 4):
         self._settings = settings
         self._timeout = timeout
+        self.retries = retries
 
     def search(self, query: str, *, mode: str = "general") -> SearchResult:
+        """429·5xx는 잠시 기다렸다 다시 묻는다(서버가 retryable이라고 알려 줌)."""
+        for attempt in range(self.retries + 1):
+            try:
+                with _SLOTS:
+                    return self._once(query, mode)
+            except LinerSearchError as e:
+                retryable = str(e).startswith(("HTTP 429", "HTTP 500", "HTTP 502", "HTTP 503", "HTTP 504"))
+                if not retryable or attempt == self.retries:
+                    raise
+                time.sleep(2 * (attempt + 1) + random.random())
+        raise LinerSearchError("재시도 초과")
+
+    def _once(self, query: str, mode: str) -> SearchResult:
         SEARCH_CALLS[0] += 1
         body = {"messages": [{"role": "user", "content": query}], "mode": mode}
         headers = {

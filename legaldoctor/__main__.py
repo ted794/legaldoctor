@@ -128,7 +128,7 @@ def cmd_eval(args: argparse.Namespace) -> int:
     from legaldoctor.liner import LinerModel
 
     s = load_settings()
-    res = evaluate(LinerModel(s), s, only=args.only, baseline=not args.no_baseline, use_search=not args.no_search)
+    res = evaluate(LinerModel(s), s, only=args.only, baseline=not args.no_baseline, use_search=not args.no_search, state_dir=Path(args.out) / "states")
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "results.json").write_text(json.dumps(res, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
@@ -201,6 +201,11 @@ def cmd_run(args: argparse.Namespace) -> int:
 
         from legaldoctor.outputs import build_report, html_to_pdf, write_all
 
+        import pickle
+
+        Path(args.out).mkdir(parents=True, exist_ok=True)
+        # 같은 분석 결과로 결과물만 다시 만들 수 있게 저장(legaldoctor render). 업로드 원본은 넣지 않음
+        (Path(args.out) / "state.pkl").write_bytes(pickle.dumps(state))
         paths = write_all(build_report(state, prof if args.profile else None), Path(args.out))
         if args.pdf:
             for name in ("consult.html", "regmap.html"):
@@ -214,10 +219,28 @@ def cmd_run(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_render(args: argparse.Namespace) -> int:
+    """저장한 분석 결과(state.pkl)로 결과물만 다시 만든다. 모델·API를 부르지 않음."""
+    import pickle
+    from pathlib import Path
+
+    from legaldoctor.outputs import build_report, write_all
+
+    state = pickle.loads(Path(args.state).read_bytes())
+    paths = write_all(build_report(state), Path(args.out or Path(args.state).parent))
+    for name, path in paths.items():
+        print(f"  {name}: {path}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="legaldoctor", description="스타트업 리걸닥터: 규제·법률 사전상담 에이전트")
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("doctor", help="API 연결 점검").set_defaults(func=cmd_doctor)
+    prr = sub.add_parser("render", help="저장한 분석 결과로 결과물만 다시 만들기")
+    prr.add_argument("--state", required=True, help="run이 남긴 state.pkl")
+    prr.add_argument("--out", help="결과물 폴더(기본: state.pkl이 있는 폴더)")
+    prr.set_defaults(func=cmd_render)
     pr = sub.add_parser("run", help="판단 점검표 실행")
     pr.add_argument("business", nargs="?", help="사업 설명")
     pr.add_argument("--case", help="data/cases의 사례 이름(예: demo)")

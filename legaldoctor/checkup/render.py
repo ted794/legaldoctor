@@ -7,7 +7,7 @@ from html import escape as e
 from legaldoctor.disclaimer import DISCLAIMER
 from legaldoctor.outputs.render import BASE_CSS, _doc
 
-from .engine import CheckupResult
+from .engine import PROTECTIVE_LAWS, CheckupResult
 
 RISK_COLOR = {"높음": "#c92a2a", "중간": "#e8590c", "낮음": "#2b8a3e"}
 LINK_LABEL = {"가": "(가) 직접사인", "나": "(나)", "다": "(다)", "라": "(라)", "Ⅱ": "Ⅱ란"}
@@ -51,7 +51,10 @@ def checkup_html(res: CheckupResult) -> str:
     parts.append("<h2>항목별 검진 결과</h2><table><tr><th>위험</th><th>항목</th><th>자료 원문</th><th>법령 대조</th><th>지금 할 일</th></tr>")
     for i in res.items:
         laws = []
-        for f in [x for x in i.findings if x.grade not in ("규정 공백", "원문 확인 불가")][:2]:
+        shown = [x for x in i.findings if x.grade not in ("규정 공백", "원문 확인 불가")]
+        # 판정 근거가 된 보호 법령을 먼저 보여 준다(판정 문구와 표시 근거가 어긋나지 않게)
+        shown.sort(key=lambda x: x.law not in PROTECTIVE_LAWS)
+        for f in shown[:2]:
             if f.grade in ("규정 공백", "원문 확인 불가"):
                 continue
             loc = "" if f.locator == "-" else f" {e(f.locator)}"

@@ -11,6 +11,7 @@ from pathlib import Path
 
 from legaldoctor.disclaimer import DISCLAIMER, DISCLAIMER_SHORT
 
+from .rank import LOW, GRADE_SCORE, is_auto_chain
 from .report import Report
 
 GRADE_COLOR = {
@@ -44,6 +45,11 @@ th{background:#f1f3f5;font-weight:600;white-space:nowrap}
 .chain{color:#868e96;font-size:11px}
 ul,ol{margin:4px 0;padding-left:20px}
 .blank{color:#adb5bd}
+h2.core{color:#A51C30;border-bottom-color:#A51C30}
+.coretbl td.rk{font-weight:700;color:#A51C30;text-align:center;width:28px}
+.coretbl td.why{color:#A51C30;font-size:12px;font-weight:600;width:180px}
+.ls{display:inline-block;margin-left:4px;padding:0 5px;border:1px solid #1971c2;border-radius:4px;color:#1971c2;font-size:10px;white-space:nowrap}
+details{margin:4px 0 8px}summary{cursor:pointer;color:#5b6573;font-size:12px;padding:4px 0}
 @media print{.page{padding:0}a{color:inherit;text-decoration:none}@page{size:A4;margin:14mm}}
 """
 
@@ -68,38 +74,94 @@ def _law_cell(row) -> str:
     return link + cache
 
 
+
+def _src(x) -> str:
+    return "<span class='ls'>Liner Search</span>" if "Liner Search" in (x.found_by or []) else ""
+
+
+def _row_tr(x) -> str:
+    quote = f"<div class='q'>“{e(x.quote)}”</div>" if x.quote else ""
+    chain = f"<div class='chain'>{' → '.join(e(c) for c in x.chain)}</div>" if len(x.chain) > 1 else ""
+    prec = f"<div class='chain'>같은 규정 특례 선례 {x.precedents}건</div>" if x.precedents else ""
+    if x.reg_status:
+        prec += f"<div class='chain'><b>{e(x.reg_status)}</b></div>"
+    mins = f"<div class='chain'>소관 {e(x.ministry)}</div>" if x.ministry else ""
+    return f"<tr><td>{_grade(x.grade)}</td><td>{e(x.type)}</td><td>{_law_cell(x)}{_src(x)}{mins}</td><td>{e(x.point)}{quote}{chain}{prec}</td></tr>"
+
+
+def _rows_table(rows) -> str:
+    return "<table><tr><th>판정</th><th>유형</th><th>근거</th><th>요지와 원문</th></tr>" + "".join(_row_tr(x) for x in rows) + "</table>"
+
+
+def _folded(x) -> bool:
+    if x.grade not in GRADE_SCORE:
+        return False  # 규정 공백·원문 확인 불가는 늘 보여 줌
+    return is_auto_chain(x) or x.score < LOW
+
+
+def _core_block(r: Report) -> str:
+    if not r.core:
+        return ""
+    act = dict(r.activities)
+    trs = "".join(
+        f"<tr><td class='rk'>{i}</td><td>{_grade(x.grade)}<div class='chain'>{e(x.type)}</div></td><td>{_law_cell(x)}{_src(x)}"
+        + (f"<div class='chain'>소관 {e(x.ministry)}</div>" if x.ministry else "")
+        + f"</td><td>{e(x.point)}<div class='chain'>{e(x.activity_id)}. {e(act.get(x.activity_id, ''))}</div></td><td class='why'>{e(' · '.join(x.reasons) or '-')}</td></tr>"
+        for i, x in enumerate(r.core, 1)
+    )
+    return (
+        "<h2 class='core'>핵심 규제</h2><p class='meta'>판정, 규제 유형, 닮은 승인 사례와 같은 규정인지, 특례 선례 수, 특례 뒤 미개정 여부로 매긴 순위. 법령 계열마다 하나씩 골랐음</p>"
+        f"<table class='coretbl'><tr><th>#</th><th>판정</th><th>근거</th><th>요지</th><th>왜 핵심인가</th></tr>{trs}</table>"
+    )
+
+
+def _search_block(r: Report) -> str:
+    st = r.search_stats or {}
+    if not st.get("used") and not r.leads:
+        return ""
+    found = [x for x in r.rows if "Liner Search" in (x.found_by or [])]
+    laws = list(dict.fromkeys(f"「{x.law}」 {x.locator}" for x in found))
+    out = ["<h2>Liner Search가 찾은 단서</h2>"]
+    out.append(
+        f"<p class='meta'>행위마다 Liner Search로 규제 법령과 정부 해석을 찾고, 나온 법령 단서는 국가법령정보 원문과 대조했음. "
+        f"법령 단서 {st.get('clues', 0)}건 가운데 원문 대조를 통과해 규제 지도에 오른 조문 {len(laws)}개, 정부 자료 단서 {len(r.leads)}건</p>"
+    )
+    if laws:
+        out.append("<p><b>원문 대조를 통과한 조문:</b> " + e(", ".join(laws[:12])) + (" 외" if len(laws) > 12 else "") + "</p>")
+    if r.leads:
+        out.append("<p><b>확인해 볼 정부 자료(원문 대조 전 단서):</b></p><ul>")
+        for l in r.leads:
+            out.append(f"<li>{e(l['kind'])}: <a href='{e(l['url'])}'>{e(l['title'])}</a> · {e(l['note'])}</li>")
+        out.append("</ul>")
+    return "".join(out)
+
+
 # 규제 지도 ---------------------------------------------------------------
 def regmap_html(r: Report) -> str:
     legend = "".join(f"<li>{_grade(g)} {e(h)}</li>" for g, h in GRADE_HELP.items())
     counts = " · ".join(f"{g} {n}" for g, n in r.counts.items())
     parts = [_header("규제 지도", r), f'<div class="disc">{e(DISCLAIMER)}</div>']
     parts.append(f"<h2>사업 요약</h2><p>{e(r.summary)}</p><p class='meta'>{e(counts)}</p><ul>{legend}</ul>")
+    parts.append(_core_block(r))
     if r.halted_at:
         parts.append(f"<p class='disc'>분석이 '{e(r.halted_at)}' 단계에서 멈춤: {e(r.halt_reason or '')}</p>")
     for aid, act in r.activities:
         rows = [x for x in r.rows if x.activity_id == aid]
         if not rows:
             continue
-        parts.append(f"<h2>{e(aid)}. {e(act)}</h2><table><tr><th>판정</th><th>유형</th><th>근거</th><th>요지와 원문</th></tr>")
-        for x in rows:
-            quote = f"<div class='q'>“{e(x.quote)}”</div>" if x.quote else ""
-            chain = f"<div class='chain'>{' → '.join(e(c) for c in x.chain)}</div>" if len(x.chain) > 1 else ""
-            prec = f"<div class='chain'>같은 규정 특례 선례 {x.precedents}건</div>" if x.precedents else ""
-            if x.reg_status:
-                prec += f"<div class='chain'><b>{e(x.reg_status)}</b></div>"
-            mins = f"<div class='chain'>소관 {e(x.ministry)}</div>" if x.ministry else ""
-            parts.append(f"<tr><td>{_grade(x.grade)}</td><td>{e(x.type)}</td><td>{_law_cell(x)}{mins}</td><td>{e(x.point)}{quote}{chain}{prec}</td></tr>")
-        parts.append("</table>")
+        main = [x for x in rows if not _folded(x)]
+        folded = [x for x in rows if _folded(x)]
+        parts.append(f"<h2>{e(aid)}. {e(act)}</h2>")
+        if main:
+            parts.append(_rows_table(main))
+        if folded:
+            parts.append(f"<details><summary>위임 사슬에서 딸려 온 하위 조문과 관련성이 낮은 조문 {len(folded)}건</summary>{_rows_table(folded)}</details>")
     if r.similar or r.positive:
         parts.append("<h2>닮은 승인 사례</h2><ul>")
         for s in r.similar + r.positive:
             parts.append(f"<li><a href='{e(s['url'])}'>{e(s['title'])}</a> · {e(s['type'])} · {e(s['date'] or '')}</li>")
         parts.append("</ul>")
-    if r.leads:
-        parts.append("<h2>확인해 볼 정부 자료(원문 대조 전 단서)</h2><ul>")
-        for l in r.leads:
-            parts.append(f"<li>{e(l['kind'])}: <a href='{e(l['url'])}'>{e(l['title'])}</a> · {e(l['note'])}</li>")
-        parts.append("</ul>")
+    parts.append(_search_block(r))
     parts.append(_track_block(r))
     return _doc("스타트업 리걸닥터 규제 지도", "".join(parts))
 
@@ -115,7 +177,8 @@ CONSULT_CSS = ".page{max-width:780px}body{font-size:11.5px;line-height:1.45}h2{f
 
 
 def consult_html(r: Report) -> str:
-    top = sorted(r.rows, key=lambda x: (list(GRADE_COLOR).index(x.grade) if x.grade in GRADE_COLOR else 9, x.activity_id))[:8]
+    rest = [x for x in sorted(r.rows, key=lambda x: -x.score) if x not in r.core and not _folded(x)]
+    top = (list(r.core) + rest)[:8]
     trs = "".join(
         f"<tr><td>{e(x.activity_id)}</td><td>{_grade(x.grade)}</td><td>{_law_cell(x)}</td><td>{e(x.point)}</td></tr>" for x in top
     )

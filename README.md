@@ -183,6 +183,14 @@ scripts/           사례 수집기, 평가 세트, 키 노출 검사
 tests/
 ```
 
+## 배포
+
+Docker 컨테이너 하나로 띄우고 기존 웹사이트의 하위 경로(예: `/legaldoctor/`)에 연결할 수 있습니다. 순서는 `deploy/README.md`에 있습니다.
+
+```bash
+cp .env.example .env && docker compose up -d --build   # 서버 안 127.0.0.1:8100
+```
+
 ## 개발
 
 ```bash

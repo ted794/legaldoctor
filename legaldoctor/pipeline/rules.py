@@ -260,14 +260,14 @@ class Track:
             if self.cases:
                 for f in findings:
                     if f.activity_id == aid:
-                        for cid in f.precedents:
+                        for cid in f.precedents[:20]:  # 트랙 규칙은 앞 20건 기준(평가와 같은 조건)
                             c = next((x for x in self.cases.cases if x.id == cid), None)
                             if c:
                                 prec_types[c.type] += 1
             t, why = track_for(a_types, a_grades, prec_types)
             plans.append(TrackPlan(aid, t, why, dict(prec_types)))
 
-        window, window_why = choose_window(approved, ministries)
+        window, window_why = choose_window(approved, ministries, findings, self.cases)
         overall = _overall(plans)
         lines = [f"권하는 트랙: {overall}", f"창구: {window.name} · {window.agency} ({window_why})"]
         if overall == "신속확인" and window.form:
@@ -283,11 +283,61 @@ class Track:
         )
 
 
-def choose_window(approved: list[dict], ministries: dict[str, list[str]]) -> tuple[Window, str]:
-    fields = Counter(r["field"] for r in approved if r.get("field") in WINDOWS)
-    if fields:
-        f, n = fields.most_common(1)[0]
-        return WINDOWS[f], f"닮은 승인 사례 {sum(fields.values())}건 중 {n}건이 이 창구"
+# 창구 판정 가중치(평가 세트와 별개로 정한 기본값)
+W_SIMILAR = 1.0  # 닮은 승인 사례 한 건(유사도로 가중)
+W_LAW = 1.0  # 원문 대조를 통과한 법령 계열 하나가 실린 사례들의 창구 분포
+PRIOR_POWER = 0.5  # 사례가 많은 창구(금융·산업융합)가 표를 독식하지 않게 사례 수의 제곱근으로 나눔
+
+
+def _law_field_dist(cases, law: str) -> Counter:
+    hits = cases.citing(law) if cases else []
+    c = Counter(h.field for h in hits if h.field in WINDOWS)
+    n = sum(c.values())
+    return Counter({f: v / n for f, v in c.items()}) if n else Counter()
+
+
+def choose_window(approved: list[dict], ministries: dict[str, list[str]], findings: list | None = None, cases=None) -> tuple[Window, str]:
+    """창구는 두 증거를 합쳐 정한다.
+
+    1) 닮은 승인 사례가 어느 창구에서 승인됐는지(유사도 가중)
+    2) 원문 대조를 통과한 법령이 사례 DB에서 주로 어느 창구 사례에 실렸는지
+    창구별 사례 수 차이(금융 1,168건 대 연구개발특구 60건)는 사전 분포로 나눠 보정한다.
+    증거가 없으면 소관 부처, 그것도 없으면 산업융합 창구.
+    """
+    votes: Counter = Counter()
+    sim = Counter()
+    for r in approved:
+        if r.get("field") in WINDOWS:
+            w = W_SIMILAR * (0.5 + float(r.get("score") or 0.0))
+            votes[r["field"]] += w
+            sim[r["field"]] += 1
+    laws: list[str] = []
+    if findings and cases is not None:
+        seen = set()
+        for f in findings:
+            if f.grade not in ("명시 규제", "의제 리스크", "해석 리스크") or f.layer == "위임 사슬":
+                continue
+            fam = re.sub(r"\s*(시행령|시행규칙)$", "", f.law)
+            if fam in seen:
+                continue
+            seen.add(fam)
+            dist = _law_field_dist(cases, fam)
+            if dist:
+                laws.append(fam)
+                for fld, share in dist.items():
+                    votes[fld] += W_LAW * share
+    if votes:
+        prior = Counter(c.field for c in cases.cases) if cases is not None else Counter()
+        total = sum(prior.values()) or 1
+        adj = {f: v / ((prior.get(f, 0) / total) or (1 / len(WINDOWS))) ** PRIOR_POWER for f, v in votes.items()}
+        best = max(adj, key=adj.get)
+        parts = []
+        if sim.get(best):
+            parts.append(f"닮은 승인 사례 {sum(sim.values())}건 중 {sim[best]}건이 이 창구")
+        law_hits = [l for l in laws if _law_field_dist(cases, l).get(best, 0) >= 0.5]
+        if law_hits:
+            parts.append(f"걸린 법령({', '.join(law_hits[:3])})의 선례가 주로 이 창구")
+        return WINDOWS[best], " · ".join(parts) or "닮은 사례와 걸린 법령의 선례 분포로 정함"
     for m in sorted(ministries, key=lambda m: -len(ministries[m])):
         if m in FIELD_BY_MINISTRY:
             return WINDOWS[FIELD_BY_MINISTRY[m]], f"주된 규제 소관이 {m}"
