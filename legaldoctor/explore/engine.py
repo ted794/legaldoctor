@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import re
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
@@ -55,7 +56,7 @@ class Explore:
         laws: LawSource,
         *,
         cases=None,
-        workers: int = 4,
+        workers: int = 8,
         per_activity: int = 8,
         use_search: bool = True,
         hint: str = "",
@@ -81,32 +82,42 @@ class Explore:
         act_by_id = {a.id: a for a in acts}
         notes: list[str] = []
 
-        cands = list(self.extra_candidates) + hypothesize(self.model, state.business, acts, hint=self.hint)
+        t0 = time.perf_counter()
+        cands = list(self.extra_candidates)
         leads: list[Lead] = []
-        if self.use_search:
-            with ThreadPoolExecutor(self.workers) as ex:
-                for a, fut in [(a, ex.submit(search_clues, self.model, self.search, a)) for a in acts]:
-                    try:
-                        c, l = fut.result()
-                        cands += c
-                        leads += l
-                    except Exception as e:  # noqa: BLE001
-                        notes.append(f"{a.id} 검색 실패: {str(e)[:120]}")
+        # 모델 가설과 Liner Search 단서 수집은 서로 기다릴 이유가 없으므로 함께 돌린다
+        with ThreadPoolExecutor(self.workers + 1) as ex:
+            hypo = ex.submit(hypothesize, self.model, state.business, acts, hint=self.hint, workers=self.workers)
+            searches = [(a, ex.submit(search_clues, self.model, self.search, a)) for a in acts] if self.use_search else []
+            for a, fut in searches:
+                try:
+                    c, l = fut.result()
+                    cands += c
+                    leads += l
+                except Exception as e:  # noqa: BLE001
+                    notes.append(f"{a.id} 검색 실패: {str(e)[:120]}")
+            cands += hypo.result()
+        t1 = time.perf_counter()
         similar = self._similar(acts)
         cands += self._precedent_candidates(similar)
         cands = self._dedupe(cands)
 
         findings: list[Finding] = []
         rejected: list[Rejected] = []
-        for law in sorted({c.law for c in cands}):
-            self.laws.load(law)  # 원문을 먼저 받아 둔다(같은 법령 중복 조회 방지)
+        # 원문을 먼저 받아 둔다(같은 법령 중복 조회 방지). 법령끼리는 독립이라 함께 받는다
+        with ThreadPoolExecutor(self.workers) as ex:
+            list(ex.map(self.laws.load, sorted({c.law for c in cands})))
+        t2 = time.perf_counter()
         with ThreadPoolExecutor(self.workers) as ex:
             for f, r in ex.map(lambda c: self._verify(c, act_by_id[c.activity_id].action), cands):
                 findings += f
                 rejected += r
+        t3 = time.perf_counter()
 
         findings += self._chain(findings)
         findings += self._shadow(findings, act_by_id)
+        t4 = time.perf_counter()
+        notes.append(f"소요: 가설·검색 {t1 - t0:.0f}초, 원문 조회 {t2 - t1:.0f}초, 원문 대조 {t3 - t2:.0f}초, 위임·해석례 {t4 - t3:.0f}초")
         findings += self._gaps(acts, cands, findings)
         self._attach_precedents(findings)
         findings = self._dedupe_findings(findings)
@@ -289,9 +300,12 @@ class Explore:
     # 4층: 그림자 규제(법령해석례) --------------------------------------------
     def _shadow(self, findings: list[Finding], act_by_id: dict[str, Any]) -> list[Finding]:
         out: list[Finding] = []
-        pairs = {(f.activity_id, f.law) for f in findings if f.grade in ("명시 규제", "의제 리스크") and f.layer != "위임 사슬"}
-        for aid, law in sorted(pairs):
+        pairs = sorted({(f.activity_id, f.law) for f in findings if f.grade in ("명시 규제", "의제 리스크") and f.layer != "위임 사슬"})
+
+        def one(pair):
+            aid, law = pair
             action = act_by_id[aid].action
+            res: list[Finding] = []
             for it in self.laws.search_interpretations(law, limit=3):
                 if not it["id"]:
                     continue
@@ -301,9 +315,15 @@ class Explore:
                 text = f"질의요지: {d['question']}\n회답: {d['answer']}"
                 v = judge(self.model, action, f"법령해석례 {it['case_no']}", text, "해석")
                 if v and v.result in ("예", "불명확"):
-                    out.append(
+                    res.append(
                         Finding(aid, "해석 리스크", "해석례", law, f"법령해석례 {it['case_no']} ({_ymd(it['date'])})", v.point or d["title"], v.quote, d["url"], it.get("agency", ""), [law, f"법령해석례 {it['case_no']}"])
                     )
+            return res
+
+        # 행위·법령 쌍마다 독립이므로 함께 돌린다(순서는 쌍 순서대로 유지)
+        with ThreadPoolExecutor(self.workers) as ex:
+            for res in ex.map(one, pairs):
+                out += res
         return out
 
     # 규정 공백 -----------------------------------------------------------
