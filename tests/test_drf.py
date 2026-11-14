@@ -104,3 +104,10 @@ def test_lawsource_falls_back_to_web():
     ls = LawSource(DownDrf(), web=FakeWeb())
     assert ls.load("가상법").meta.name == "가상법" and ls.status["가상법"] == "ok"
     assert ls.load("없는법") is None and ls.status["없는법"] == "not_found"
+
+
+def test_clean_name():
+    from regpang.law.web import clean_name
+
+    assert clean_name("도시 및 주거환경정비법 ( 약칭: 도시정비법 )") == "도시 및 주거환경정비법"
+    assert clean_name("수의사법") == "수의사법"

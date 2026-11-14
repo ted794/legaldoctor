@@ -74,7 +74,14 @@ class LinerModel:
         return content
 
     def chat_json(self, messages: list[dict[str, Any]], **kw: Any) -> Any:
-        return extract_json(self.chat(messages, **kw))
+        """JSON 응답을 받는다. 파싱에 실패하면 한 번 더 묻는다(응답이 잘리거나 형식이 깨지는 경우)."""
+        try:
+            return extract_json(self.chat(messages, **kw))
+        except LinerModelError as e:
+            if "JSON" not in str(e):
+                raise
+            retry = [*messages, {"role": "user", "content": "앞 응답의 JSON 형식이 깨졌음. 설명 없이 올바른 JSON 하나만 다시 출력할 것."}]
+            return extract_json(self.chat(retry, **kw))
 
     def close(self) -> None:
         self._client.close()

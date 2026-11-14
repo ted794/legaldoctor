@@ -58,9 +58,14 @@ def _ymd(m: re.Match) -> str:
     return f"{m.group(1)}{int(m.group(2)):02d}{int(m.group(3)):02d}"
 
 
+def clean_name(title: str) -> str:
+    """'도시 및 주거환경정비법 ( 약칭: 도시정비법 )' → '도시 및 주거환경정비법'"""
+    return re.sub(r"\s*\(\s*약칭\s*:[^)]*\)\s*", "", title).strip()
+
+
 def parse_body(page: str, name: str = "") -> LawDoc:
     lines = _lines(page)
-    title = lines[0] if lines else name
+    title = clean_name(lines[0]) if lines else name
     effective, ministry = "", ""
     for l in lines[:6]:
         if l.startswith("[시행") and not effective:
@@ -114,6 +119,7 @@ class WebLaw:
         p = self._cache(name)
         if p.exists():
             d = json.loads(p.read_text(encoding="utf-8"))
+            d["meta"]["name"] = clean_name(d["meta"]["name"])
             doc = LawDoc(
                 meta=LawMeta(**d["meta"]),
                 articles=[Article(**a) for a in d["articles"]],
