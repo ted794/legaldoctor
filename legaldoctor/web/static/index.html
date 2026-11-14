@@ -140,7 +140,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
 const $=s=>document.querySelector(s);
 let sid=null,editing=false,last=null;
 async function api(path,opt={}){const r=await fetch(path,opt);if(!r.ok){throw new Error((await r.json().catch(()=>({detail:r.statusText}))).detail)}return r.json()}
-async function session(){if(!sid){sid=(await api('/api/sessions',{method:'POST'})).id}return sid}
+async function session(){if(!sid){sid=(await api('api/sessions',{method:'POST'})).id}return sid}
 function busy(on,text){document.querySelectorAll('.btn').forEach(b=>b.disabled=on);$('#msg').textContent=on?(text||'읽고 있어요...'):''}
 function esc(s){return (s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
@@ -166,7 +166,7 @@ function render(v){
 
 async function sendForm(fd,label){
   await session();busy(true,label);
-  try{render(await api(`/api/sessions/${sid}/materials`,{method:'POST',body:fd}))}catch(e){$('#msg').textContent=e.message}finally{busy(false);}
+  try{render(await api(`api/sessions/${sid}/materials`,{method:'POST',body:fd}))}catch(e){$('#msg').textContent=e.message}finally{busy(false);}
 }
 $('#sendText').onclick=()=>{const t=$('#bizText').value.trim();if(!t)return;const fd=new FormData();fd.append('text',t);sendForm(fd,'설명을 읽고 있어요...')};
 const fileIn=$('#fileIn'),drop=$('#drop');
@@ -203,15 +203,15 @@ document.querySelectorAll('#menu button').forEach(b=>b.onclick=()=>{
 let ckModule='invest';
 document.querySelectorAll('#ckMods button').forEach(b=>b.onclick=()=>{ckModule=b.dataset.m;document.querySelectorAll('#ckMods button').forEach(x=>x.classList.toggle('pick',x===b))});
 $('#ckFile').onchange=e=>{$('#ckFiles').textContent=[...e.target.files].map(f=>f.name).join(', ')};
-$('#ckDemo').onclick=async()=>{try{$('#ckText').value=(await api('/api/checkup/demo/'+ckModule)).text}catch(e){$('#msg').textContent=e.message}};
+$('#ckDemo').onclick=async()=>{try{$('#ckText').value=(await api('api/checkup/demo/'+ckModule)).text}catch(e){$('#msg').textContent=e.message}};
 const RC={'높음':'#c92a2a','중간':'#e8590c','낮음':'#2b8a3e'};
 $('#ckRun').onclick=async()=>{
   const fd=new FormData();fd.append('module',ckModule);fd.append('text',$('#ckText').value);[...$('#ckFile').files].forEach(f=>fd.append('files',f));
   busy(true,'조항을 뽑고 법령 원문과 대조하고 있어요. 몇 분 걸릴 수 있어요...');
-  try{const r=await api('/api/checkup',{method:'POST',body:fd});
+  try{const r=await api('api/checkup',{method:'POST',body:fd});
     const hi=r.items.filter(i=>i.risk==='높음').length, lw=r.items.filter(i=>i.lawyer).length;
     $('#ckResult').innerHTML=`<h3>${esc(r.title)} · ${esc(r.causes.join(', '))}</h3><p class="hint">검진 항목 ${r.items.length} · 위험 높음 ${hi} · 변호사 심화자문 권함 ${lw}</p>`+
-      `<div class="row"><a class="btn" href="/api/checkup/${r.id}" target="_blank">검진표 열기</a></div>`+
+      `<div class="row"><a class="btn" href="api/checkup/${r.id}" target="_blank">검진표 열기</a></div>`+
       r.items.map(i=>`<div class="ck-item"><span class="risk" style="background:${RC[i.risk]||'#495057'}">${esc(i.risk)}</span><b>${esc(i.label)}</b> · ${esc(i.verdict)}<div class="hint">“${esc(i.quote)}”</div>${i.lawyer?'<div class="hint" style="color:#1971c2">변호사 심화자문 권함</div>':''}</div>`).join('')+
       (r.halted?`<p class="warn">${esc(r.halted)}</p>`:'')+`<p class="hint">※ ${esc(r.disclaimer)}</p>`;
   }catch(e){$('#msg').textContent=e.message}finally{busy(false)}};
@@ -229,7 +229,7 @@ function showQ(v){
   $('#freeBtn').onclick=()=>{const a=$('#freeAns').value.trim();if(a)answer(a)};
 }
 async function answer(a){await session();busy(true,'다음 질문을 고르고 있어요...');
-  try{const v=await api(`/api/sessions/${sid}/interview`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answer:a})});render(v);showQ(v)}
+  try{const v=await api(`api/sessions/${sid}/interview`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answer:a})});render(v);showQ(v)}
   catch(e){$('#msg').textContent=e.message}finally{busy(false)}}
 $('#startTalk').onclick=()=>answer(null);
 
@@ -239,14 +239,14 @@ $('#okBtn').onclick=async()=>{await session();const edits={};
   if(editing)document.querySelectorAll('.slot input').forEach(i=>{const s=last.slots.find(x=>x.key===i.dataset.k);if(i.value.trim()&&i.value.trim()!==(s.value||''))edits[i.dataset.k]=i.value.trim()});
   busy(true,'규제를 살펴보고 있어요...');
   try{editing=false;$('#editBtn').textContent='고칠 곳 있어요';
-    render(await api(`/api/sessions/${sid}/confirm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}));
-    const r=await api(`/api/sessions/${sid}/analyze`,{method:'POST'});
-    const out=n=>`/api/sessions/${sid}/out/${n}`;
+    render(await api(`api/sessions/${sid}/confirm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}));
+    const r=await api(`api/sessions/${sid}/analyze`,{method:'POST'});
+    const out=n=>`api/sessions/${sid}/out/${n}`;
     const links=r.outputs.length?`<div class="row"><a class="btn" href="${out('regmap.html')}" target="_blank">규제 지도</a><a class="btn ghost" href="${out('consult.html')}" target="_blank">변호사 상담 준비서</a><a class="btn ghost" href="${out('application.html')}" target="_blank">신속확인 신청서 초안</a><a class="btn ghost" href="${out('application.docx')}">신청서 Word</a></div><p class="hint">열린 문서에서 인쇄(Ctrl+P)를 누르면 PDF로 저장됩니다.</p>`:'';
     const counts=Object.entries(r.counts||{}).map(([k,v])=>`${esc(k)} ${v}`).join(' · ');
     $('#result').innerHTML=`<h3>권하는 길: ${esc(r.track||'')}</h3><p class="hint">${counts}</p>`+links+(r.halted_at?`<p class="warn">분석이 멈춘 단계: ${esc(r.halt_reason)}</p>`:'')+r.stages.map(s=>`<details><summary>${esc(s.stage)}</summary><pre>${esc(s.summary)}</pre></details>`).join('');
   }catch(e){$('#msg').textContent=e.message}finally{busy(false)}};
-api('/api/sessions',{method:'POST'}).then(r=>{sid=r.id;return api('/api/sessions/'+sid)}).then(render).catch(()=>{});
+api('api/sessions',{method:'POST'}).then(r=>{sid=r.id;return api('api/sessions/'+sid)}).then(render).catch(()=>{});
 </script>
 </body>
 </html>

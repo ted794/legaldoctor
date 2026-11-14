@@ -1,0 +1,15 @@
+# 실행: docker compose up -d --build
+# .env에 LINER_API_KEY(필수), LAW_OC(선택)를 넣는다. 이 파일과 같은 폴더의 .env를 읽음
+services:
+  legaldoctor:
+    build: .
+    image: legaldoctor:latest
+    env_file: .env
+    ports:
+      - "127.0.0.1:8100:8000"  # 서버 안에서만 열고 앞단 웹서버(nginx)가 연결함
+    volumes:
+      - law_cache:/app/data/law_cache  # 실행 중 받은 법령 원문 캐시를 재시작 뒤에도 유지
+    restart: unless-stopped
+
+volumes:
+  law_cache:
