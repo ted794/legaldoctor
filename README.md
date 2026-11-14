@@ -21,7 +21,7 @@
 Python 3.11 이상과 [uv](https://docs.astral.sh/uv/)가 필요합니다.
 
 ```bash
-cp .env.example .env              # LINER_API_KEY, LAW_OC 값을 채운다
+cp .env.example .env              # LINER_API_KEY를 채운다(LAW_OC는 선택)
 uv run legaldoctor doctor         # Liner Model·Search·국가법령정보 연결 점검
 uv run legaldoctor web            # 웹 화면 http://127.0.0.1:8000
 ```
@@ -136,9 +136,9 @@ Liner가 낸 단서는 그대로 쓰지 않습니다. 조문 번호와 내용은
 | 이름 | 설명 |
 |---|---|
 | `LINER_API_KEY` | Liner Model과 Liner Search에 같이 쓰는 키 |
-| `LAW_OC` | 국가법령정보 공동활용 Open API 인증값. 신청할 때 실행 서버의 IP를 등록해야 호출이 통과합니다 |
+| `LAW_OC` | 선택. 국가법령정보 공동활용 Open API 인증값. 신청할 때 실행 서버의 IP를 등록해야 호출이 통과합니다 |
 
-`LAW_OC` 인증에 실패하면 국가법령정보센터 웹 화면의 법령 본문을 조문 단위로 읽고, 그것도 안 되면 `data/law_cache`의 저장본을 씁니다. 저장본을 쓴 항목은 결과물에 캐시 원문으로 표시합니다.
+`LAW_OC`를 비워 두거나 인증에 실패하면 국가법령정보센터 웹 화면의 법령 본문을 조문 단위로 읽고, 그것도 안 되면 `data/law_cache`의 저장본을 씁니다. 저장본을 쓴 항목은 결과물에 캐시 원문으로 표시합니다. 심사용으로는 `LINER_API_KEY` 하나만 넣어도 실행됩니다.
 
 ## 기존 부분과 신규 부분
 

@@ -49,7 +49,7 @@ def cmd_doctor(_: argparse.Namespace) -> int:
         _fail("Liner Search", str(e)[:200])
         bad += 1
     if not s.has_law_oc:
-        _fail("설정", "LAW_OC가 비어 있음. 캐시 원문만 사용함")
+        _fail("설정", "LAW_OC가 비어 있음. 국가법령정보센터 웹 원문과 캐시로 대신함(분석은 동작)")
     try:
         r = DrfClient(s).search("law", "산업융합 촉진법")
         if r.from_cache:
