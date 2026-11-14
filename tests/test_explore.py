@@ -205,7 +205,8 @@ def test_reg_status_after_special():
 
     doc = LawDoc(LawMeta("가상법", "법률", effective="20200101"), [Article("3", "", "본문", effective="20210101"), Article("4", "", "본문")])
     assert judge_status(doc, "3", "2022-05-01")[0] == "현존 규제"
-    assert judge_status(doc, "3", "2020-05-01")[0] == "특례 이후 개정"
+    assert judge_status(doc, "3", "2020-05-01")[0] == "조문 개정 이력"
+    assert judge_status(doc, "4", "2019-05-01")[0] == "법령 개정 이력"
     assert judge_status(doc, "4", "2022-05-01") == ("현존 규제", "20200101", "법령 시행일")
     assert judge_status(doc, "9", "2022-05-01")[0] == "조문 없음"
     assert judge_status(None, "3", "2022-05-01")[0] == "법령 확인 불가"

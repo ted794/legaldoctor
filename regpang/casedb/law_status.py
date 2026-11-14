@@ -2,7 +2,9 @@
 
 판정
 - 현존 규제: 국가법령정보의 현재 조문 시행일이 마지막 특례 승인일보다 이르거나 같음. 특례 이후 조문이 바뀌지 않았으니 규제가 그대로 남아 있음
-- 특례 이후 개정: 조문 시행일이 특례 승인일보다 늦음. 해소됐는지는 개정 내용을 대조해야 함
+- 조문 개정 이력: 그 조문이 특례 승인일 뒤에 개정됨. 개정이 그 규제를 고친 것인지 다른 사항을 고친 것인지는 알 수 없으므로
+  규제가 해소됐다고 단정하지 않는다
+- 법령 개정 이력: 조문별 개정일이 없고 법령 전체만 특례 뒤에 바뀜. 해당 조문이 바뀌었는지조차 알 수 없음
 - 조문 없음: 현재 법령에 그 조문이 없음. 삭제·이동 가능성
 - 법령 확인 불가: 법령을 찾지 못함(폐지·제명 변경 가능성) 또는 원문 조회 실패
 
@@ -63,12 +65,12 @@ def judge_status(doc, art_key: str | None, latest: str) -> tuple[str, str, str]:
         if art is None:
             return "조문 없음", "", ""
         if art.effective:
-            return ("특례 이후 개정" if case and _ymd(art.effective) > case else "현존 규제"), art.effective, "조문 시행일"
+            return ("조문 개정 이력" if case and _ymd(art.effective) > case else "현존 규제"), art.effective, "조문 개정일"
     eff = _ymd(doc.meta.effective)
     if eff and case and eff <= case:
         return "현존 규제", eff, "법령 시행일"
     if eff and case:
-        return "특례 이후 개정", eff, "법령 시행일"
+        return "법령 개정 이력", eff, "법령 시행일"
     return "법령 확인 불가", eff, ""
 
 

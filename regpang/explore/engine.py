@@ -176,8 +176,10 @@ class Explore:
                 status, eff, basis = judge_status(self.laws.load(f.law), key, latest)
                 if status == "현존 규제":
                     f.reg_status = f"현존 규제: 특례(최근 {latest}) 이후 미개정"
-                elif status == "특례 이후 개정":
-                    f.reg_status = f"특례 이후 개정({eff[:4]}.{eff[4:6]}.{eff[6:8]}.): 해소 여부 대조 필요"
+                elif status == "조문 개정 이력":
+                    f.reg_status = f"특례 뒤 이 조문 개정 이력 있음({eff[:4]}.{eff[4:6]}.{eff[6:8]}.). 이 규제를 고친 개정인지는 미확인"
+                elif status == "법령 개정 이력":
+                    f.reg_status = f"특례 뒤 법령 개정 이력 있음({eff[:4]}.{eff[4:6]}.{eff[6:8]}.). 이 조문이 바뀌었는지는 미확인"
 
     # 1·3층: 정의·조문 대조 -------------------------------------------------
     def _verify(self, c: Candidate, action: str) -> tuple[list[Finding], list[Rejected]]:
