@@ -1,0 +1,582 @@
+{
+ "base": {
+  "source": "sandbox_go_kr",
+  "mode": "상세 포함",
+  "count": 2787
+ },
+ "secondary": {
+  "ict_nipa": {
+   "count": 303,
+   "matched": 271,
+   "added_unmatched": 32,
+   "base_without_counterpart": 21,
+   "type_disagreements": 7,
+   "meta": {
+    "key": "ict_nipa",
+    "count": 303,
+    "saved_at": "2026-11-13T17:27:24+00:00",
+    "source_name": "ICT 규제샌드박스 승인사례(sandbox.or.kr, 과기정통부·NIPA)",
+    "list_urls": [
+     "https://www.sandbox.or.kr/board/designated_case.do?applyFormCode=FORM_002&pageNumber=1",
+     "https://www.sandbox.or.kr/board/designated_case.do?applyFormCode=FORM_003&pageNumber=1"
+    ],
+    "portal_totals": {
+     "임시허가": 75,
+     "실증특례": 228
+    }
+   }
+  },
+  "industry_kiat": {
+   "count": 932,
+   "matched": 928,
+   "added_unmatched": 4,
+   "base_without_counterpart": 10,
+   "type_disagreements": 9,
+   "meta": {
+    "key": "industry_kiat",
+    "count": 932,
+    "saved_at": "2026-11-13T17:32:58+00:00",
+    "source_name": "산업융합 규제샌드박스 특례부여현황(sandbox.kiat.or.kr, 산업통상부·KIAT)",
+    "list_url": "https://sandbox.kiat.or.kr/front/pstmng/selectCtlExeLibListAjax.do",
+    "page_url": "https://sandbox.kiat.or.kr/front/pstmng/selectCtlExeLibPage.do?MenuId=403995cd1cfb4dbbbd97839c08a8c3fb",
+    "portal_kind_counts": {
+     "실증특례": 855,
+     "임시허가": 56,
+     "기타": 21
+    }
+   }
+  },
+  "industry_motir": {
+   "count": 59,
+   "matched": 48,
+   "added_unmatched": 11,
+   "base_without_counterpart": 894,
+   "type_disagreements": 1,
+   "meta": {
+    "key": "industry_motir",
+    "count": 59,
+    "saved_at": "2026-11-13T17:43:24+00:00",
+    "source_name": "산업통상부 산업융합 규제샌드박스 규제특례 승인 공고(motir.go.kr)",
+    "search": "https://www.motir.go.kr/kor/article/ATCL2826a2625?searchKeyword=규제특례 승인",
+    "notices": [
+     {
+      "url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/71401/view",
+      "title": "2026년 제6차 산업융합 규제샌드박스 규제특례 승인 공고",
+      "notice_no": "2026-680",
+      "notice_date": "2026-11-02",
+      "n_items": 8,
+      "no_range": [
+       879,
+       890
+      ],
+      "missing_in_range": [
+       885,
+       886,
+       888,
+       889
+      ]
+     },
+     {
+      "url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/71307/view",
+      "title": "2026년 제5차 산업융합 규제샌드박스 규제특례 승인 공고",
+      "notice_no": "2026-585",
+      "notice_date": "2026-09-07",
+      "n_items": 3,
+      "no_range": [
+       876,
+       878
+      ],
+      "missing_in_range": []
+     },
+     {
+      "url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/71267/view",
+      "title": "2026년도 제4차 산업융합 규제샌드박스 규제특례 승인 공고",
+      "notice_no": "2026-544",
+      "notice_date": "2026-08-11",
+      "n_items": 3,
+      "no_range": [
+       873,
+       875
+      ],
+      "missing_in_range": []
+     },
+     {
+      "url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/71039/view",
+      "title": "2026년도 제1차 산업융합 규제샌드박스 규제특례 승인 공고",
+      "notice_no": "2026-304",
+      "notice_date": "2026-04-22",
+      "n_items": 18,
+      "no_range": [
+       831,
+       849
+      ],
+      "missing_in_range": [
+       834
+      ]
+     },
+     {
+      "url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/70776/view",
+      "title": "2025년도 제4차 산업융합 규제샌드박스 규제특례 승인 공고",
+      "notice_no": "2026-053",
+      "notice_date": "2026-01-23",
+      "n_items": 27,
+      "no_range": [
+       800,
+       828
+      ],
+      "missing_in_range": [
+       803,
+       807
+      ]
+     }
+    ]
+   }
+  },
+  "mobility_kotsa": {
+   "count": 107,
+   "matched": 95,
+   "added_unmatched": 12,
+   "base_without_counterpart": 1,
+   "type_disagreements": 0,
+   "meta": {
+    "key": "mobility_kotsa",
+    "count": 107,
+    "saved_at": "2026-11-13T17:30:37+00:00",
+    "source_name": "모빌리티 규제샌드박스 실증특례 승인과제 현황(sandbox.kotsa.or.kr, 국토교통부·TS)",
+    "list_url": "https://sandbox.kotsa.or.kr/front/board/boardContentsListPage.do?board_id=47&MenuId=e9274d23c3fd40a881cdc6e75be79893",
+    "portal_total": 107
+   }
+  },
+  "smartcity_kaia": {
+   "count": 66,
+   "matched": 64,
+   "added_unmatched": 2,
+   "base_without_counterpart": 3,
+   "type_disagreements": 1,
+   "meta": {
+    "key": "smartcity_kaia",
+    "count": 66,
+    "saved_at": "2026-11-13T17:34:32+00:00",
+    "source_name": "스마트도시 규제샌드박스 사업별 승인사례(smartcity.kaia.re.kr, 국토교통부·KAIA)",
+    "list_url": "https://smartcity.kaia.re.kr/sandbox/apply/applyCase.do",
+    "portal_total": 66,
+    "portal_kind_counts": {
+     "실증특례": 58,
+     "적극해석": 8
+    }
+   }
+  },
+  "rnd_msit": {
+   "count": 4,
+   "matched": 0,
+   "added_unmatched": 4,
+   "base_without_counterpart": 56,
+   "type_disagreements": 0,
+   "meta": {
+    "key": "rnd_msit",
+    "count": 4,
+    "saved_at": "2026-11-13T17:36:40+00:00",
+    "source_name": "과기정통부 공고(연구개발특구 신기술 실증특례 지정, msit.go.kr)",
+    "notices": [
+     {
+      "url": "https://www.msit.go.kr/bbs/view.do?sCode=user&mPid=121&mId=310&bbsSeqNo=96&nttSeqNo=3186630",
+      "file": "https://www.msit.go.kr/ssm/file/fileDown.do?atchFileNo=55337&fileOrd=3",
+      "notice_no": "2026-1016",
+      "committee": "제59차 연구개발특구위원회",
+      "notice_date": "2026-10-14",
+      "n_items": 7
+     }
+    ]
+   }
+  },
+  "circular_mcee": {
+   "count": 5,
+   "matched": 1,
+   "added_unmatched": 4,
+   "base_without_counterpart": 61,
+   "type_disagreements": 0,
+   "meta": {
+    "key": "circular_mcee",
+    "count": 5,
+    "saved_at": "2026-11-13T17:48:13+00:00",
+    "source_name": "기후에너지환경부 순환경제 규제샌드박스 규제특례 승인 공고(mcee.go.kr)",
+    "notices": [
+     {
+      "url": "https://www.mcee.go.kr/home/web/board/read.do?menuId=&boardMasterId=39&boardCategoryId=&boardId=1900750",
+      "file": "https://www.mcee.go.kr/home/file/readDownloadFile.do?fileId=334748&fileSeq=1",
+      "notice_no": "2026-947",
+      "committee": "제3차 순환경제 신기술·서비스 심의위원회",
+      "nos": [
+       "2026-01-063",
+       "2026-01-064",
+       "2026-01-065",
+       "2026-01-066",
+       "2026-01-067"
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "finance_gapfill": {
+  "added": 3,
+  "checks": [
+   {
+    "date": "2020-09-24",
+    "press_cumulative": 115,
+    "db_cumulative_before_fill": 115,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=346&pageIndex=1",
+    "db_cumulative_after_fill": 115
+   },
+   {
+    "date": "2020-11-19",
+    "press_cumulative": 120,
+    "db_cumulative_before_fill": 120,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=452&pageIndex=1",
+    "db_cumulative_after_fill": 120
+   },
+   {
+    "date": "2020-12-22",
+    "press_cumulative": 135,
+    "db_cumulative_before_fill": 135,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=629&pageIndex=1",
+    "db_cumulative_after_fill": 135
+   },
+   {
+    "date": "2021-01-27",
+    "press_cumulative": 137,
+    "db_cumulative_before_fill": 137,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=648&pageIndex=1",
+    "db_cumulative_after_fill": 137
+   },
+   {
+    "date": "2021-02-19",
+    "press_cumulative": 139,
+    "db_cumulative_before_fill": 139,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=692&pageIndex=1",
+    "db_cumulative_after_fill": 139
+   },
+   {
+    "date": "2021-04-08",
+    "press_cumulative": 139,
+    "db_cumulative_before_fill": 139,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=757&pageIndex=1",
+    "db_cumulative_after_fill": 139
+   },
+   {
+    "date": "2021-04-14",
+    "press_cumulative": 142,
+    "db_cumulative_before_fill": 142,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=762&pageIndex=1",
+    "db_cumulative_after_fill": 142
+   },
+   {
+    "date": "2021-05-26",
+    "press_cumulative": 145,
+    "db_cumulative_before_fill": 145,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=802&pageIndex=1",
+    "db_cumulative_after_fill": 145
+   },
+   {
+    "date": "2021-07-22",
+    "press_cumulative": 153,
+    "db_cumulative_before_fill": 153,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=896&pageIndex=1",
+    "db_cumulative_after_fill": 153
+   },
+   {
+    "date": "2021-09-08",
+    "press_cumulative": 153,
+    "db_cumulative_before_fill": 153,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=971&pageIndex=1",
+    "db_cumulative_after_fill": 153
+   },
+   {
+    "date": "2021-10-13",
+    "press_cumulative": 154,
+    "db_cumulative_before_fill": 154,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1025&pageIndex=1",
+    "db_cumulative_after_fill": 154
+   },
+   {
+    "date": "2021-11-12",
+    "press_cumulative": 185,
+    "db_cumulative_before_fill": 185,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1088&pageIndex=1",
+    "db_cumulative_after_fill": 185
+   },
+   {
+    "date": "2022-02-16",
+    "press_cumulative": 210,
+    "db_cumulative_before_fill": 210,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1426&pageIndex=1",
+    "db_cumulative_after_fill": 210
+   },
+   {
+    "date": "2022-03-30",
+    "press_cumulative": 211,
+    "db_cumulative_before_fill": 211,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1484&pageIndex=1",
+    "db_cumulative_after_fill": 211
+   },
+   {
+    "date": "2022-06-09",
+    "press_cumulative": 211,
+    "db_cumulative_before_fill": 211,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1582&pageIndex=1",
+    "db_cumulative_after_fill": 211
+   },
+   {
+    "date": "2022-09-07",
+    "press_cumulative": 224,
+    "db_cumulative_before_fill": 224,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1625&pageIndex=1",
+    "db_cumulative_after_fill": 224
+   },
+   {
+    "date": "2022-11-09",
+    "press_cumulative": 232,
+    "db_cumulative_before_fill": 232,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1667&pageIndex=1",
+    "db_cumulative_after_fill": 232
+   },
+   {
+    "date": "2023-04-12",
+    "press_cumulative": 238,
+    "db_cumulative_before_fill": 238,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1830&pageIndex=1",
+    "db_cumulative_after_fill": 238
+   },
+   {
+    "date": "2023-05-22",
+    "press_cumulative": 238,
+    "db_cumulative_before_fill": 238,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1875&pageIndex=1",
+    "db_cumulative_after_fill": 238
+   },
+   {
+    "date": "2023-06-21",
+    "press_cumulative": 258,
+    "db_cumulative_before_fill": 258,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1895&pageIndex=1",
+    "db_cumulative_after_fill": 258
+   },
+   {
+    "date": "2023-07-19",
+    "press_cumulative": 273,
+    "db_cumulative_before_fill": 273,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1925&pageIndex=1",
+    "db_cumulative_after_fill": 273
+   },
+   {
+    "date": "2023-09-13",
+    "press_cumulative": 283,
+    "db_cumulative_before_fill": 283,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1970&pageIndex=1",
+    "db_cumulative_after_fill": 283
+   },
+   {
+    "date": "2023-12-13",
+    "press_cumulative": 293,
+    "db_cumulative_before_fill": 293,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2041&pageIndex=1",
+    "db_cumulative_after_fill": 293
+   },
+   {
+    "date": "2023-12-26",
+    "press_cumulative": 293,
+    "db_cumulative_before_fill": 293,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2045&pageIndex=1",
+    "db_cumulative_after_fill": 293
+   },
+   {
+    "date": "2024-01-31",
+    "press_cumulative": 298,
+    "db_cumulative_before_fill": 298,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2073&pageIndex=1",
+    "db_cumulative_after_fill": 298
+   },
+   {
+    "date": "2024-04-03",
+    "press_cumulative": 305,
+    "db_cumulative_before_fill": 305,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2115&pageIndex=1",
+    "db_cumulative_after_fill": 305
+   },
+   {
+    "date": "2024-05-29",
+    "press_cumulative": 323,
+    "db_cumulative_before_fill": 323,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2167&pageIndex=1",
+    "db_cumulative_after_fill": 323
+   },
+   {
+    "date": "2024-06-26",
+    "press_cumulative": 325,
+    "db_cumulative_before_fill": 325,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2206&pageIndex=1",
+    "db_cumulative_after_fill": 325
+   },
+   {
+    "date": "2024-07-24",
+    "press_cumulative": 355,
+    "db_cumulative_before_fill": 355,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2235&pageIndex=1",
+    "db_cumulative_after_fill": 355
+   },
+   {
+    "date": "2024-09-30",
+    "press_cumulative": 375,
+    "db_cumulative_before_fill": 375,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2426&pageIndex=1",
+    "db_cumulative_after_fill": 375
+   },
+   {
+    "date": "2024-10-30",
+    "press_cumulative": 384,
+    "db_cumulative_before_fill": 384,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2448&pageIndex=1",
+    "db_cumulative_after_fill": 384
+   },
+   {
+    "date": "2024-11-13",
+    "press_cumulative": 418,
+    "db_cumulative_before_fill": 418,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2464&pageIndex=1",
+    "db_cumulative_after_fill": 418
+   },
+   {
+    "date": "2024-12-11",
+    "press_cumulative": 453,
+    "db_cumulative_before_fill": 453,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2541&pageIndex=1",
+    "db_cumulative_after_fill": 453
+   },
+   {
+    "date": "2024-12-24",
+    "press_cumulative": 500,
+    "db_cumulative_before_fill": 500,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2610&pageIndex=1",
+    "db_cumulative_after_fill": 500
+   },
+   {
+    "date": "2025-04-02",
+    "press_cumulative": 549,
+    "db_cumulative_before_fill": 549,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2969&pageIndex=1",
+    "db_cumulative_after_fill": 549
+   },
+   {
+    "date": "2025-04-16",
+    "press_cumulative": 645,
+    "db_cumulative_before_fill": 645,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2985&pageIndex=1",
+    "db_cumulative_after_fill": 645
+   },
+   {
+    "date": "2025-05-02",
+    "press_cumulative": 673,
+    "db_cumulative_before_fill": 673,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3009&pageIndex=1",
+    "db_cumulative_after_fill": 673
+   },
+   {
+    "date": "2025-06-25",
+    "press_cumulative": 705,
+    "db_cumulative_before_fill": 705,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3147&pageIndex=1",
+    "db_cumulative_after_fill": 705
+   },
+   {
+    "date": "2025-07-23",
+    "press_cumulative": 788,
+    "db_cumulative_before_fill": 788,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3454&pageIndex=1",
+    "db_cumulative_after_fill": 788
+   },
+   {
+    "date": "2025-09-17",
+    "press_cumulative": 886,
+    "db_cumulative_before_fill": 886,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3545&pageIndex=1",
+    "db_cumulative_after_fill": 886
+   },
+   {
+    "date": "2025-11-05",
+    "press_cumulative": 901,
+    "db_cumulative_before_fill": 901,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3577&pageIndex=1",
+    "db_cumulative_after_fill": 901
+   },
+   {
+    "date": "2026-01-28",
+    "press_cumulative": 1035,
+    "db_cumulative_before_fill": 1035,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3725&pageIndex=1",
+    "db_cumulative_after_fill": 1035
+   },
+   {
+    "date": "2026-04-29",
+    "press_cumulative": 1072,
+    "db_cumulative_before_fill": 1072,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3886&pageIndex=1",
+    "db_cumulative_after_fill": 1072
+   },
+   {
+    "date": "2026-06-17",
+    "press_cumulative": 1075,
+    "db_cumulative_before_fill": 1075,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3867&pageIndex=1",
+    "db_cumulative_after_fill": 1075
+   },
+   {
+    "date": "2026-07-01",
+    "press_cumulative": 1106,
+    "db_cumulative_before_fill": 1106,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3888&pageIndex=1",
+    "db_cumulative_after_fill": 1106
+   },
+   {
+    "date": "2026-07-15",
+    "press_cumulative": 1111,
+    "db_cumulative_before_fill": 1112,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3903&pageIndex=1",
+    "db_cumulative_after_fill": 1112
+   },
+   {
+    "date": "2026-10-07",
+    "press_cumulative": 1164,
+    "db_cumulative_before_fill": 1164,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3982&pageIndex=1",
+    "db_cumulative_after_fill": 1164
+   },
+   {
+    "date": "2026-10-21",
+    "press_cumulative": 1168,
+    "db_cumulative_before_fill": 1165,
+    "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=4002&pageIndex=1",
+    "db_cumulative_after_fill": 1168
+   }
+  ]
+ },
+ "total": 2859,
+ "by_field_type": {
+  "circular|실증특례": 66,
+  "finance|혁신금융서비스": 1168,
+  "ict|실증특례": 221,
+  "ict|임시허가": 76,
+  "ict|적극해석": 27,
+  "industry|실증특례": 869,
+  "industry|임시허가": 64,
+  "industry|적극해석": 20,
+  "mobility|실증특례": 107,
+  "mobility|적극해석": 1,
+  "rfz|특구특례": 111,
+  "rnd|실증특례": 45,
+  "rnd|임시허가": 1,
+  "rnd|적극해석": 14,
+  "smartcity|실증특례": 62,
+  "smartcity|적극해석": 7
+ },
+ "built_at": "2026-11-13T18:03:53+00:00"
+}

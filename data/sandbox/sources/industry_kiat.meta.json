@@ -1,0 +1,13 @@
+{
+ "key": "industry_kiat",
+ "count": 932,
+ "saved_at": "2026-11-13T17:32:58+00:00",
+ "source_name": "산업융합 규제샌드박스 특례부여현황(sandbox.kiat.or.kr, 산업통상부·KIAT)",
+ "list_url": "https://sandbox.kiat.or.kr/front/pstmng/selectCtlExeLibListAjax.do",
+ "page_url": "https://sandbox.kiat.or.kr/front/pstmng/selectCtlExeLibPage.do?MenuId=403995cd1cfb4dbbbd97839c08a8c3fb",
+ "portal_kind_counts": {
+  "실증특례": 855,
+  "임시허가": 56,
+  "기타": 21
+ }
+}

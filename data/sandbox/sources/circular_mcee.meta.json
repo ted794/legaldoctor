@@ -1,0 +1,21 @@
+{
+ "key": "circular_mcee",
+ "count": 5,
+ "saved_at": "2026-11-13T17:48:13+00:00",
+ "source_name": "기후에너지환경부 순환경제 규제샌드박스 규제특례 승인 공고(mcee.go.kr)",
+ "notices": [
+  {
+   "url": "https://www.mcee.go.kr/home/web/board/read.do?menuId=&boardMasterId=39&boardCategoryId=&boardId=1900750",
+   "file": "https://www.mcee.go.kr/home/file/readDownloadFile.do?fileId=334748&fileSeq=1",
+   "notice_no": "2026-947",
+   "committee": "제3차 순환경제 신기술·서비스 심의위원회",
+   "nos": [
+    "2026-01-063",
+    "2026-01-064",
+    "2026-01-065",
+    "2026-01-066",
+    "2026-01-067"
+   ]
+  }
+ ]
+}

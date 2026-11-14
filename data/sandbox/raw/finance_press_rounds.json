@@ -1,0 +1,854 @@
+{
+ "fetched_at": "2026-11-13T17:31:06+00:00",
+ "press_count": 392,
+ "rounds": [
+  {
+   "id": 252,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=252&pageIndex=1",
+   "date": "2020-06-04",
+   "title": null,
+   "cumulative": 11,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 346,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=346&pageIndex=1",
+   "date": "2020-09-24",
+   "title": null,
+   "cumulative": 115,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 420,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=420&pageIndex=1",
+   "date": "2020-11-04",
+   "title": null,
+   "cumulative": 14,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 452,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=452&pageIndex=1",
+   "date": "2020-11-19",
+   "title": null,
+   "cumulative": 120,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 629,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=629&pageIndex=1",
+   "date": "2020-12-22",
+   "title": null,
+   "cumulative": 135,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 648,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=648&pageIndex=1",
+   "date": "2021-01-27",
+   "title": null,
+   "cumulative": 137,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 668,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=668&pageIndex=1",
+   "date": "2021-02-08",
+   "title": null,
+   "cumulative": 18,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 692,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=692&pageIndex=1",
+   "date": "2021-02-19",
+   "title": null,
+   "cumulative": 139,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 757,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=757&pageIndex=1",
+   "date": "2021-04-08",
+   "title": "우리의 금융 생활은 꾸준히, 의미있게 변화하고 있습니다.",
+   "cumulative": 139,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 762,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=762&pageIndex=1",
+   "date": "2021-04-14",
+   "title": "’21.4.14. 금융위원회, 혁신금융서비스 3건 지정",
+   "cumulative": 142,
+   "new": 3,
+   "items": []
+  },
+  {
+   "id": 802,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=802&pageIndex=1",
+   "date": "2021-05-26",
+   "title": "’21.5.26. 금융위원회, 혁신금융서비스 3건 지정",
+   "cumulative": 145,
+   "new": 3,
+   "items": []
+  },
+  {
+   "id": 896,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=896&pageIndex=1",
+   "date": "2021-07-22",
+   "title": "’21.7.21. 금융위원회, 혁신금융서비스 8건 지정",
+   "cumulative": 153,
+   "new": 8,
+   "items": []
+  },
+  {
+   "id": 971,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=971&pageIndex=1",
+   "date": "2021-09-08",
+   "title": "'21.9.8. 금융위원회, 혁신금융서비스 6건 지정기간 연장",
+   "cumulative": 153,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 1025,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1025&pageIndex=1",
+   "date": "2021-10-13",
+   "title": "'21.10.13. 금융위원회, 혁신금융서비스 1건 지정 및 11건 지정기간 연장",
+   "cumulative": 154,
+   "new": 1,
+   "items": []
+  },
+  {
+   "id": 1088,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1088&pageIndex=1",
+   "date": "2021-11-12",
+   "title": "'21.11.12. 금융위원회, 혁신금융서비스 31건 지정 및 2건 지정기간 연장",
+   "cumulative": 185,
+   "new": 31,
+   "items": []
+  },
+  {
+   "id": 1426,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1426&pageIndex=1",
+   "date": "2022-02-16",
+   "title": "'22.2.16. 금융위원회, 혁신금융서비스 25건 지정",
+   "cumulative": 210,
+   "new": 25,
+   "items": []
+  },
+  {
+   "id": 1484,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1484&pageIndex=1",
+   "date": "2022-03-30",
+   "title": "혁신금융서비스 심사 결과 - '22.3.30. 금융위원회, 혁신금융서비스 1건 신규 지정 -",
+   "cumulative": 211,
+   "new": 1,
+   "items": []
+  },
+  {
+   "id": 1582,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1582&pageIndex=1",
+   "date": "2022-06-09",
+   "title": "혁신금융서비스 심사 결과 - 혁신금융서비스 4건 지정기간 연장 / 규제개선 요청 2건 수용 -",
+   "cumulative": 211,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 1625,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1625&pageIndex=1",
+   "date": "2022-09-07",
+   "title": "혁신금융서비스 심사 결과 - 혁신금융서비스 13건 신규지정 / 4건 지정기간 연장 등 -",
+   "cumulative": 224,
+   "new": 13,
+   "items": []
+  },
+  {
+   "id": 1667,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1667&pageIndex=1",
+   "date": "2022-11-09",
+   "title": "혁신금융서비스 심사 결과 및 주요성과 - 혁신금융서비스 8건 신규지정 / 서비스 관련 고용증가·투자유치 성과 -",
+   "cumulative": 232,
+   "new": 8,
+   "items": []
+  },
+  {
+   "id": 1830,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1830&pageIndex=1",
+   "date": "2023-04-12",
+   "title": "혁신금융서비스 심사 결과 - 혁신금융서비스 1건 신규 지정, 5건 지정기간 연장 등 의결",
+   "cumulative": 238,
+   "new": 5,
+   "items": []
+  },
+  {
+   "id": 1875,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1875&pageIndex=1",
+   "date": "2023-05-22",
+   "title": "「찾아가는 금융규제 샌드박스」, 매월 현장 핀테크기업들과의 대화",
+   "cumulative": 238,
+   "new": null,
+   "items": []
+  },
+  {
+   "id": 1895,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1895&pageIndex=1",
+   "date": "2023-06-21",
+   "title": "혁신금융서비스 심사 결과 - 혁신금융서비스 20건 신규 지정, 3건 지정기간 연장, 3건 지정내용 변경",
+   "cumulative": 258,
+   "new": 3,
+   "items": []
+  },
+  {
+   "id": 1925,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1925&pageIndex=1",
+   "date": "2023-07-19",
+   "title": "혁신금융서비스 심사 결과 - 혁신금융서비스 15건 신규 지정, 1건 지정내용 변경, 1건 규제개선",
+   "cumulative": 273,
+   "new": 1,
+   "items": []
+  },
+  {
+   "id": 1970,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=1970&pageIndex=1",
+   "date": "2023-09-13",
+   "title": "혁신금융서비스 의결 결과 - 신규 혁신금융서비스 지정 10건, 기존 혁신금융서비스 지정기간 연장 25건 등 의결",
+   "cumulative": 283,
+   "new": 10,
+   "items": []
+  },
+  {
+   "id": 2041,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2041&pageIndex=1",
+   "date": "2023-12-13",
+   "title": "조각투자 방식 신종증권 장내시장 개설 혁신금융서비스 신규 지정",
+   "cumulative": 293,
+   "new": 10,
+   "items": []
+  },
+  {
+   "id": 2045,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2045&pageIndex=1",
+   "date": "2023-12-26",
+   "title": "올해도 ｢금융규제 샌드박스｣가 일상 속 금융혁신을 만들었습니다 - ‘23년 금융규제 샌드박스 제도 운영성과 -",
+   "cumulative": 293,
+   "new": 56,
+   "items": []
+  },
+  {
+   "id": 2073,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2073&pageIndex=1",
+   "date": "2024-01-31",
+   "title": "온투업 연계투자상품 비교‧추천 서비스 혁신금융서비스 신규 지정",
+   "cumulative": 298,
+   "new": 5,
+   "items": []
+  },
+  {
+   "id": 2115,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2115&pageIndex=1",
+   "date": "2024-04-03",
+   "title": "외화 선불전자지급수단의 선물하기 서비스 등 혁신금융서비스 신규 지정",
+   "cumulative": 305,
+   "new": 2,
+   "items": []
+  },
+  {
+   "id": 2167,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2167&pageIndex=1",
+   "date": "2024-05-29",
+   "title": "’클라우드 기반 소프트웨어 서비스(SaaS)의 내부망 이용‘ 혁신금융서비스 신규 지정",
+   "cumulative": 323,
+   "new": 16,
+   "items": []
+  },
+  {
+   "id": 2206,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2206&pageIndex=1",
+   "date": "2024-06-26",
+   "title": "인터넷전문은행과 지방은행의 '공동대출 서비스’ 혁신금융서비스 신규 지정",
+   "cumulative": 325,
+   "new": 2,
+   "items": []
+  },
+  {
+   "id": 2235,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2235&pageIndex=1",
+   "date": "2024-07-24",
+   "title": "저축은행의 P2P금융 개인신용대출에 대한 연계투자 혁신금융서비스 신규 지정 - 금융위는 신규 혁신금융서비스 지정 30건 등 의결",
+   "cumulative": 355,
+   "new": 30,
+   "items": []
+  },
+  {
+   "id": 2426,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2426&pageIndex=1",
+   "date": "2024-09-30",
+   "title": "클라우드 활용 소프트웨어 서비스(SaaS) 이용을 허용하는 혁신금융서비스 14건 지정",
+   "cumulative": 375,
+   "new": 14,
+   "items": []
+  },
+  {
+   "id": 2448,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2448&pageIndex=1",
+   "date": "2024-10-30",
+   "title": "중앙은행 디지털 화폐(CBDC) 시스템 내 예금 토큰 기반 지급‧이체 서비스 등 혁신금융서비스 9건 지정",
+   "cumulative": 384,
+   "new": 9,
+   "items": []
+  },
+  {
+   "id": 2464,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2464&pageIndex=1",
+   "date": "2024-11-13",
+   "title": "공모펀드를 주식‧ETF처럼 편리하게 매매할 수 있게 되었습니다. - 일반 공모펀드의 상장클래스 신설을 통한 상장거래 서비스 34건 혁신금융서비스 지정",
+   "cumulative": 418,
+   "new": 34,
+   "items": []
+  },
+  {
+   "id": 2541,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2541&pageIndex=1",
+   "date": "2024-12-11",
+   "title": "혁신금융서비스 25건을 신규 지정하였습니다.",
+   "cumulative": 453,
+   "new": 25,
+   "items": []
+  },
+  {
+   "id": 2610,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2610&pageIndex=1",
+   "date": "2024-12-24",
+   "title": "퇴직연금 로보어드바이저 일임서비스 등 신규 지정으로 금융규제 샌드박스 500건 돌파 - 신규 혁신금융서비스 지정 47건 등 금융위 의결",
+   "cumulative": 500,
+   "new": 47,
+   "items": []
+  },
+  {
+   "id": 2969,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2969&pageIndex=1",
+   "date": "2025-04-02",
+   "title": "소상공인 대상 신용평가등급 발급 서비스 등 혁신금융서비스 4건 신규 지정 의결",
+   "cumulative": 549,
+   "new": 4,
+   "items": []
+  },
+  {
+   "id": 2985,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=2985&pageIndex=1",
+   "date": "2025-04-16",
+   "title": "금융기관보험대리점의 판매비중 규제개선 등 혁신금융서비스 96건 신규 지정 의결",
+   "cumulative": 645,
+   "new": 96,
+   "items": [
+    {
+     "company": "국민은행 등 43개사",
+     "count": 43,
+     "services": [
+      "금융기관보험대리점의 판매비중 규제개선"
+     ]
+    },
+    {
+     "company": "비바리퍼블리카 등 5개사",
+     "count": 5,
+     "services": [
+      "펀드상품 비교·추천 서비스"
+     ]
+    },
+    {
+     "company": "신한은행 및 신한저축은행",
+     "count": 1,
+     "services": [
+      "신한 상생 대환대출 서비스"
+     ]
+    },
+    {
+     "company": "신한은행 및 이나인페이",
+     "count": 1,
+     "services": [
+      "이나인페이 SOL글로벌 통장 & 체크카드 서비스"
+     ]
+    },
+    {
+     "company": "국민은행 및 에스에스지닷컴",
+     "count": 1,
+     "services": [
+      "쇼핑플랫폼 이용 고객 대상 패키지형 금융상품·서비스 제공('쓱KB은행')"
+     ]
+    },
+    {
+     "company": "하나은행 등 4개사",
+     "count": 4,
+     "services": [
+      "일반 공모펀드의 상장클래스 신설을 통한 상장거래 서비스"
+     ]
+    },
+    {
+     "company": "NH투자증권 등 4개사",
+     "count": 5,
+     "services": [
+      "클라우드를 활용한 생성형 AI의 내부망 이용",
+      "구 분",
+      "업체명",
+      "혁신금융서비스 지정"
+     ]
+    },
+    {
+     "company": "신한은행 등 11개사",
+     "count": 16,
+     "services": [
+      "클라우드를 활용한 생성형 AI의 내부망 이용"
+     ]
+    },
+    {
+     "company": "노무라금융투자 등 8개사",
+     "count": 19,
+     "services": [
+      "클라우드를 활용한 소프트웨어서비스(SaaS)의 내부망 이용"
+     ]
+    },
+    {
+     "company": "경남은행",
+     "count": 1,
+     "services": []
+    },
+    {
+     "company": "지정내용변경 수용",
+     "count": 1,
+     "services": []
+    },
+    {
+     "company": "삼성증권",
+     "count": 1,
+     "services": [
+      "클라우드를 활용한 생성형 AI의 내부망 이용",
+      "(내용)사용데이터 범위 변경",
+      "250416(보도자료) 금융기관보험대리점의 판매비중 규제개선 등 혁신금융서비스 96건을 신규 지정하였습니다V8.hwpx 파일다운로드 250416(보도자료) 금융기관보험대리점의 판매비중 규제개선 등 혁신금융서비스 96건을 신규 지정하였습니다V8.hwp 파일다운로드 250416(보도자료) 금융기관보험대리점의 판매비중 규제개선 등 혁신금융서비스 96건을 신규 지정하였습니다V8.pdf 파일다운로드 목록으로 var content = document.querySelector('.board_content p'); content.innerHTML = content.innerText;"
+     ]
+    }
+   ]
+  },
+  {
+   "id": 3009,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3009&pageIndex=1",
+   "date": "2025-05-02",
+   "title": "소상공인 사업 기반 투자계약증권 유통플랫폼 등 혁신금융서비스 28건 신규 지정 의결",
+   "cumulative": 673,
+   "new": 28,
+   "items": [
+    {
+     "company": "토스증권 등 12개사",
+     "count": 27,
+     "services": [
+      "클라우드를 활용한 소프트웨어서비스* (SaaS)의 내부망 이용 * MS사의 M365(Copilot), 보안, 업무협업, 분석·자동화 솔루션",
+      "(금융위)250502(보도자료) 소상공인 사업 기반 투자계약증권 유통플랫폼 등 혁신금융서비스 28건 신규 지정 의결.pdf 파일다운로드 (금융위)250502(보도자료) 소상공인 사업 기반 투자계약증권 유통플랫폼 등 혁신금융서비스 28건 신규 지정 의결.hwpx 파일다운로드 (금융위)250502(보도자료) 소상공인 사업 기반 투자계약증권 유통플랫폼 등 혁신금융서비스 28건 신규 지정 의결.hwp 파일다운로드 목록으로 var content = document.querySelector('.board_content p'); content.innerHTML = content.innerText;"
+     ]
+    }
+   ]
+  },
+  {
+   "id": 3147,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3147&pageIndex=1",
+   "date": "2025-06-25",
+   "title": "“해외주식 소수단위 거래 서비스” 등 혁신금융서비스 14건 신규 지정 의결",
+   "cumulative": 705,
+   "new": 14,
+   "items": [
+    {
+     "company": "우리투자증권",
+     "count": 1,
+     "services": [
+      "해외주식 소수단위 거래 서비스"
+     ]
+    },
+    {
+     "company": "에스케이텔레콤 외 9개사",
+     "count": 13,
+     "services": [
+      "내부 시스템에서 생성형 AI를 활용하는 서비스"
+     ]
+    },
+    {
+     "company": "지정내용 변경",
+     "count": 4,
+     "services": []
+    },
+    {
+     "company": "두나무 (➝증권플러스비상장(가칭))",
+     "count": 1,
+     "services": [
+      "비상장주식 거래 플랫폼 서비스",
+      "(내용) 혁신금융사업자 변경"
+     ]
+    },
+    {
+     "company": "에스에스지닷컴 (플래티넘페이먼츠(가칭) 추가)",
+     "count": 1,
+     "services": [
+      "쇼핑플랫폼 이용 고객 대상 패키지형 금융상품 제공 서비스",
+      "(내용) 혁신금융사업자 추가"
+     ]
+    },
+    {
+     "company": "한국투자증권 외 1개사",
+     "count": 2,
+     "services": [
+      "내부 시스템에서 생성형 AI를 활용하는 서비스",
+      "(내용) AI 모델 확대 등",
+      "250625(보도자료) “해외주식 소수단위 거래 서비스” 등 혁신금융서비스 14건 신규 지정 의결.pdf 파일다운로드 250625(보도자료) “해외주식 소수단위 거래 서비스” 등 혁신금융서비스 14건 신규 지정 의결.hwp 파일다운로드 250625(보도자료) “해외주식 소수단위 거래 서비스” 등 혁신금융서비스 14건 신규 지정 의결.hwpx 파일다운로드 목록으로 var content = document.querySelector('.board_content p'); content.innerHTML = content.innerText;"
+     ]
+    }
+   ]
+  },
+  {
+   "id": 3454,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3454&pageIndex=1",
+   "date": "2025-07-23",
+   "title": "혁신금융서비스 신규 지정 의결",
+   "cumulative": 788,
+   "new": 3,
+   "items": []
+  },
+  {
+   "id": 3545,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3545&pageIndex=1",
+   "date": "2025-09-17",
+   "title": "“비금융정보 기반 포용금융 신용평가 서비스” 등 혁신금융서비스 57건 신규 지정 의결",
+   "cumulative": 886,
+   "new": 57,
+   "items": [
+    {
+     "company": "통신대안평가",
+     "count": 1,
+     "services": [
+      "비금융정보 기반 신용평가 서비스"
+     ]
+    },
+    {
+     "company": "삼성증권, 유안타증권",
+     "count": 2,
+     "services": [
+      "외국인 통합계좌를 활용한 해외증권사 고객 대상 국내주식 거래서비스"
+     ]
+    },
+    {
+     "company": "NH투자증권",
+     "count": 1,
+     "services": [
+      "증권 담보대출 대환대출 서비스"
+     ]
+    },
+    {
+     "company": "신한카드 외 3개사",
+     "count": 1,
+     "services": [
+      "고객자산 보호를 위한 그룹사 간 보이스피싱 공동대응 원스탑 서비스"
+     ]
+    },
+    {
+     "company": "라이나생명보험 외 19개사",
+     "count": 32,
+     "services": [
+      "클라우드를 활용한 소프트웨어서비스* (SaaS)의 내부망 이용 * 업무관리, 업무협업, 보안관리, 개발업무"
+     ]
+    },
+    {
+     "company": "카카오페이 외 10개사",
+     "count": 20,
+     "services": [
+      "내부 임직원 및 대고객 대상 생성형 AI 활용 서비스"
+     ]
+    },
+    {
+     "company": "규제개선 수용",
+     "count": 1,
+     "services": []
+    },
+    {
+     "company": "한국예탁결제원 외 18개사",
+     "count": 1,
+     "services": [
+      "해외주식 소수점 거래 서비스",
+      "250917(보도자료) “비금융정보 기반 포용금융 신용평가 서비스” 등 혁신금융서비스 57건 신규 지정 의결.hwpx 파일다운로드 250917(보도자료) “비금융정보 기반 포용금융 신용평가 서비스” 등 혁신금융서비스 57건 신규 지정 의결.hwp 파일다운로드 250917(보도자료) “비금융정보 기반 포용금융 신용평가 서비스” 등 혁신금융서비스 57건 신규 지정 의결.pdf 파일다운로드 목록으로 var content = document.querySelector('.board_content p'); content.innerHTML = content.innerText;"
+     ]
+    }
+   ]
+  },
+  {
+   "id": 3577,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3577&pageIndex=1",
+   "date": "2025-11-05",
+   "title": "“외화 선불충전금 기반 해외주식 투자 서비스” 등 혁신금융서비스 3건 신규 지정 의결 -금번 신규 지정으로 혁신금융서비스 누적 지정 건수는 총 901건",
+   "cumulative": 901,
+   "new": 3,
+   "items": []
+  },
+  {
+   "id": 3725,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3725&pageIndex=1",
+   "date": "2026-01-28",
+   "title": "“저축은행·상호금융이 투자자로 참여하는 온라인투자연계금융업 연계투자 서비스” 등 혁신금융서비스 34건 신규 지정 의결",
+   "cumulative": 1035,
+   "new": 34,
+   "items": []
+  },
+  {
+   "id": 3886,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3886&pageIndex=1",
+   "date": "2026-04-29",
+   "title": "“MMW-CMA 간편 가입서비스” 등 혁신금융서비스 13건 신규 지정 의결",
+   "cumulative": 1072,
+   "new": 13,
+   "items": [
+    {
+     "company": "한국투자증권",
+     "count": 1,
+     "services": [
+      "MMW CMA 간편 가입서비스"
+     ]
+    },
+    {
+     "company": "키움증권 및 하나카드",
+     "count": 1,
+     "services": [
+      "증권사 위탁계좌-외화 선불전자지급수단 연계 서비스"
+     ]
+    },
+    {
+     "company": "KB국민카드 외 7개사",
+     "count": 8,
+     "services": [
+      "신용카드회사의 전화를 이용한 보험상품 모집 시 판매비중 규제 개선"
+     ]
+    },
+    {
+     "company": "십일번가 및 신한은행",
+     "count": 1,
+     "services": [
+      "11번가 전용 적금 서비스"
+     ]
+    },
+    {
+     "company": "롯데멤버스 및 전북은행",
+     "count": 1,
+     "services": [
+      "APP기반 제휴 통장 개설 간편화한 생활 금융 플랫폼 서비스"
+     ]
+    },
+    {
+     "company": "삼성카드 및 우리은행",
+     "count": 1,
+     "services": [
+      "모니모 우리통장 서비스"
+     ]
+    }
+   ]
+  },
+  {
+   "id": 3867,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3867&pageIndex=1",
+   "date": "2026-06-17",
+   "title": "“마이데이터 활용 금리인하요구 서비스” 등 혁신금융서비스 3건 신규 지정 의결 -금번 신규 지정으로 혁신금융서비스 누적 지정건수는 총 1,075건",
+   "cumulative": 1075,
+   "new": 3,
+   "items": [
+    {
+     "company": "농업협동조합중앙회",
+     "count": 1,
+     "services": [
+      "마이데이터 활용 금리인하요구 서비스"
+     ]
+    },
+    {
+     "company": "SK플래닛 및 전북은행",
+     "count": 1,
+     "services": [
+      "OK 캐시백 제휴통장 서비스"
+     ]
+    },
+    {
+     "company": "KB자산운용",
+     "count": 1,
+     "services": [
+      "개인형 퇴직연금(IRP) 로보어드바이저 일임서비스",
+      "260617(보도자료) “마이데이터 활용 금리인하요구 서비스” 등 혁신금융서비스 3건 신규 지정 의결.hwp 파일다운로드 260617(보도자료) “마이데이터 활용 금리인하요구 서비스” 등 혁신금융서비스 3건 신규 지정 의결.pdf 파일다운로드 목록으로 var content = document.querySelector('.board_content p'); content.innerHTML = content.innerText;"
+     ]
+    }
+   ]
+  },
+  {
+   "id": 3888,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3888&pageIndex=1",
+   "date": "2026-07-01",
+   "title": "“금융기관보험대리점 판매비중 규제개선” 등 혁신금융서비스 31건 신규 지정 의결",
+   "cumulative": 1106,
+   "new": 31,
+   "items": [
+    {
+     "company": "서울강서농업협동조합 외 6개사",
+     "count": 7,
+     "services": [
+      "금융기관 보험대리점의 판매비중 규제 개선"
+     ]
+    },
+    {
+     "company": "JB우리캐피탈 외 19개사",
+     "count": 24,
+     "services": [
+      "내부 임직원 및 고객 대상 생성형 AI 활용 서비스"
+     ]
+    },
+    {
+     "company": "지정내용 변경",
+     "count": 8,
+     "services": []
+    },
+    {
+     "company": "한화생명보험 외 7개사",
+     "count": 8,
+     "services": [
+      "내부 임직원 및 고객 대상 생성형 AI 활용 서비스 * 생성형 AI모델 추가, 시스템 구성, 업무 방법 등 변경"
+     ]
+    }
+   ]
+  },
+  {
+   "id": 3903,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3903&pageIndex=1",
+   "date": "2026-07-15",
+   "title": "“한국은행 디지털화폐(CBDC) 시스템 내 예금토큰 기반 지급결제 테스트(프로젝트 한강) 2단계 시행” 등 혁신금융서비스 5건 신규 지정 의결",
+   "cumulative": 1111,
+   "new": 2,
+   "items": [
+    {
+     "company": "오렌지스퀘어",
+     "count": 1,
+     "services": [
+      "무인환전기기와 앱을 이용한 방한 외국인 관광객 선불카드 서비스"
+     ]
+    },
+    {
+     "company": "네이버파이낸셜",
+     "count": 1,
+     "services": [
+      "방한 외국인 대상 선불전자지급수단 발행 서비스"
+     ]
+    },
+    {
+     "company": "경남은행 및 아이엠뱅크",
+     "count": 2,
+     "services": [
+      "CBDC 내 예금 토큰 기반 지급ㆍ결제 서비스"
+     ]
+    },
+    {
+     "company": "카카오뱅크 및 부산은행",
+     "count": 1,
+     "services": [
+      "공동대출 서비스"
+     ]
+    },
+    {
+     "company": "지정내용 변경",
+     "count": 7,
+     "services": []
+    },
+    {
+     "company": "국민은행 외 6개사",
+     "count": 7,
+     "services": [
+      "CBDC 내 예금 토큰 기반 지급ㆍ결제 서비스 * 2단계 테스트를 위해 이용고객, 사용처 범위 확대, 송금 기능 추가 등 변경",
+      "260715(보도자료) “한국은행 디지털화폐(CBDC) 시스템 내 예금토큰 기반 지급결제 테스트(프로젝트 한강) 2단계 시행” 등 혁신금융서비스 5건 신규 지정 의결.hwp 파일다운로드 260715(보도자료) “한국은행 디지털화폐(CBDC) 시스템 내 예금토큰 기반 지급결제 테스트(프로젝트 한강) 2단계 시행” 등 혁신금융서비스 5건 신규 지정 의결.pdf 파일다운로드 목록으로 var content = document.querySelector('.board_content p'); content.innerHTML = content.innerText;"
+     ]
+    }
+   ]
+  },
+  {
+   "id": 3982,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=3982&pageIndex=1",
+   "date": "2026-10-07",
+   "title": "“개인간 중고거래 신용카드 안전결제 서비스” 등 혁신금융서비스 24건 신규 지정 의결",
+   "cumulative": 1164,
+   "new": 25,
+   "items": [
+    {
+     "company": "네이버파이낸셜",
+     "count": 1,
+     "services": [
+      "개인간 중고거래 신용카드 안전결제 서비스"
+     ]
+    },
+    {
+     "company": "토스뱅크 및 광주은행",
+     "count": 1,
+     "services": [
+      "서비스"
+     ]
+    },
+    {
+     "company": "미래에셋증권",
+     "count": 1,
+     "services": [
+      "Wrap형 CMA 모바일 가입 서비스"
+     ]
+    },
+    {
+     "company": "카카오페이 외 13개사",
+     "count": 21,
+     "services": [
+      "내부 임직원 및 고객 대상 생성형 AI 활용 서비스"
+     ]
+    }
+   ]
+  },
+  {
+   "id": 4002,
+   "url": "https://sandbox.fintech.or.kr/result/report_detail.do?lang=ko&id=4002&pageIndex=1",
+   "date": "2026-10-21",
+   "title": "“보증금 기반 비대면 신용카드 발급 서비스” 등 혁신금융서비스 4건 신규 지정 의결 - 신규 혁신금융서비스 지정 4건 및 규제개선 요청 수용 1건 의결",
+   "cumulative": 1168,
+   "new": 4,
+   "items": [
+    {
+     "company": "신한카드",
+     "count": 1,
+     "services": [
+      "보증금(선불전자지급수단 활용) 기반 비대면 신용카드 발급 서비스"
+     ]
+    },
+    {
+     "company": "우리카드",
+     "count": 1,
+     "services": [
+      "외국인 고객 보증금 기반 신용카드 발급 서비스"
+     ]
+    },
+    {
+     "company": "뱅크샐러드",
+     "count": 1,
+     "services": [
+      "마이데이터를 활용한 저금리 대출 대리 조회 서비스"
+     ]
+    },
+    {
+     "company": "모인",
+     "count": 1,
+     "services": [
+      "방한 외국인 대상 무기명 선불전자지급수단 서비스"
+     ]
+    }
+   ]
+  }
+ ]
+}
