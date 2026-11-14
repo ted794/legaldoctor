@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" font-family="'Noto Sans KR','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#495057"/>
+    </marker>
+    <marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#e8590c"/>
+    </marker>
+  </defs>
+  <rect width="1920" height="1080" fill="#ffffff"/>
+
+  <!-- 제목 -->
+  <text x="60" y="92" font-size="46" font-weight="700" fill="#1b1f24">범용 AI에 묻는 것과 규제팡은 무엇이 다른가</text>
+  <text x="62" y="138" font-size="24" fill="#5b6573">같은 질문을 넣어도 근거가 다름</text>
+
+  <!-- 왼쪽: 범용 AI -->
+  <rect x="60" y="175" width="600" height="770" rx="24" fill="#f4f5f7"/>
+  <text x="100" y="232" font-size="32" font-weight="700" fill="#495057">범용 AI에 질문</text>
+
+  <rect x="160" y="268" width="400" height="76" rx="14" fill="#ffffff" stroke="#adb5bd" stroke-width="2"/>
+  <text x="360" y="316" font-size="26" text-anchor="middle" fill="#1b1f24">창업자 질문</text>
+  <line x1="360" y1="346" x2="360" y2="384" stroke="#495057" stroke-width="3" marker-end="url(#ar)"/>
+  <rect x="160" y="388" width="400" height="92" rx="14" fill="#ffffff" stroke="#adb5bd" stroke-width="2"/>
+  <text x="360" y="428" font-size="26" text-anchor="middle" fill="#1b1f24">모델의 기억</text>
+  <text x="360" y="462" font-size="20" text-anchor="middle" fill="#868e96">학습 시점까지의 지식</text>
+  <line x1="360" y1="482" x2="360" y2="520" stroke="#495057" stroke-width="3" marker-end="url(#ar)"/>
+  <rect x="160" y="524" width="400" height="76" rx="14" fill="#ffffff" stroke="#adb5bd" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="360" y="572" font-size="26" text-anchor="middle" fill="#1b1f24">그럴듯한 답</text>
+
+  <g font-size="22" fill="#343a40">
+    <text x="100" y="668"><tspan fill="#c92a2a" font-weight="700">×</tspan>  조문을 기억으로 인용함</text>
+    <text x="130" y="700" fill="#868e96" font-size="20">없는 조문이나 옛 조문이 섞임</text>
+    <text x="100" y="750"><tspan fill="#c92a2a" font-weight="700">×</tspan>  법률 단계에서 답이 끝남</text>
+    <text x="100" y="800"><tspan fill="#c92a2a" font-weight="700">×</tspan>  학습 뒤의 승인 사례와 개정을 모름</text>
+    <text x="100" y="850"><tspan fill="#c92a2a" font-weight="700">×</tspan>  빈칸은 추정으로 채움</text>
+    <text x="130" y="882" fill="#868e96" font-size="20">모른다고 하지 않음</text>
+  </g>
+
+  <!-- 오른쪽: 규제팡 -->
+  <rect x="700" y="175" width="1160" height="770" rx="24" fill="#fff6ef" stroke="#ffd8bf" stroke-width="2"/>
+  <text x="740" y="232" font-size="32" font-weight="700" fill="#e8590c">규제팡</text>
+  <text x="862" y="232" font-size="24" fill="#5b6573">후보는 AI가 내고, 확정은 원문이 함</text>
+
+  <!-- 1행: 흐름 -->
+  <g>
+    <rect x="740" y="270" width="232" height="112" rx="14" fill="#ffffff" stroke="#dee2e6" stroke-width="2"/>
+    <text x="856" y="314" font-size="25" font-weight="700" text-anchor="middle" fill="#1b1f24">입력 4종</text>
+    <text x="856" y="346" font-size="19" text-anchor="middle" fill="#5b6573">스무고개 · 글</text>
+    <text x="856" y="370" font-size="19" text-anchor="middle" fill="#5b6573">사업소개서 · 그림</text>
+
+    <line x1="974" y1="326" x2="1006" y2="326" stroke="#495057" stroke-width="3" marker-end="url(#ar)"/>
+
+    <rect x="1010" y="270" width="232" height="112" rx="14" fill="#ffffff" stroke="#dee2e6" stroke-width="2"/>
+    <text x="1126" y="314" font-size="25" font-weight="700" text-anchor="middle" fill="#1b1f24">후보 생성</text>
+    <text x="1126" y="346" font-size="19" text-anchor="middle" fill="#5b6573">Liner Model</text>
+    <text x="1126" y="370" font-size="19" text-anchor="middle" fill="#5b6573">Liner Search</text>
+
+    <line x1="1244" y1="326" x2="1276" y2="326" stroke="#e8590c" stroke-width="3" marker-end="url(#aro)"/>
+
+    <rect x="1280" y="262" width="252" height="128" rx="16" fill="#e8590c"/>
+    <text x="1406" y="312" font-size="27" font-weight="700" text-anchor="middle" fill="#ffffff">원문 대조 관문</text>
+    <text x="1406" y="346" font-size="19" text-anchor="middle" fill="#fff4e6">국가법령정보 원문에서</text>
+    <text x="1406" y="370" font-size="19" text-anchor="middle" fill="#fff4e6">근거 구절을 그대로 찾음</text>
+
+    <line x1="1534" y1="326" x2="1566" y2="326" stroke="#e8590c" stroke-width="3" marker-end="url(#aro)"/>
+
+    <rect x="1570" y="270" width="250" height="112" rx="14" fill="#ffffff" stroke="#e8590c" stroke-width="2.5"/>
+    <text x="1695" y="314" font-size="25" font-weight="700" text-anchor="middle" fill="#1b1f24">규제 지도</text>
+    <text x="1695" y="346" font-size="19" text-anchor="middle" fill="#5b6573">명시 · 의제 · 해석</text>
+    <text x="1695" y="370" font-size="19" text-anchor="middle" fill="#5b6573">규정 공백</text>
+  </g>
+
+  <!-- 탈락 표시 -->
+  <rect x="1246" y="404" width="320" height="40" rx="20" fill="#fff5f5" stroke="#ffc9c9" stroke-width="1.5"/>
+  <text x="1406" y="431" font-size="18" text-anchor="middle" fill="#c92a2a">못 찾으면 탈락 · 허위 조문 0건</text>
+
+  <!-- 2행: 깊이 -->
+  <text x="740" y="496" font-size="22" font-weight="700" fill="#495057">원문 위에서 더 깊이</text>
+  <g>
+    <rect x="740" y="514" width="340" height="150" rx="14" fill="#ffffff" stroke="#dee2e6" stroke-width="2"/>
+    <text x="764" y="556" font-size="24" font-weight="700" fill="#1b1f24">숨은 규제</text>
+    <text x="764" y="594" font-size="19" fill="#343a40">위임 문구를 따라 끝까지</text>
+    <g font-size="17" fill="#e8590c" font-weight="700">
+      <text x="764" y="636" font-size="18">법률 → 시행령 → 시행규칙 → 고시·별표</text>
+    </g>
+
+    <rect x="1120" y="514" width="340" height="150" rx="14" fill="#ffffff" stroke="#dee2e6" stroke-width="2"/>
+    <text x="1144" y="556" font-size="24" font-weight="700" fill="#1b1f24">선례와 현존 여부</text>
+    <text x="1144" y="594" font-size="19" fill="#343a40">공개 승인 사례 2,859건 대조</text>
+    <text x="1144" y="626" font-size="19" fill="#343a40">특례 뒤 미개정이면 현존 규제</text>
+
+    <rect x="1500" y="514" width="340" height="150" rx="14" fill="#ffffff" stroke="#dee2e6" stroke-width="2"/>
+    <text x="1524" y="556" font-size="24" font-weight="700" fill="#1b1f24">그림자 규제</text>
+    <text x="1524" y="594" font-size="19" fill="#343a40">법령해석례 · 보도해명에서</text>
+    <text x="1524" y="626" font-size="19" fill="#343a40">막거나 조건을 붙이는 해석</text>
+  </g>
+
+  <!-- 3행: 사실 확인과 출구 -->
+  <text x="740" y="720" font-size="22" font-weight="700" fill="#495057">사실은 묻고, 모르는 것은 모른다고 함</text>
+  <g>
+    <rect x="740" y="738" width="340" height="80" rx="40" fill="#ffffff" stroke="#dee2e6" stroke-width="2"/>
+    <text x="910" y="772" font-size="20" text-anchor="middle" fill="#1b1f24">판단을 가르는 사실을</text>
+    <text x="910" y="800" font-size="20" text-anchor="middle" fill="#1b1f24">스무고개로 먼저 물음</text>
+
+    <rect x="1120" y="738" width="340" height="80" rx="40" fill="#e7f1fb" stroke="#a5d8ff" stroke-width="2"/>
+    <text x="1290" y="772" font-size="20" text-anchor="middle" fill="#1971c2" font-weight="700">규정 공백 = 신속확인 대상</text>
+    <text x="1290" y="800" font-size="18" text-anchor="middle" fill="#1971c2">원문 확인 불가는 판단 보류</text>
+
+    <rect x="1500" y="738" width="340" height="80" rx="40" fill="#1b1f24"/>
+    <text x="1670" y="772" font-size="20" text-anchor="middle" fill="#ffffff" font-weight="700">신속확인 신청서 초안</text>
+    <text x="1670" y="800" font-size="20" text-anchor="middle" fill="#ffffff" font-weight="700">변호사 상담 준비서</text>
+  </g>
+  <text x="740" y="880" font-size="19" fill="#5b6573">유형 · 소관 · 트랙은 규칙표로 판정해 같은 입력에 같은 결과가 나옴</text>
+  <text x="740" y="912" font-size="19" fill="#5b6573">모든 결과물은 법률 자문이 아닌 상담 준비 자료로 표시</text>
+
+  <!-- 하단 한 줄 -->
+  <rect x="60" y="975" width="1800" height="72" rx="18" fill="#1b1f24"/>
+  <text x="960" y="1021" font-size="28" text-anchor="middle" fill="#ffffff">범용 AI는 그럴듯한 답을, 규제팡은 <tspan fill="#ffa94d" font-weight="700">원문으로 확인한 근거</tspan>와 <tspan fill="#74c0fc" font-weight="700">확인하지 못한 공백</tspan>을 나눠 줌</text>
+</svg>
