@@ -30,7 +30,8 @@ _AMEND = re.compile(r"<(?:개정|신설|전문개정|본조신설)[^>]*>|\[(?:�
 
 
 def law_url(name: str) -> str:
-    return f"{WEB}/법령/{re.sub(r'\s+', '', name)}"
+    compact = re.sub(r"\s+", "", name)  # f-string 안에 역슬래시를 두지 않음(Python 3.11 호환)
+    return f"{WEB}/법령/{compact}"
 
 
 def _get(url: str, tries: int = 4) -> str:
