@@ -63,22 +63,22 @@ a{color:var(--c);text-decoration:none}
 <li>유형·소관·트랙은 규칙표로 판정해 같은 입력에 같은 결과가 나옴</li>
 </ul>
 
-<h2>3. 평가: 공개 승인 사례 10건</h2>
-<p>사업 설명만 넣고 승인 결과와 대조함. 입력에서 법령명·조문·특례 결과를 지우고, 같은 사례와 그 뒤 승인 사례는 선례 검색에서 뺌. 비교 대상은 같은 Liner Model에 범용 프롬프트로 물은 결과임(2026.11.14 실행).</p>
+<h2>3. 평가: 공개 승인 사례 20건</h2>
+<p>사업 설명만 넣고 승인 결과와 대조함. 평가 세트 10건과 규칙을 고칠 때 보지 않은 검증 세트 10건을 합친 값임. 입력에서 법령명·조문·특례 결과를 지우고, 같은 사례와 그 뒤 승인 사례는 선례 검색에서 뺌. 비교 대상은 같은 Liner Model에 범용 프롬프트로 물은 결과임(2026.11.14 실행).</p>
 <div class="two">
 <table>
 <tr><th>항목</th><th class="n">리걸닥터</th><th class="n">범용</th></tr>
-<tr class="hi"><td>핵심 법령 적중(시행령·시행규칙 포함)</td><td class="n">80%</td><td class="n">70%</td></tr>
-<tr class="hi"><td>핵심 법령 적중(정확한 법령명)</td><td class="n">75%</td><td class="n">50%</td></tr>
-<tr class="hi"><td>조문 적중</td><td class="n">45%</td><td class="n">33%</td></tr>
-<tr><td>허위 조문</td><td class="n">0건</td><td class="n">0건</td></tr>
+<tr class="hi"><td>핵심 법령 적중(시행령·시행규칙 포함)</td><td class="n">76%</td><td class="n">68%</td></tr>
+<tr class="hi"><td>핵심 법령 적중(정확한 법령명)</td><td class="n">73%</td><td class="n">53%</td></tr>
+<tr class="hi"><td>조문 적중</td><td class="n">48%</td><td class="n">25%</td></tr>
+<tr class="hi"><td>허위 조문</td><td class="n">0건</td><td class="n">5건</td></tr>
 </table>
 <table>
 <tr><th>항목</th><th class="n">리걸닥터</th><th class="n">범용</th></tr>
-<tr><td>트랙 일치</td><td class="n">8/10</td><td class="n">8/10</td></tr>
-<tr><td>창구 일치</td><td class="n">5/10</td><td class="n">8/10</td></tr>
-<tr><td>평균 소요</td><td class="n">174초</td><td class="n">6초</td></tr>
-<tr><td colspan="3">범용 쪽이 놓친 의무기록 모바일 조회 사례에서 정답인 정보통신망법까지 찾음. 창구 판정과 속도는 개선 과제임</td></tr>
+<tr><td>트랙 일치</td><td class="n">14/20</td><td class="n">16/20</td></tr>
+<tr><td>창구 일치</td><td class="n">10/20</td><td class="n">15/20</td></tr>
+<tr><td>평균 소요</td><td class="n">114초</td><td class="n">5초</td></tr>
+<tr><td colspan="3">검증 세트만 보면 법령 계열 67% 대 57%, 조문 46% 대 25%. 트랙·창구 판정과 속도는 개선 과제임</td></tr>
 </table>
 </div>
 
@@ -98,7 +98,7 @@ a{color:var(--c);text-decoration:none}
 </ul>
 <table>
 <tr><th style="width:24%">대상</th><th>쓰임</th><th style="width:32%">줄어드는 것</th></tr>
-<tr><td>변호사·변리사</td><td>정리된 상담 준비서로 심층상담 시작</td><td>상담 1건당 기초 조사 보통 8시간 → 약 3분</td></tr>
+<tr><td>변호사·변리사</td><td>정리된 상담 준비서로 심층상담 시작</td><td>상담 1건당 기초 조사 보통 8시간 → 약 2분</td></tr>
 <tr><td>액셀러레이터·VC</td><td>투자 검토 단계의 규제·계약 리스크 선별</td><td>포트폴리오 실사 선행 조사</td></tr>
 <tr><td>기업 법무팀</td><td>신사업 출시 전 내부 검토</td><td>외부 자문 전 쟁점 정리</td></tr>
 <tr><td>샌드박스 사무국·지자체</td><td>신속확인·민원 접수 전 관련 조문과 선례 정리</td><td>회신 전 조사 시간</td></tr>

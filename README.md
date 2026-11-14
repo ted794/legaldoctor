@@ -101,23 +101,25 @@ uv run legaldoctor checkup labor  --file data/checkup/demo_labor.md    # 21장 �
 
 ## 평가
 
-공개 승인 사례 10건(ICT, 산업융합, 금융, 모빌리티, 순환경제, 연구개발특구)의 사업 설명만 넣고 정답과 대조했습니다. 입력에서 법령명·조문·특례 결과를 지우고, 같은 사례와 그 뒤에 승인된 사례는 선례 검색에서 뺐습니다. 비교 대상은 같은 Liner Model에 범용 프롬프트로 물은 결과입니다.
+공개 승인 사례 20건의 사업 설명만 넣고 정답과 대조했습니다. 평가 세트 10건(`data/eval/set.json`)과, 규칙을 고칠 때 보지 않은 검증 세트 10건(`data/eval/set_b.json`, 창구별 고정 시드 추출)을 합친 값입니다. 입력에서 법령명·조문·특례 결과를 지우고, 같은 사례와 그 뒤에 승인된 사례는 선례 검색에서 뺐습니다. 비교 대상은 같은 Liner Model에 범용 프롬프트로 물은 결과입니다.
 
 | 항목 | 리걸닥터 | 범용 프롬프트 |
 |---|---:|---:|
-| 핵심 법령 적중(시행령·시행규칙 포함) | 80% | 70% |
-| 핵심 법령 적중(정확한 법령명) | 75% | 50% |
-| 조문 적중 | 45% | 33% |
-| 허위 조문 | 0 | 0 |
-| 트랙 일치 | 8/10 | 8/10 |
-| 창구 일치 | 5/10 | 8/10 |
-| 평균 소요 | 174초 | 6초 |
+| 핵심 법령 적중(시행령·시행규칙 포함) | 76% | 68% |
+| 핵심 법령 적중(정확한 법령명) | 73% | 53% |
+| 조문 적중 | 48% | 25% |
+| 허위 조문 | 0 | 5 |
+| 트랙 일치 | 14/20 | 16/20 |
+| 창구 일치 | 10/20 | 15/20 |
+| 평균 소요 | 114초 | 5초 |
 
-2026.11.14. 실행 결과입니다. 범용 쪽이 놓친 병원 의무기록 조회 사례에서 리걸닥터는 정답인 정보통신망법까지 찾았습니다. 창구 판정과 속도는 범용 쪽이 앞섭니다.
+2026.11.14. 실행 결과입니다. 검증 세트만 따로 보면 법령 계열 적중 67% 대 57%, 조문 적중 46% 대 25%, 허위 조문 0 대 2입니다. 범용 쪽은 20건에서 없는 조문을 5건 지어냈고 리걸닥터는 원문에서 근거 구절을 찾지 못한 판정을 버리므로 0건입니다. 트랙·창구 판정과 속도는 범용 쪽이 앞섭니다.
 
 ```bash
-uv run python scripts/make_eval_set.py   # data/eval/set.json
-uv run legaldoctor eval                  # out/eval/report.md
+uv run python scripts/make_eval_set.py                # data/eval/set.json
+uv run python scripts/make_eval_set.py --validation   # data/eval/set_b.json
+uv run legaldoctor eval                               # out/eval/report.md
+uv run legaldoctor eval --set data/eval/set_b.json --out out/eval_b
 ```
 
 ## Liner API 사용 기능
