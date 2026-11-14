@@ -57,7 +57,7 @@ def _doc(title: str, body: str, extra_css: str = "") -> str:
 
 
 def _header(title: str, r: Report, menu: str = "규제팡 · 규제 검진") -> str:
-    return f"""<h1>스타트업 법률<span>닥터</span> · {e(title)}</h1><div class="meta">{e(menu)} · 작성일 {e(r.made_on)} · {e(DISCLAIMER_SHORT)}</div>"""
+    return f"""<h1>스타트업 리걸<span>닥터</span> · {e(title)}</h1><div class="meta">{e(menu)} · 작성일 {e(r.made_on)} · {e(DISCLAIMER_SHORT)}</div>"""
 
 
 def _law_cell(row) -> str:
@@ -101,7 +101,7 @@ def regmap_html(r: Report) -> str:
             parts.append(f"<li>{e(l['kind'])}: <a href='{e(l['url'])}'>{e(l['title'])}</a> · {e(l['note'])}</li>")
         parts.append("</ul>")
     parts.append(_track_block(r))
-    return _doc("스타트업 법률닥터 규제 지도", "".join(parts))
+    return _doc("스타트업 리걸닥터 규제 지도", "".join(parts))
 
 
 def _track_block(r: Report) -> str:
@@ -130,7 +130,7 @@ def consult_html(r: Report) -> str:
 <h2>4. 상담 전에 정리해 갈 사실</h2><ul>{li(r.facts_to_confirm[:5])}</ul>
 <h2>5. 닮은 승인 사례</h2><ul>{sim}</ul>
 <h2>6. 권하는 길</h2><p><b>{e(r.track)}</b> · {e(r.window.name)} ({e(r.window_reason)})</p>"""
-    return _doc("스타트업 법률닥터 변호사 상담 준비서", body, CONSULT_CSS)
+    return _doc("스타트업 리걸닥터 변호사 상담 준비서", body, CONSULT_CSS)
 
 
 # 신속확인 신청서 초안 ---------------------------------------------------------
@@ -151,11 +151,11 @@ def application_sections(r: Report) -> list[tuple[str, list[str]]]:
 
 def application_html(r: Report) -> str:
     w = r.window
-    track_note = "" if r.track == "신속확인" else f"<p class='disc'>법률닥터가 권하는 트랙은 {e(r.track)}임. 신속확인으로 규제 여부와 소관을 먼저 확정한 뒤 {e(r.track)} 신청으로 넘어가는 순서를 권함.</p>"
+    track_note = "" if r.track == "신속확인" else f"<p class='disc'>리걸닥터가 권하는 트랙은 {e(r.track)}임. 신속확인으로 규제 여부와 소관을 먼저 확정한 뒤 {e(r.track)} 신청으로 넘어가는 순서를 권함.</p>"
     head = track_note + f"<p>제출처: {e(w.agency)} · 근거 {e(w.basis or '해당 분야 법령')} · 서식 <a href='{e(w.form_url)}'>{e(w.form or '해당 분야 서식')}</a></p>"
     secs = "".join(f"<h2>{e(t)}</h2><ul>{''.join(f'<li>{e(x)}</li>' for x in items)}</ul>" for t, items in application_sections(r))
     note = "<p class='meta'>[기재] 칸은 신청인이 채운다. 실제 제출은 위 서식 원본에 옮겨 적는다. 산업융합·특구 서식에는 30일 안에 회신이 없으면 허가등이 필요 없는 것으로 본다는 안내가 있다.</p>"
-    return _doc("스타트업 법률닥터 신속확인 신청서 초안", f"{_header('신속확인 신청서 초안', r)}<div class='disc'>{e(DISCLAIMER)}</div>{head}{secs}{note}")
+    return _doc("스타트업 리걸닥터 신속확인 신청서 초안", f"{_header('신속확인 신청서 초안', r)}<div class='disc'>{e(DISCLAIMER)}</div>{head}{secs}{note}")
 
 
 def application_docx(r: Report) -> bytes:
@@ -167,7 +167,7 @@ def application_docx(r: Report) -> bytes:
     style.font.name = "Malgun Gothic"
     style.font.size = Pt(10)
     doc.add_heading("신속확인 신청서 초안", level=1)
-    doc.add_paragraph(f"작성일 {r.made_on} · 스타트업 법률닥터(규제팡) · {DISCLAIMER_SHORT}")
+    doc.add_paragraph(f"작성일 {r.made_on} · 스타트업 리걸닥터(규제팡) · {DISCLAIMER_SHORT}")
     doc.add_paragraph(DISCLAIMER)
     w = r.window
     doc.add_paragraph(f"제출처: {w.agency} · 근거 {w.basis or '해당 분야 법령'} · 서식 {w.form or '해당 분야 서식'} {w.form_url}")

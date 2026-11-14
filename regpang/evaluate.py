@@ -1,4 +1,4 @@
-"""평가: 공개 승인 사례의 사업 설명만 넣고 법률닥터(규제팡 엔진)와 범용 프롬프트를 정답과 대조한다.
+"""평가: 공개 승인 사례의 사업 설명만 넣고 리걸닥터(규제팡 엔진)와 범용 프롬프트를 정답과 대조한다.
 
 채점 항목(기획서 6장)
 - 핵심 법령 적중: 정답 법령 중 찾아낸 비율. 시행령·시행규칙은 같은 법령 계열로도 따로 센다
@@ -177,7 +177,7 @@ def summarize(results: list[dict]) -> dict[str, Any]:
 def to_markdown(res: dict[str, Any]) -> str:
     s = res["summary"]
     pct = lambda v: f"{v * 100:.0f}%"
-    lines = ["# 스타트업 법률닥터 평가 결과", "", "| 항목 | 법률닥터 | 범용 프롬프트(같은 모델 단독) |", "|---|---:|---:|"]
+    lines = ["# 스타트업 리걸닥터 평가 결과", "", "| 항목 | 리걸닥터 | 범용 프롬프트(같은 모델 단독) |", "|---|---:|---:|"]
     rp, bl = s.get("regpang", {}), s.get("baseline", {})
     def cell(d, k, fmt=str):
         return fmt(d[k]) if d and d.get(k) is not None else "-"
@@ -194,7 +194,7 @@ def to_markdown(res: dict[str, Any]) -> str:
     ]
     for label, k, fmt in rows:
         lines.append(f"| {label} | {cell(rp, k, fmt)} | {cell(bl, k, fmt)} |")
-    lines += ["", "## 사례별", "", "| 사례 | 정답 트랙 | 법률닥터 법령 적중 | 범용 법령 적중 | 법률닥터 허위 | 범용 허위 |", "|---|---|---:|---:|---:|---:|"]
+    lines += ["", "## 사례별", "", "| 사례 | 정답 트랙 | 리걸닥터 법령 적중 | 범용 법령 적중 | 리걸닥터 허위 | 범용 허위 |", "|---|---|---:|---:|---:|---:|"]
     for r in res["results"]:
         a, b = r.get("regpang", {}), r.get("baseline", {})
         lines.append(

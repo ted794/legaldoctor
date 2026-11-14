@@ -32,7 +32,7 @@ def checkup_html(res: CheckupResult) -> str:
     m = res.module
     hi = sum(1 for i in res.items if i.risk == "높음")
     parts = [
-        f"<h1>스타트업 법률<span>닥터</span> · {e(m.title)}</h1>",
+        f"<h1>스타트업 리걸<span>닥터</span> · {e(m.title)}</h1>",
         f"<div class='meta'>대비하는 사인: {e(', '.join(f'{c['no']}. {c['name']}' for c in res.causes))} · 사인 분류는 스타트업 부검보고서 체계</div>",
         f"<div class='disc'>{e(DISCLAIMER)}</div>",
         f"<div class='sum'><div>검진 항목 <b>{len(res.items)}</b></div><div>위험 높음 <b style='color:#c92a2a'>{hi}</b></div><div>변호사 심화자문 권함 <b style='color:#1971c2'>{len(res.lawyer_items)}</b></div></div>",
@@ -75,4 +75,4 @@ def checkup_html(res: CheckupResult) -> str:
             + "".join(f"<li>{e(i.label)}: “{e(i.quote[:80])}”</li>" for i in res.lawyer_items)
             + "</ol><p class='meta'>이 검진표를 그대로 들고 가면 사실관계 파악 시간을 줄일 수 있음</p>"
         )
-    return _doc(f"스타트업 법률닥터 {m.title}", "".join(parts), CSS)
+    return _doc(f"스타트업 리걸닥터 {m.title}", "".join(parts), CSS)
