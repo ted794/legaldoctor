@@ -227,6 +227,6 @@ def rescore_windows(state_dir: Path, set_path: Path = SET_PATH) -> list[tuple[st
         findings = (ex.payload.get("findings") if ex else None) or []
         approved = (prec.payload.get("approved") if prec else None) or []
         ministries = (jur.payload.get("ministries") if jur else None) or {}
-        w, why = choose_window(approved, ministries, findings, holdout_index(it, records))
+        w, why = choose_window(approved, ministries, findings, holdout_index(it, records), st.business)
         out.append((it["id"], it["gold"]["field"], w.field, why))
     return out

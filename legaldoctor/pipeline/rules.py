@@ -267,7 +267,7 @@ class Track:
             t, why = track_for(a_types, a_grades, prec_types)
             plans.append(TrackPlan(aid, t, why, dict(prec_types)))
 
-        window, window_why = choose_window(approved, ministries, findings, self.cases)
+        window, window_why = choose_window(approved, ministries, findings, self.cases, state.business)
         overall = _overall(plans)
         lines = [f"권하는 트랙: {overall}", f"창구: {window.name} · {window.agency} ({window_why})"]
         if overall == "신속확인" and window.form:
@@ -287,6 +287,20 @@ class Track:
 W_SIMILAR = 1.0  # 닮은 승인 사례 한 건(유사도로 가중)
 W_LAW = 1.0  # 원문 대조를 통과한 법령 계열 하나가 실린 사례들의 창구 분포
 PRIOR_POWER = 0.5  # 사례가 많은 창구(금융·산업융합)가 표를 독식하지 않게 사례 수의 제곱근으로 나눔
+W_DOMAIN = 3.0  # 사업 설명에 창구 분야를 가리키는 말이 있을 때
+
+# 창구마다 맡는 사업 분야를 가리키는 말(각 창구 근거 법률의 대상 분야 기준)
+DOMAIN_WORDS = {
+    "mobility": ("자율주행", "모빌리티", "차량", "택시", "셔틀", "운송", "이송", "탑승", "승차", "킥보드", "주행", "운행"),
+    "finance": ("금융", "대출", "보험", "카드", "결제", "송금", "투자", "마이데이터", "금리", "증권", "예금"),
+    "circular": ("폐기물", "재활용", "부산물", "순환자원", "폐자원", "업사이클"),
+    "smartcity": ("스마트시티", "스마트도시", "국가시범도시"),
+    "rfz": ("규제자유특구",),
+    "rnd": ("연구개발특구", "강소특구"),
+}
+# 지정 구역 안에서만 쓰는 창구: 사업 설명에 그 구역이 나올 때만 후보로 둠
+# (스마트도시 규제샌드박스는 전국의 스마트도시 서비스가 대상이라 넣지 않음)
+ZONE_ONLY = {"rfz", "rnd"}
 
 
 def _law_field_dist(cases, law: str) -> Counter:
@@ -296,11 +310,13 @@ def _law_field_dist(cases, law: str) -> Counter:
     return Counter({f: v / n for f, v in c.items()}) if n else Counter()
 
 
-def choose_window(approved: list[dict], ministries: dict[str, list[str]], findings: list | None = None, cases=None) -> tuple[Window, str]:
+def choose_window(approved: list[dict], ministries: dict[str, list[str]], findings: list | None = None, cases=None, business: str = "") -> tuple[Window, str]:
     """창구는 두 증거를 합쳐 정한다.
 
     1) 닮은 승인 사례가 어느 창구에서 승인됐는지(유사도 가중)
     2) 원문 대조를 통과한 법령이 사례 DB에서 주로 어느 창구 사례에 실렸는지
+    3) 사업 설명에 창구 분야(모빌리티·금융·순환경제 등)를 가리키는 말이 있는지
+    규제자유특구·연구개발특구는 지정 구역 안에서만 쓰므로 설명에 그 구역이 나올 때만 후보로 둔다.
     창구별 사례 수 차이(금융 1,168건 대 연구개발특구 60건)는 사전 분포로 나눠 보정한다.
     증거가 없으면 소관 부처, 그것도 없으면 산업융합 창구.
     """
@@ -326,6 +342,15 @@ def choose_window(approved: list[dict], ministries: dict[str, list[str]], findin
                 laws.append(fam)
                 for fld, share in dist.items():
                     votes[fld] += W_LAW * share
+    domain_hits: dict[str, list[str]] = {}
+    for fld, words in DOMAIN_WORDS.items():
+        hit = [w for w in words if w in business]
+        if hit:
+            domain_hits[fld] = hit
+            votes[fld] += W_DOMAIN * min(len(hit), 2) / 2
+    for fld in ZONE_ONLY:
+        if fld not in domain_hits:
+            votes.pop(fld, None)  # 지정 구역 밖이면 이 창구로는 신청할 수 없음
     if votes:
         prior = Counter(c.field for c in cases.cases) if cases is not None else Counter()
         total = sum(prior.values()) or 1
@@ -334,6 +359,8 @@ def choose_window(approved: list[dict], ministries: dict[str, list[str]], findin
         parts = []
         if sim.get(best):
             parts.append(f"닮은 승인 사례 {sum(sim.values())}건 중 {sim[best]}건이 이 창구")
+        if domain_hits.get(best):
+            parts.append(f"사업 설명의 분야({', '.join(domain_hits[best][:3])})가 이 창구 소관")
         law_hits = [l for l in laws if _law_field_dist(cases, l).get(best, 0) >= 0.5]
         if law_hits:
             parts.append(f"걸린 법령({', '.join(law_hits[:3])})의 선례가 주로 이 창구")

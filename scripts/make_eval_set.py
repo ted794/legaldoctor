@@ -2,6 +2,7 @@
 """평가 세트 만들기: 공개 승인 사례에서 고른 사례의 사업 설명만 남기고 정답(법령·조문·트랙·창구)은 따로 둔다.
 
   uv run python scripts/make_eval_set.py      → data/eval/set.json
+  uv run python scripts/make_eval_set.py --validation  → data/eval/set_b.json (규칙 조정에 쓰지 않은 검증 세트)
 
 입력 문장에서는 법령명·조문·특례 결과를 지운다. 승인 결과를 보고 맞히는 일을 막기 위해서다.
 """
@@ -55,10 +56,56 @@ def sanitize(text: str) -> str:
     return " ".join(keep)
 
 
+def _similar(a: str, b: str, th: float = 0.35) -> bool:
+    """글자 2-gram 겹침으로 같은 서비스를 거른다."""
+    ga = {a[i : i + 2] for i in range(len(a) - 1)}
+    gb = {b[i : i + 2] for i in range(len(b) - 1)}
+    return bool(ga and gb) and len(ga & gb) / min(len(ga), len(gb)) >= th  # 겹침 계수: 짧은 쪽이 거의 다 겹치면 같은 서비스
+
+
+def validation_picks(rs: dict, seed: int = 20261114) -> list[str]:
+    """평가 세트와 겹치지 않게 창구별로 고정 시드로 고른다. 승인 결과·법령이 있고 설명이 충분한 사례만."""
+    import random
+
+    rnd = random.Random(seed)
+    want = {"ict": 2, "industry": 2, "finance": 2, "mobility": 1, "circular": 1, "smartcity": 1, "rfz": 1}
+    norm = lambda s: re.sub(r"\s+", "", s or "")
+    taken = {norm(rs[c]["title"]) for c in PICKS if c in rs} | {norm(sanitize(rs[c].get("summary") or ""))[:40] for c in PICKS if c in rs}
+    bodies = [norm(sanitize(rs[c].get("summary") or "") or rs[c]["title"]) for c in PICKS if c in rs]
+    out = []
+    for fld, n in want.items():
+        pool = sorted(
+            cid
+            for cid, r in rs.items()
+            if r["field"] == fld
+            and cid not in PICKS
+            and r.get("type") in TRACK_OF
+            and parse_regulation(r.get("regulation"))
+            and len(sanitize(r.get("summary") or "")) >= 60
+        )
+        rnd.shuffle(pool)
+        got = 0
+        for cid in pool:
+            r = rs[cid]
+            keys = {norm(r["title"]), norm(sanitize(r.get("summary") or ""))[:40]}
+            body = norm(sanitize(r.get("summary") or "") or r["title"])
+            if keys & taken or any(_similar(body, b) for b in bodies):
+                continue  # 평가 세트나 이미 고른 사례와 같은 서비스(재신청·동일 과제)는 뺌
+            taken |= keys
+            bodies.append(body)
+            out.append(cid)
+            got += 1
+            if got >= n:
+                break
+    return out
+
+
 def main() -> int:
     rs = {json.loads(l)["id"]: json.loads(l) for l in (ROOT / "data/sandbox/cases.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()}
+    validation = "--validation" in sys.argv
+    picks = validation_picks(rs) if validation else PICKS
     items = []
-    for cid in PICKS:
+    for cid in picks:
         r = rs[cid]
         laws = parse_regulation(r.get("regulation"))
         items.append(
@@ -78,8 +125,9 @@ def main() -> int:
                 "source_url": r.get("source_url"),
             }
         )
-    out = ROOT / "data/eval/set.json"
-    out.write_text(json.dumps({"version": 1, "note": "공개 승인 사례 10건. 입력에서 법령명·조문·특례 결과를 지움", "items": items}, ensure_ascii=False, indent=1), encoding="utf-8")
+    out = ROOT / ("data/eval/set_b.json" if validation else "data/eval/set.json")
+    note = "검증 세트: 평가 세트와 겹치지 않는 공개 승인 사례 10건(고정 시드). 규칙 조정에 쓰지 않음" if validation else "공개 승인 사례 10건. 입력에서 법령명·조문·특례 결과를 지움"
+    out.write_text(json.dumps({"version": 1, "note": note, "items": items}, ensure_ascii=False, indent=1), encoding="utf-8")
     for it in items:
         print(f"{it['id']} [{it['gold']['track']}/{it['field']}] {len(it['input'])}자 | {it['input'][:90]}")
     return 0
