@@ -7,7 +7,7 @@
 ## 준비물
 
 - Ubuntu 서버, sudo 권한
-- Python 3.11 이상
+- Python 3.11 이상. Ubuntu 22.04 기본은 3.10이므로 `sudo apt install python3.11 python3.11-venv`
 - Liner API 키(운영용 계정에서 발급. 대회 지급 키는 대회 개발용으로만 씀)
 - 앞단 nginx
 
@@ -15,12 +15,13 @@
 
 1. 전용 계정과 코드
    ```bash
-   sudo useradd --system --create-home --home-dir /srv/legaldoctor --shell /usr/sbin/nologin legaldoctor
-   sudo -u legaldoctor git clone <저장소 주소> /srv/legaldoctor
+   sudo useradd --system --no-create-home --home-dir /srv/legaldoctor --shell /usr/sbin/nologin legaldoctor
+   sudo mkdir -p /srv/legaldoctor && sudo chown legaldoctor:legaldoctor /srv/legaldoctor
+   sudo -u legaldoctor git clone <저장소 주소> /srv/legaldoctor   # 빈 폴더여야 clone이 됨
    ```
 2. 가상환경과 설치
    ```bash
-   sudo -u legaldoctor python3 -m venv /srv/legaldoctor/.venv
+   sudo -u legaldoctor python3.11 -m venv /srv/legaldoctor/.venv
    sudo -u legaldoctor /srv/legaldoctor/.venv/bin/pip install -e /srv/legaldoctor
    ```
 3. 키 파일(서비스 계정 소유, 권한 600. 다른 서비스의 .env와 섞지 않음)
