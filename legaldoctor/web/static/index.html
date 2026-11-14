@@ -57,6 +57,21 @@ canvas{width:100%;height:320px;border:1px solid var(--line);border-radius:10px;b
 .result h3{margin:14px 0 4px;font-size:16px}
 .result pre{white-space:pre-wrap;font:inherit;margin:0}
 .warn{color:var(--accent);font-size:13px}
+#prog{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 32px));background:var(--card);border:2px solid var(--accent);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:14px 16px;z-index:50}
+#prog .t{display:flex;align-items:center;gap:10px;font-weight:600}
+#prog .sp{width:18px;height:18px;border:3px solid var(--accent-soft);border-top-color:var(--accent);border-radius:50%;animation:sp 0.9s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+#prog .el{margin-left:auto;color:var(--sub);font-weight:400;font-size:13px;white-space:nowrap}
+#prog ol{list-style:none;margin:10px 0 0;padding:0;font-size:13px}
+#prog li{padding:2px 0 2px 20px;position:relative;color:var(--sub)}
+#prog li::before{content:"";position:absolute;left:4px;top:8px;width:8px;height:8px;border-radius:50%;border:2px solid var(--line)}
+#prog li.done{color:var(--ink)}#prog li.done::before{background:var(--ok);border-color:var(--ok)}
+#prog li.now{color:var(--accent);font-weight:600}#prog li.now::before{border-color:var(--accent);background:var(--accent-soft)}
+#prog .ph{color:var(--sub);font-size:12px;margin-top:8px}
+#notice{display:none;margin:10px 0;padding:10px 12px;border-radius:10px;font-size:14px;border:1px solid var(--line);background:var(--chip)}
+#notice.err{border-color:var(--accent);background:var(--accent-soft)}
+#notice.ok{border-color:var(--ok)}
+#notice button{float:right;border:0;background:transparent;color:var(--sub);cursor:pointer;font:inherit}
 footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-size:13px}
 </style>
 </head>
@@ -119,6 +134,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
       <div class="hint" id="ckFiles"></div>
       <div id="ckResult"></div>
     </div>
+    <div id="notice" role="status"></div>
     <p class="warn" id="msg"></p>
   </section>
 
@@ -135,13 +151,28 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
     <div class="result" id="result"></div>
   </aside>
 </main>
+<div id="prog" hidden role="status" aria-live="polite"><div class="t"><span class="sp"></span><span id="progT"></span><span class="el" id="progEl"></span></div><ol id="progS"></ol><div class="ph" id="progH"></div></div>
 <footer><div id="disc"></div><div class="hint" style="margin-top:6px">올린 자료는 분석에만 쓰고 저장하지 않습니다. 분석을 위해 내용이 AI 모델 서비스(라이너)로 전송됩니다. <a href="privacy" target="_blank">개인정보 처리 안내</a></div></footer>
 <script>
 const $=s=>document.querySelector(s);
 let sid=null,editing=false,last=null;
 async function api(path,opt={}){const r=await fetch(path,opt);if(!r.ok){throw new Error((await r.json().catch(()=>({detail:r.statusText}))).detail)}return r.json()}
 async function session(){if(!sid){sid=(await api('api/sessions',{method:'POST'})).id}return sid}
-function busy(on,text){document.querySelectorAll('.btn').forEach(b=>b.disabled=on);$('#msg').textContent=on?(text||'읽고 있어요...'):''}
+// 진행 표시: 기다리는 동안 무엇을 하는지, 얼마나 지났는지 보여 준다
+let progT0=0,progIv=null,progPlan=null;
+function fmt(s){return s<60?`${s}초`:`${Math.floor(s/60)}분 ${s%60}초`}
+function drawSteps(steps){$('#progS').innerHTML=steps.map(s=>`<li class="${s.state}">${esc(s.label)}</li>`).join('')}
+function showProg(title,plan,hint){
+  document.querySelectorAll('.btn').forEach(b=>b.disabled=true);
+  $('#progT').textContent=title;$('#progH').textContent=hint||'';$('#prog').hidden=false;
+  progT0=Date.now();progPlan=plan||null;clearInterval(progIv);
+  const tick=()=>{const el=Math.round((Date.now()-progT0)/1000);$('#progEl').textContent=fmt(el);
+    if(progPlan){let acc=0,cur=progPlan.length-1;for(let i=0;i<progPlan.length;i++){acc+=progPlan[i][1];if(el<acc){cur=i;break}}
+      drawSteps(progPlan.map((p,i)=>({label:p[0],state:i<cur?'done':i===cur?'now':'todo'})))}};
+  tick();progIv=setInterval(tick,1000)}
+function hideProg(){clearInterval(progIv);$('#prog').hidden=true;document.querySelectorAll('.btn').forEach(b=>b.disabled=false)}
+function busy(on,text){if(on)showProg(text||'읽고 있어요');else hideProg()}
+function notice(kind,html){const n=$('#notice');n.className=kind;n.style.display='block';n.innerHTML='<button aria-label="닫기" onclick="this.parentNode.style.display=\'none\'">닫기</button>'+html;n.scrollIntoView({block:'nearest',behavior:'smooth'})}
 function esc(s){return (s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
@@ -164,9 +195,21 @@ function render(v){
   if(notes.length)$('#msg').textContent=notes.join(' / ');
 }
 
+const READ_PLAN=[['파일 받기',3],['쪽마다 글과 화면 읽기',8],['사업 모델 12개 항목 정리',60]];
 async function sendForm(fd,label){
-  await session();busy(true,label);
-  try{render(await api(`api/sessions/${sid}/materials`,{method:'POST',body:fd}))}catch(e){$('#msg').textContent=e.message}finally{busy(false);}
+  await session();$('#notice').style.display='none';
+  showProg(label,fd.has('files')?READ_PLAN:[['내용 읽기',3],['사업 모델 12개 항목 정리',60]],'보통 10~40초 걸려요. 쪽수가 많으면 조금 더 걸립니다');
+  try{const v=await api(`api/sessions/${sid}/materials`,{method:'POST',body:fd});render(v);afterRead(v)}
+  catch(e){notice('err',`<b>자료를 처리하지 못했어요.</b> ${esc(e.message)}<br>잠시 뒤 다시 올리거나, 사업 내용을 글로 2~3줄 적어 주세요.`)}
+  finally{hideProg()}
+}
+function afterRead(v){
+  const filled=v.slots.filter(s=>s.value).length,rd=v.read||{};
+  const what=(rd.text_pages||rd.image_pages)?`읽은 자료: 글 ${rd.text_pages||0}쪽, 화면 ${rd.image_pages||0}쪽. `:'';
+  const skip=(v.skipped||[]).length?`<br>못 읽은 파일: ${esc(v.skipped.join(' / '))}`:'';
+  if(v.error){notice('err',`<b>${esc(v.error)}</b>${skip}`);return}
+  if(!filled){notice('err',`<b>이 자료에서는 사업 모델을 읽지 못했어요.</b> ${what}그림 위주 자료라면 어떤 서비스인지 글로 2~3줄 적어 주시거나 "스무고개로 답하기"로 진행해 주세요.${skip}`);return}
+  notice('ok',`${what}사업 모델 12개 항목 중 <b>${filled}개</b>를 채웠어요. 오른쪽 내용을 확인하고, 빈 칸은 스무고개로 채우거나 "고칠 곳 있어요"로 직접 고쳐 주세요.${skip}`)
 }
 $('#sendText').onclick=()=>{const t=$('#bizText').value.trim();if(!t)return;const fd=new FormData();fd.append('text',t);sendForm(fd,'설명을 읽고 있어요...')};
 const fileIn=$('#fileIn'),drop=$('#drop');
@@ -207,14 +250,14 @@ $('#ckDemo').onclick=async()=>{try{$('#ckText').value=(await api('api/checkup/de
 const RC={'높음':'#c92a2a','중간':'#e8590c','낮음':'#2b8a3e'};
 $('#ckRun').onclick=async()=>{
   const fd=new FormData();fd.append('module',ckModule);fd.append('text',$('#ckText').value);[...$('#ckFile').files].forEach(f=>fd.append('files',f));
-  busy(true,'조항을 뽑고 법령 원문과 대조하고 있어요. 몇 분 걸릴 수 있어요...');
+  $('#notice').style.display='none';showProg('검진하고 있어요',[['조항·사실 뽑기',40],['관련 법령 찾기',60],['법령 원문과 대조',150],['검진표 만들기',60]],'보통 3~5분 걸려요. 이 창을 닫지 말고 기다려 주세요');
   try{const r=await api('api/checkup',{method:'POST',body:fd});
     const hi=r.items.filter(i=>i.risk==='높음').length, lw=r.items.filter(i=>i.lawyer).length;
     $('#ckResult').innerHTML=`<h3>${esc(r.title)} · ${esc(r.causes.join(', '))}</h3><p class="hint">검진 항목 ${r.items.length} · 위험 높음 ${hi} · 변호사 심화자문 권함 ${lw}</p>`+
       `<div class="row"><a class="btn" href="api/checkup/${r.id}" target="_blank">검진표 열기</a></div>`+
       r.items.map(i=>`<div class="ck-item"><span class="risk" style="background:${RC[i.risk]||'#495057'}">${esc(i.risk)}</span><b>${esc(i.label)}</b> · ${esc(i.verdict)}<div class="hint">“${esc(i.quote)}”</div>${i.lawyer?'<div class="hint" style="color:#1971c2">변호사 심화자문 권함</div>':''}</div>`).join('')+
       (r.halted?`<p class="warn">${esc(r.halted)}</p>`:'')+`<p class="hint">※ ${esc(r.disclaimer)}</p>`;
-  }catch(e){$('#msg').textContent=e.message}finally{busy(false)}};
+  }catch(e){notice('err',`<b>검진을 마치지 못했어요.</b> ${esc(e.message)}`)}finally{hideProg()}};
 
 // 스무고개
 function showQ(v){
@@ -235,17 +278,32 @@ $('#startTalk').onclick=()=>answer(null);
 
 // 확인·분석
 $('#editBtn').onclick=()=>{if(!last)return;editing=!editing;$('#editBtn').textContent=editing?'수정 취소':'고칠 곳 있어요';render(last)};
-$('#okBtn').onclick=async()=>{await session();const edits={};
-  if(editing)document.querySelectorAll('.slot input').forEach(i=>{const s=last.slots.find(x=>x.key===i.dataset.k);if(i.value.trim()&&i.value.trim()!==(s.value||''))edits[i.dataset.k]=i.value.trim()});
-  busy(true,'규제를 살펴보고 있어요...');
-  try{editing=false;$('#editBtn').textContent='고칠 곳 있어요';
-    render(await api(`api/sessions/${sid}/confirm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}));
-    const r=await api(`api/sessions/${sid}/analyze`,{method:'POST'});
+function showResult(r){
     const out=n=>`api/sessions/${sid}/out/${n}`;
     const links=r.outputs.length?`<div class="row"><a class="btn" href="${out('regmap.html')}" target="_blank">규제 지도</a><a class="btn ghost" href="${out('consult.html')}" target="_blank">변호사 상담 준비서</a><a class="btn ghost" href="${out('application.html')}" target="_blank">신속확인 신청서 초안</a><a class="btn ghost" href="${out('application.docx')}">신청서 Word</a></div><p class="hint">열린 문서에서 인쇄(Ctrl+P)를 누르면 PDF로 저장됩니다.</p>`:'';
     const counts=Object.entries(r.counts||{}).map(([k,v])=>`${esc(k)} ${v}`).join(' · ');
-    $('#result').innerHTML=`<h3>권하는 길: ${esc(r.track||'')}</h3><p class="hint">${counts}</p>`+links+(r.halted_at?`<p class="warn">분석이 멈춘 단계: ${esc(r.halt_reason)}</p>`:'')+r.stages.map(s=>`<details><summary>${esc(s.stage)}</summary><pre>${esc(s.summary)}</pre></details>`).join('');
-  }catch(e){$('#msg').textContent=e.message}finally{busy(false)}};
+    const core=(r.core||[]).length?`<p class="hint">핵심 규제: ${r.core.map(c=>esc(`「${c.law}」 ${c.locator}`)).join(', ')}</p>`:'';
+    $('#result').innerHTML=`<h3>권하는 길: ${esc(r.track||'')}</h3><p class="hint">${counts}</p>`+core+links+(r.halted_at?`<p class="warn">분석이 멈춘 단계: ${esc(r.halt_reason)}</p>`:'')+r.stages.map(s=>`<details><summary>${esc(s.stage)}</summary><pre>${esc(s.summary)}</pre></details>`).join('');
+    $('#result').scrollIntoView({block:'start',behavior:'smooth'})}
+function jobSteps(j){let now=false;return (j.stages||[]).map(s=>{if(s.done)return{label:s.label,state:'done'};if(!now){now=true;return{label:s.label,state:'now'}}return{label:s.label,state:'todo'}})}
+async function pollJob(){
+  for(;;){await new Promise(r=>setTimeout(r,2000));
+    const j=await api(`api/sessions/${sid}/analyze`);
+    if(j.stages&&j.stages.length){progPlan=null;drawSteps(jobSteps(j))}
+    if(j.status==='done')return j.result;
+    if(j.status==='error')throw new Error(j.error||'분석 중 문제가 생겼어요');
+    if(j.status==='idle')throw new Error('분석이 시작되지 않았어요. 다시 눌러 주세요');}
+}
+$('#okBtn').onclick=async()=>{await session();const edits={};
+  if(editing)document.querySelectorAll('.slot input').forEach(i=>{const s=last.slots.find(x=>x.key===i.dataset.k);if(i.value.trim()&&i.value.trim()!==(s.value||''))edits[i.dataset.k]=i.value.trim()});
+  $('#notice').style.display='none';
+  showProg('규제를 살펴보고 있어요',[['분석 준비',5]],'보통 2분 안팎 걸려요. 이 창을 닫지 말고 기다려 주세요');
+  try{editing=false;$('#editBtn').textContent='고칠 곳 있어요';
+    render(await api(`api/sessions/${sid}/confirm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}));
+    const st=await api(`api/sessions/${sid}/analyze`,{method:'POST'});
+    showResult(st.status==='done'?st.result:await pollJob());
+    notice('ok','분석이 끝났어요. 아래 "규제 지도"부터 열어 보세요.');
+  }catch(e){notice('err',`<b>분석을 마치지 못했어요.</b> ${esc(e.message)}`)}finally{hideProg()}};
 api('api/sessions',{method:'POST'}).then(r=>{sid=r.id;return api('api/sessions/'+sid)}).then(render).catch(()=>{});
 </script>
 </body>

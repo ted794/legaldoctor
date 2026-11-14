@@ -24,6 +24,7 @@ MaterialKind = Literal["text", "document", "image", "interview"]
 
 MAX_IMAGE_SIDE = 1280
 MAX_PDF_PAGE_IMAGES = 6
+MAX_PDF_PAGE_IMAGES_NO_TEXT = 10
 MAX_TEXT_PER_MATERIAL = 6000
 
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
@@ -96,7 +97,9 @@ def _pdf(data: bytes, fname: str) -> list[Material]:
         if text:
             out.append(Material(kind="document", name=f"{fname} {i}쪽", text=text))
     pdf = pdfium.PdfDocument(data)
-    for i in range(min(len(pdf), MAX_PDF_PAGE_IMAGES)):
+    # 글이 거의 없는 PDF(그림으로 만든 IR 자료 등)는 쪽 화면을 더 많이 본다
+    few_text = sum(len(m.text or "") for m in out) < 300
+    for i in range(min(len(pdf), MAX_PDF_PAGE_IMAGES_NO_TEXT if few_text else MAX_PDF_PAGE_IMAGES)):
         img = pdf[i].render(scale=1.4).to_pil()
         b64, mime = image_to_b64(img)
         out.append(Material(kind="image", name=f"{fname} {i + 1}쪽 화면", image_b64=b64, mime=mime))
