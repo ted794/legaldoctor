@@ -128,7 +128,7 @@ def cmd_eval(args: argparse.Namespace) -> int:
     from legaldoctor.liner import LinerModel
 
     s = load_settings()
-    res = evaluate(LinerModel(s), s, only=args.only, baseline=not args.no_baseline, use_search=not args.no_search)
+    res = evaluate(LinerModel(s), s, only=args.only, baseline=not args.no_baseline, use_search=not args.no_search, state_dir=Path(args.out) / "states")
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "results.json").write_text(json.dumps(res, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
