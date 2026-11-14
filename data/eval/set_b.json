@@ -1,0 +1,209 @@
+{
+ "version": 1,
+ "note": "검증 세트: 평가 세트와 겹치지 않는 공개 승인 사례 10건(고정 시드). 규칙 조정에 쓰지 않음",
+ "items": [
+  {
+   "id": "sbx-ict-00306",
+   "title": "실시간 통화 기반 보이스피싱 탐지 서비스",
+   "field": "ict",
+   "approved_date": "2025-09-11",
+   "input": "전화 수신 시, 단말에서 동작하는 AI기술로 실시간 통화 음성데이터로부터 성문 정보를 추출하여 목소리간의 유사도를 측정, 기존에 신고된 범인의 목소리와 유사한 경우에 고객에게 위험을 알리는 서비스",
+   "gold": {
+    "laws": [
+     "개인정보 보호법"
+    ],
+    "articles": [
+     "개인정보 보호법 23"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2495"
+  },
+  {
+   "id": "sbx-ict-00016",
+   "title": "이동형 가상현실(VR) 체험 트럭",
+   "field": "ict",
+   "approved_date": "2019-08-21",
+   "input": "기존 트럭의 구조를 변경하여 화물공간에 VR 모션 시뮬레이터 등을 설치해 VR 수요지역(지자체·학교·축제 등)에 찾아가는 VR 체험 서비스 제공 VR트럭을 이용한 VR 체험 서비스",
+   "gold": {
+    "laws": [
+     "게임산업진흥에 관한 법률 시행규칙",
+     "관광진흥법",
+     "관광진흥법 시행규칙",
+     "자동차관리법 시행규칙"
+    ],
+    "articles": [
+     "게임산업진흥에 관한 법률 시행규칙 16",
+     "관광진흥법 33",
+     "관광진흥법 시행규칙 11",
+     "자동차관리법 시행규칙 55"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=123"
+  },
+  {
+   "id": "sbx-ind-00100",
+   "title": "자동차 전자제어장치 무선 업데이트 서비스",
+   "field": "industry",
+   "approved_date": "2020-12-23",
+   "input": "기존에 정비소 방문을 통해서만 가능했던 자동차 전자제어장치* 소프트웨어 업데이트를 무선통신을 이용하여 직접 업데이트하는 서비스 * 유무선통신장치, 첨단운전자보조장치, 파워크레인/구동계 관련 제어장치, 샤시제어장치, 바디제어장치, 전원제어장치, 에어백제어장치",
+   "gold": {
+    "laws": [
+     "자동차관리법"
+    ],
+    "articles": [
+     "자동차관리법 66"
+    ],
+    "track": "임시허가",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=398"
+  },
+  {
+   "id": "sbx-ind-00344",
+   "title": "스마트라벨(QR코드)을 활용한 식품 표시 간소화",
+   "field": "industry",
+   "approved_date": "2023-03-30",
+   "input": "포장재에 기재하는 식품표시사항 중 필수표시사항을 제외한 일부를 QR코드로 제공하는 ‘스마트라벨’을 적용한 식품 제조·판매",
+   "gold": {
+    "laws": [
+     "식품 등의 표시ㆍ광고에 관한 법률",
+     "식품 등의 표시ㆍ광고에 관한 법률 시행규칙"
+    ],
+    "articles": [
+     "식품 등의 표시ㆍ광고에 관한 법률 4",
+     "식품 등의 표시ㆍ광고에 관한 법률 5",
+     "식품 등의 표시ㆍ광고에 관한 법률 6",
+     "식품 등의 표시ㆍ광고에 관한 법률 시행규칙 3",
+     "식품 등의 표시ㆍ광고에 관한 법률 시행규칙 5"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=899"
+  },
+  {
+   "id": "sbx-fin-00237",
+   "title": "보이는 TM 보험 가입 서비스",
+   "field": "finance",
+   "approved_date": "2022-12-21",
+   "input": "기존 전화모집(TM) 과정상 모집인이 음성통화로 표준상품설명대본을 낭독하고 전과정을 음성녹음하는 절차 없이 단순 상품안내를 제외한 중요사항 설명과 청약절차를 모바일 웹(Web)을 통해 진행하는 서비스",
+   "gold": {
+    "laws": [
+     "보험업법 시행령"
+    ],
+    "articles": [
+     "보험업법 시행령 43"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=777"
+  },
+  {
+   "id": "sbx-fin-00369",
+   "title": "클라우드를 활용한 소프트웨어 서비스(SaaS)의 내부망 이용(M365)",
+   "field": "finance",
+   "approved_date": "2024-09-27",
+   "input": "임직원의 업무 생산성 향상을 위해 SaaS(Software-as-a-Service) 기반의 협업 솔루션인 “M365(마이크로소프트365)”를 내부업무용 단말기에서 이용",
+   "gold": {
+    "laws": [
+     "전자금융감독규정"
+    ],
+    "articles": [
+     "전자금융감독규정 15"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1453"
+  },
+  {
+   "id": "sbx-mob-00137",
+   "title": "수소 트랙터를 활용한 화물 운송 실증",
+   "field": "mobility",
+   "approved_date": "2025-11-25",
+   "input": "수소전기 트랙터 국내 도입을 위한 기술 및 운영 적합성을 검증하기 위하여 수소전기 트랙터를 물류 운송사 노선에 투입하여, 기술적 성능 검토 및 친환경 물류 시스템",
+   "gold": {
+    "laws": [
+     "자동차 및 자동차부품의 성능과 기준에 관한 규칙"
+    ],
+    "articles": [
+     "자동차 및 자동차부품의 성능과 기준에 관한 규칙 114"
+    ],
+    "track": "실증특례",
+    "field": "mobility",
+    "ministry": "국토교통부(모빌리티)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2548"
+  },
+  {
+   "id": "sbx-circ-00059",
+   "title": "식물성 잔재물 및 농업부산물을 재활용한 고발열량·저회분 바이오 생활연료제품",
+   "field": "circular",
+   "approved_date": "2026-04-30",
+   "input": "기존에 버려지던 식물성 잔재물 및 농업부산물을 자원재활용 공정을 활용하여 기존 펠릿을 대체할 수 있는 고발열량 바이오 생활연료제품을 제조하는 기술",
+   "gold": {
+    "laws": [
+     "폐기물관리법",
+     "폐기물관리법 시행규칙"
+    ],
+    "articles": [
+     "폐기물관리법 25",
+     "폐기물관리법 시행규칙 4의2"
+    ],
+    "track": "실증특례",
+    "field": "circular",
+    "ministry": "기후에너지환경부(순환경제)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2846"
+  },
+  {
+   "id": "sbx-scity-00017",
+   "title": "퍼스널 모빌리티용 무선충전 거치대 실증",
+   "field": "smartcity",
+   "approved_date": "2021-03-10",
+   "input": "전동킥보드 서비스와 연계하여 사용자가 공유 전동킥보드를 무선 충전거치대에 반납 시 별도 조작없이 자동으로 충전",
+   "gold": {
+    "laws": [
+     "도로교통법"
+    ],
+    "articles": [
+     "도로교통법 32"
+    ],
+    "track": "실증특례",
+    "field": "smartcity",
+    "ministry": "국토교통부(스마트도시)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=430"
+  },
+  {
+   "id": "sbx-rfz-00111",
+   "title": "새로운 유형의 동물용 첨단바이오의약품 및 신약에 대한 안전성·유효성 심사 규정 실증",
+   "field": "rfz",
+   "approved_date": "2026-06-19",
+   "input": "∙ 동물용 첨단바이오의약품·신약에 대한 안전성 및 유효성 검증 규정을 개발하고 임상시험 기준 확립과 법적 근거 마련 ∙ 동물용 첨단바이오의약품 임상시험 환경 구축 및 단계별 임상시험",
+   "gold": {
+    "laws": [
+     "동물용의약품등 안전성·유효성 심사에 관한 규정"
+    ],
+    "articles": [
+     "동물용의약품등 안전성·유효성 심사에 관한 규정 5"
+    ],
+    "track": "실증특례",
+    "field": "rfz",
+    "ministry": "중소벤처기업부(규제자유특구)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2924"
+  }
+ ]
+}

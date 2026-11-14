@@ -128,7 +128,9 @@ def cmd_eval(args: argparse.Namespace) -> int:
     from legaldoctor.liner import LinerModel
 
     s = load_settings()
-    res = evaluate(LinerModel(s), s, only=args.only, baseline=not args.no_baseline, use_search=not args.no_search, state_dir=Path(args.out) / "states")
+    from legaldoctor.evaluate import SET_PATH
+
+    res = evaluate(LinerModel(s), s, only=args.only, baseline=not args.no_baseline, use_search=not args.no_search, set_path=Path(args.set) if args.set else SET_PATH, state_dir=Path(args.out) / "states")
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "results.json").write_text(json.dumps(res, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
@@ -260,6 +262,7 @@ def main(argv: list[str] | None = None) -> int:
     pe.add_argument("--no-baseline", action="store_true", help="범용 프롬프트 비교 생략")
     pe.add_argument("--no-search", action="store_true", help="Liner Search 단서 생략(빠름)")
     pe.add_argument("--out", default="out/eval")
+    pe.add_argument("--set", help="평가 세트 파일(기본 data/eval/set.json, 검증 세트는 data/eval/set_b.json)")
     pe.set_defaults(func=cmd_eval)
     pc = sub.add_parser("checkup", help="운영 단계 검진(invest: 투자계약 13장, labor: 노무 21장)")
     pc.add_argument("module", choices=["invest", "labor"])
