@@ -107,9 +107,14 @@ def slots_help() -> str:
     return "\n".join(f"- {k}: {label} ({why})" for k, label, why in SLOTS)
 
 
-def material_parts(materials: list[Material], max_images: int = 8) -> list[dict[str, Any]]:
+TEXT_BUDGET = 24000  # 한 번에 모델로 보내는 글자 수 상한. 쪽수가 많은 사업소개서도 응답이 깨지지 않게 쪽마다 고르게 줄임
+
+
+def material_parts(materials: list[Material], max_images: int = 10) -> list[dict[str, Any]]:
     parts: list[dict[str, Any]] = []
     n_img = 0
+    n_text = sum(1 for m in materials if not m.is_image and m.text) or 1
+    per = max(800, TEXT_BUDGET // n_text)
     for m in materials:
         if m.is_image:
             if n_img >= max_images:
@@ -118,7 +123,7 @@ def material_parts(materials: list[Material], max_images: int = 8) -> list[dict[
             parts.append({"type": "text", "text": f"[출처: {m.name}] (그림)"})
             parts.append({"type": "image_url", "image_url": {"url": f"data:{m.mime};base64,{m.image_b64}"}})
         elif m.text:
-            parts.append({"type": "text", "text": f"[출처: {m.name}]\n{m.text}"})
+            parts.append({"type": "text", "text": f"[출처: {m.name}]\n{m.text[:per]}"})
     return parts
 
 

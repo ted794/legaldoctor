@@ -86,6 +86,7 @@ class Session:
     drawings: int = 0
     edits: int = 0
     outputs: dict[str, Any] = field(default_factory=dict)
+    job: dict[str, Any] = field(default_factory=dict)  # 규제 분석 진행 상황(백그라운드 실행)
 
     @property
     def profile(self) -> BMProfile:
@@ -185,11 +186,17 @@ async def add_materials(
             new += from_file(data, f.filename or "파일")
         except UnsupportedFile as e:
             skipped.append(str(e))
+        except Exception:  # noqa: BLE001  암호가 걸렸거나 손상된 파일
+            skipped.append(f"{f.filename}: 파일을 열지 못함(암호가 걸렸거나 손상된 파일일 수 있음). PDF로 다시 저장해 올려 주세요")
+    read = {"text_pages": sum(1 for m in new if not m.is_image and m.text), "image_pages": sum(1 for m in new if m.is_image)}
     if not new:
-        return profile_view(s, skipped=skipped, rejected=[])
+        return profile_view(s, skipped=skipped, rejected=[], read=read, error="올린 자료에서 읽을 내용을 찾지 못했어요" if files else "")
     s.materials += new
-    _, rejected = extract_profile(model(), new, s.profile)
-    return profile_view(s, skipped=skipped, rejected=rejected)
+    try:
+        _, rejected = extract_profile(model(), new, s.profile)
+    except Exception as e:  # noqa: BLE001  모델 호출 실패를 화면에 알린다
+        return profile_view(s, skipped=skipped, rejected=[], read=read, error=f"자료는 받았지만 사업 모델을 정리하지 못했어요. 잠시 뒤 다시 시도하거나 글로 2~3줄 설명해 주세요({str(e)[:80]})")
+    return profile_view(s, skipped=skipped, rejected=rejected, read=read)
 
 
 class AnswerIn(BaseModel):
@@ -220,36 +227,71 @@ def confirm(sid: str, body: ConfirmIn) -> dict[str, Any]:
     return profile_view(s)
 
 
-@app.post("/api/sessions/{sid}/analyze", dependencies=[rate_limit("heavy")])
-def analyze(sid: str) -> dict[str, Any]:
+def _run_analysis(s: Session) -> None:
     from legaldoctor.outputs import application_docx, application_html, build_report, consult_html, regmap_html
     from legaldoctor.pipeline.runner import build_stages, run
 
+    job = s.job
+    try:
+        stages = build_stages(model())
+        labels = {st.name: st.label for st in stages}
+        job["stages"] = [{"key": st.name, "label": st.label, "done": False} for st in stages]
+
+        def on_stage(stage, result):
+            for x in job["stages"]:
+                if x["key"] == stage.name:
+                    x["done"] = True
+
+        state = run(s.profile.to_business_text(), stages=stages, on_stage=on_stage)
+        report = build_report(state, s.profile)
+        s.outputs = {
+            "regmap.html": regmap_html(report),
+            "consult.html": consult_html(report),
+            "application.html": application_html(report),
+            "application.docx": application_docx(report),
+        }
+        job["result"] = {
+            "stages": [{"stage": labels.get(r.stage, r.stage), "summary": r.summary, "notes": r.notes} for r in state.results.values()],
+            "halted_at": state.halted_at,
+            "halt_reason": state.halt_reason,
+            "track": report.track,
+            "counts": report.counts,
+            "core": [{"law": x.law, "locator": x.locator, "grade": x.grade} for x in report.core],
+            "outputs": list(s.outputs),
+            "disclaimer": DISCLAIMER,
+        }
+        job["status"] = "done"
+    except Exception as e:  # noqa: BLE001
+        job["status"] = "error"
+        job["error"] = f"분석 중 문제가 생겼어요. 잠시 뒤 다시 시도해 주세요({str(e)[:120]})"
+    finally:
+        job["ended"] = time.time()
+
+
+def _job_view(s: Session) -> dict[str, Any]:
+    job = s.job
+    if not job:
+        return {"status": "idle"}
+    end = job.get("ended") or time.time()
+    return {k: v for k, v in job.items() if k != "started"} | {"elapsed": round(end - job["started"])}
+
+
+@app.post("/api/sessions/{sid}/analyze", dependencies=[rate_limit("heavy")])
+def analyze(sid: str) -> dict[str, Any]:
+    """분석을 백그라운드로 시작한다. 진행 상황은 GET 같은 주소로 본다(약 2분)."""
     s = get(sid)
     if not s.profile.slots:
         raise HTTPException(400, "사업 모델 정보가 아직 없음")
-    stages = build_stages(model())
-    labels = {st.name: st.label for st in stages}
-    state = run(s.profile.to_business_text(), stages=stages)
-    report = build_report(state, s.profile)
-    s.outputs = {
-        "regmap.html": regmap_html(report),
-        "consult.html": consult_html(report),
-        "application.html": application_html(report),
-        "application.docx": application_docx(report),
-    }
-    return {
-        "stages": [
-            {"stage": labels.get(r.stage, r.stage), "summary": r.summary, "notes": r.notes}
-            for r in state.results.values()
-        ],
-        "halted_at": state.halted_at,
-        "halt_reason": state.halt_reason,
-        "track": report.track,
-        "counts": report.counts,
-        "outputs": list(s.outputs),
-        "disclaimer": DISCLAIMER,
-    }
+    if s.job.get("status") == "running":
+        return _job_view(s)
+    s.job = {"status": "running", "started": time.time(), "stages": []}
+    threading.Thread(target=_run_analysis, args=(s,), daemon=True).start()
+    return _job_view(s)
+
+
+@app.get("/api/sessions/{sid}/analyze")
+def analyze_status(sid: str) -> dict[str, Any]:
+    return _job_view(get(sid))
 
 
 @app.get("/api/sessions/{sid}/out/{name}")
