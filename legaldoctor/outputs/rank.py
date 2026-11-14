@@ -49,8 +49,12 @@ def score_row(row, similar_ids: set[str]) -> Scored:
     s += GRADE_SCORE.get(row.grade, 0)
     t = TYPE_SCORE.get(row.type, 0)
     s += t
+    if row.grade == "명시 규제":
+        why.append("원문 조문이 직접 규율")
     if row.type in ("진입 규제", "금지·제한", "인증·검사"):
         why.append(row.type)
+    elif row.type == "적용 범위(정의)" and row.grade == "명시 규제":
+        why.append("정의에 해당하면 법 전체가 적용")
     shared = [i for i in getattr(row, "precedent_ids", []) if i in similar_ids]
     if shared:
         s += 30

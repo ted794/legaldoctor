@@ -174,7 +174,7 @@ class Explore:
             key = parse_article_ref(f.locator) if f.locator.startswith("제") else None
             hits = self.cases.citing(f.law, key) or (self.cases.citing(f.law) if not key else [])
             special = [c for c in hits if c.type in SPECIAL_TYPES]
-            f.precedents = [c.id for c in hits[:20]]
+            f.precedents = [c.id for c in hits]  # 전부 남김: 닮은 사례와 겹치는지 순위에 씀
             if special:
                 latest = max((c.date for c in special), default="")
                 status, eff, basis = judge_status(self.laws.load(f.law), key, latest)

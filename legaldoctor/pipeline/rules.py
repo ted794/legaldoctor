@@ -260,7 +260,7 @@ class Track:
             if self.cases:
                 for f in findings:
                     if f.activity_id == aid:
-                        for cid in f.precedents:
+                        for cid in f.precedents[:20]:  # 트랙 규칙은 앞 20건 기준(평가와 같은 조건)
                             c = next((x for x in self.cases.cases if x.id == cid), None)
                             if c:
                                 prec_types[c.type] += 1
