@@ -64,6 +64,7 @@ class LinerModel:
         if resp.status_code != 200:
             raise LinerModelError(f"HTTP {resp.status_code}: {resp.text[:500]}")
         data = resp.json()
+        _record_usage(data.get("usage") or {})
         try:
             choice = data["choices"][0]
         except (KeyError, IndexError) as e:
@@ -85,6 +86,17 @@ class LinerModel:
 
     def close(self) -> None:
         self._client.close()
+
+
+# 실행 한 번에 쓴 토큰을 모은다(진단 1건당 비용 측정용). 스레드 여러 개가 더해도 정수 덧셈이라 근사로 충분함.
+USAGE = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "cached_tokens": 0}
+
+
+def _record_usage(u: dict[str, Any]) -> None:
+    USAGE["calls"] += 1
+    USAGE["prompt_tokens"] += int(u.get("prompt_tokens") or 0)
+    USAGE["completion_tokens"] += int(u.get("completion_tokens") or 0)
+    USAGE["cached_tokens"] += int((u.get("prompt_tokens_details") or {}).get("cached_tokens") or 0)
 
 
 _FENCE = re.compile(r"```(?:json)?\s*(.*?)```", re.S)

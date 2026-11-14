@@ -32,7 +32,7 @@ def checkup_html(res: CheckupResult) -> str:
     m = res.module
     hi = sum(1 for i in res.items if i.risk == "높음")
     parts = [
-        f"<h1>스타트업 리걸<span>닥터</span> · {e(m.title)}</h1>",
+        f"<h1><span>스타트업 리걸닥터</span> · {e(m.title)}</h1>",
         f"<div class='meta'>대비하는 사인: {e(', '.join(f'{c['no']}. {c['name']}' for c in res.causes))} · 사인 분류는 스타트업 부검보고서 체계</div>",
         f"<div class='disc'>{e(DISCLAIMER)}</div>",
         f"<div class='sum'><div>검진 항목 <b>{len(res.items)}</b></div><div>위험 높음 <b style='color:#c92a2a'>{hi}</b></div><div>변호사 심화자문 권함 <b style='color:#1971c2'>{len(res.lawyer_items)}</b></div></div>",

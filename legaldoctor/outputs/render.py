@@ -32,10 +32,10 @@ BASE_CSS = """
 *{box-sizing:border-box}
 body{margin:0;font:13px/1.55 "Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;color:#1b1f24;background:#fff}
 .page{max-width:900px;margin:0 auto;padding:28px 20px}
-h1{font-size:22px;margin:0 0 2px}h1 span{color:#e8590c}
+h1{font-size:22px;margin:0 0 2px}h1 span{color:#A51C30}
 h2{font-size:15px;margin:18px 0 6px;padding-bottom:3px;border-bottom:2px solid #1b1f24}
 .meta{color:#5b6573;font-size:12px}
-.disc{margin-top:8px;padding:6px 10px;border-left:3px solid #e8590c;background:#fff4ec;font-size:12px}
+.disc{margin-top:8px;padding:6px 10px;border-left:3px solid #A51C30;background:#FBEFF1;font-size:12px}
 table{width:100%;border-collapse:collapse;margin:4px 0}
 th,td{border:1px solid #dee2e6;padding:5px 7px;text-align:left;vertical-align:top}
 th{background:#f1f3f5;font-weight:600;white-space:nowrap}
@@ -57,7 +57,7 @@ def _doc(title: str, body: str, extra_css: str = "") -> str:
 
 
 def _header(title: str, r: Report, menu: str = "규제팡 · 규제 검진") -> str:
-    return f"""<h1>스타트업 리걸<span>닥터</span> · {e(title)}</h1><div class="meta">{e(menu)} · 작성일 {e(r.made_on)} · {e(DISCLAIMER_SHORT)}</div>"""
+    return f"""<h1><span>스타트업 리걸닥터</span> · {e(title)}</h1><div class="meta">{e(menu)} · 작성일 {e(r.made_on)} · {e(DISCLAIMER_SHORT)}</div>"""
 
 
 def _law_cell(row) -> str:
