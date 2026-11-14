@@ -135,8 +135,10 @@ def parse_admrul_service(data: Any, meta: LawMeta) -> LawDoc:
 class LawSource:
     """법령 이름으로 원문을 찾고 조문 단위로 꺼낸다. 한 실행 안에서는 메모리에 재사용한다."""
 
-    def __init__(self, drf: DrfClient):
+    def __init__(self, drf: DrfClient, web=None):
         self.drf = drf
+        self.web = web  # web.WebLaw | None: DRF가 막힐 때 쓰는 예비 경로
+        self.drf_down = False
         self._docs: dict[str, LawDoc] = {}
         self._loaded: dict[str, LawDoc | None] = {}
         self.errors: list[str] = []
@@ -178,10 +180,21 @@ class LawSource:
     def load(self, name: str) -> LawDoc | None:
         if name in self._loaded:
             return self._loaded[name]
-        meta = self.find(name)
-        doc = self.get(meta) if meta else None
-        if doc is None and self.status.get(name) == "ok":
-            self.status[name] = "unavailable"
+        doc = None
+        if not self.drf_down:
+            meta = self.find(name)
+            doc = self.get(meta) if meta else None
+            if doc is None and self.status.get(name) == "ok":
+                self.status[name] = "unavailable"
+            if self.status.get(name) == "unavailable" and any("검증" in e or "DrfAuthError" in e or "DrfUnavailable" in e for e in self.errors[-2:]):
+                self.drf_down = True
+        if doc is None and self.web is not None and (self.drf_down or self.status.get(name) == "unavailable"):
+            try:
+                doc = self.web.load(name)
+                self.status[name] = "ok" if doc else "not_found"
+            except Exception as e:  # noqa: BLE001
+                self.errors.append(f"{name}(웹): {e}")
+                self.status[name] = "unavailable"
         self._loaded[name] = doc
         return doc
 

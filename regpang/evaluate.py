@@ -131,7 +131,9 @@ def evaluate(model, settings, *, only: str | None = None, baseline: bool = True,
     if only:
         items = [i for i in items if i["id"] == only]
     records = [json.loads(l) for l in CASES_PATH.read_text(encoding="utf-8").splitlines() if l.strip()]
-    laws_src = LawSource(DrfClient(settings))
+    from regpang.law.web import WebLaw
+
+    laws_src = LawSource(DrfClient(settings), web=WebLaw())
     results = []
     for it in items:
         row: dict[str, Any] = {"id": it["id"], "title": it["title"], "gold": it["gold"]}

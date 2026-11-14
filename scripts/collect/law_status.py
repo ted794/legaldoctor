@@ -24,7 +24,9 @@ from regpang.law.source import LawSource  # noqa: E402
 def main() -> int:
     limit = int(sys.argv[sys.argv.index("--limit") + 1]) if "--limit" in sys.argv else None
     records = [json.loads(l) for l in (ROOT / "data/sandbox/cases.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
-    rows = assess_all(records, LawSource(DrfClient(load_settings())), limit=limit)
+    from regpang.law.web import WebLaw
+
+    rows = assess_all(records, LawSource(DrfClient(load_settings()), web=WebLaw()), limit=limit)
     save(rows)
     c = Counter(r.status for r in rows)
     print(f"규정 {len(rows)}건: " + ", ".join(f"{k} {v}" for k, v in c.most_common()))

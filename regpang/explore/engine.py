@@ -335,12 +335,14 @@ def build_explore(model, settings, *, use_search: bool = True, cases=None) -> Ex
     from regpang.law import DrfClient
     from regpang.liner import LinerSearch
 
+    from regpang.law.web import WebLaw
+
     from .precedent import load_index
 
     return Explore(
         model,
         LinerSearch(settings) if use_search else None,
-        LawSource(DrfClient(settings)),
+        LawSource(DrfClient(settings), web=WebLaw()),
         cases=cases if cases is not None else load_index(),
         use_search=use_search,
     )
