@@ -123,18 +123,19 @@ def grade_item(item: CheckItem, module: Module) -> None:
     item.action = cat.action if cat else ""
     grades = [f.grade for f in item.findings]
     risk = cat.risk if cat else "중간"
+    gtext = {**module.grade_text, **(cat.grade_text if cat and cat.grade_text else {})}
     if "명시 규제" in grades:
-        item.verdict = module.grade_text["명시 규제"]
+        item.verdict = gtext["명시 규제"]
         if module.key == "labor" and risk == "중간":
             risk = "높음"
     elif "의제 리스크" in grades:
-        item.verdict = module.grade_text["의제 리스크"]
+        item.verdict = gtext["의제 리스크"]
     elif "해석 리스크" in grades:
-        item.verdict = module.grade_text["해석 리스크"]
+        item.verdict = gtext["해석 리스크"]
     elif "원문 확인 불가" in grades:
-        item.verdict = module.grade_text["원문 확인 불가"]
+        item.verdict = gtext["원문 확인 불가"]
     else:
-        item.verdict = module.grade_text["규정 공백"]
+        item.verdict = gtext["규정 공백"]
         if module.key == "invest" and item.category in ("personal_liability", "insolvency"):
             risk = "높음"  # 보호 규정이 없으면 계약대로 개인에게 집행될 수 있음(27장)
     if module.key == "invest" and item.category in ("personal_liability", "insolvency"):
@@ -160,8 +161,9 @@ def run_checkup(model, module: Module, text: str, explore) -> CheckupResult:
     extra: list[Candidate] = []
     for i in items:
         cat = module.category(i.category)
-        for law, term in (cat.anchors if cat else []):
-            extra.append(Candidate(i.id, law, term, "", f"{cat.label} 고정 대조", "고정 대조"))
+        for a in (cat.anchors if cat else []):
+            law, term, art = (a + ("",))[:3]  # (법령, 용어[, 조문]) — 조문을 주면 그 조문을 바로 대조
+            extra.append(Candidate(i.id, law, term, art, f"{cat.label} 고정 대조", "고정 대조"))
     explore.hint = module.hint
     explore.extra_candidates = extra
 

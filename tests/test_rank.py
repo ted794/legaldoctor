@@ -36,3 +36,17 @@ def test_core_one_per_family_and_skips_auto_chain():
 
 def test_non_graded_rows_not_ranked():
     assert rank_rows([row("-", "-", grade="규정 공백")], set()) == []
+
+
+def test_labor_category_grade_text_and_article_anchor():
+    from legaldoctor.checkup.engine import CheckItem, grade_item
+    from legaldoctor.checkup.modules import LABOR
+    from legaldoctor.explore.types import Finding
+
+    hc = LABOR.category("headcount")
+    assert hc.grade_text["명시 규제"] == "적용 의무 확인"
+    assert any(len(a) == 3 and a[2] == "제48조" for a in LABOR.category("overtime").anchors)
+    item = CheckItem("I1", "headcount", "상시근로자 수", "직원 7명", "직원 7명", "회사")
+    item.findings = [Finding("I1", "명시 규제", "조문 대조", "근로기준법", "제11조", "5인 이상 적용")]
+    grade_item(item, LABOR)
+    assert item.verdict == "적용 의무 확인" and item.risk == "낮음"
