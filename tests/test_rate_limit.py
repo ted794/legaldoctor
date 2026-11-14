@@ -9,10 +9,10 @@ def test_heavy_limit_per_ip(monkeypatch):
     web._daily.clear()
     c = TestClient(web.app)
     h = {"x-real-ip": "203.0.113.7"}
-    codes = [c.post("/api/checkup", data={"module": "없는검진"}, headers=h).status_code for _ in range(3)]
-    assert codes == [400, 400, 429]  # 한도 안에서는 원래 응답, 넘으면 429
-    other = c.post("/api/checkup", data={"module": "없는검진"}, headers={"x-real-ip": "203.0.113.8"})
-    assert other.status_code == 400  # 다른 IP는 따로 셈
+    codes = [c.post("/api/checkup/없음/run", json={"ids": []}, headers=h).status_code for _ in range(3)]
+    assert codes == [404, 404, 429]  # 한도 안에서는 원래 응답, 넘으면 429
+    other = c.post("/api/checkup/없음/run", json={"ids": []}, headers={"x-real-ip": "203.0.113.8"})
+    assert other.status_code == 404  # 다른 IP는 따로 셈
 
 
 def test_daily_cap(monkeypatch):
@@ -21,5 +21,5 @@ def test_daily_cap(monkeypatch):
     web._hits.clear()
     web._daily.clear()
     c = TestClient(web.app)
-    assert c.post("/api/checkup", data={"module": "x"}, headers={"x-real-ip": "198.51.100.1"}).status_code == 400
-    assert c.post("/api/checkup", data={"module": "x"}, headers={"x-real-ip": "198.51.100.2"}).status_code == 429
+    assert c.post("/api/checkup/없음/run", json={"ids": []}, headers={"x-real-ip": "198.51.100.1"}).status_code == 404
+    assert c.post("/api/checkup/없음/run", json={"ids": []}, headers={"x-real-ip": "198.51.100.2"}).status_code == 429

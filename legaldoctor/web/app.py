@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
+from starlette.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from pydantic import BaseModel
 
@@ -87,6 +88,7 @@ class Session:
     edits: int = 0
     outputs: dict[str, Any] = field(default_factory=dict)
     job: dict[str, Any] = field(default_factory=dict)  # 규제 분석 진행 상황(백그라운드 실행)
+    created: float = field(default_factory=time.time)
 
     @property
     def profile(self) -> BMProfile:
@@ -144,6 +146,11 @@ def privacy() -> FileResponse:
     return FileResponse(STATIC / "privacy.html")
 
 
+@app.get("/terms")
+def terms() -> FileResponse:
+    return FileResponse(STATIC / "terms.html")
+
+
 @app.get("/api/info")
 def info() -> dict[str, str]:
     """운영자 표시. 값은 배포 서버의 .env(LD_OPERATOR, LD_CONTACT)에서 읽어 저장소에 운영 정보를 남기지 않는다."""
@@ -152,6 +159,9 @@ def info() -> dict[str, str]:
 
 @app.post("/api/sessions")
 def create_session() -> dict[str, str]:
+    now = time.time()
+    for k in [k for k, s in SESSIONS.items() if now - s.created > 6 * 3600]:
+        SESSIONS.pop(k, None)  # 세션(입력 자료·결과물)은 메모리에 6시간만 둠
     sid = secrets.token_urlsafe(12)
     SESSIONS[sid] = Session(interview=Interview(model=model()))
     return {"id": sid}
@@ -183,7 +193,7 @@ async def add_materials(
             skipped.append(f"{f.filename}: 20MB 초과")
             continue
         try:
-            new += from_file(data, f.filename or "파일")
+            new += await run_in_threadpool(from_file, data, f.filename or "파일")
         except UnsupportedFile as e:
             skipped.append(str(e))
         except Exception:  # noqa: BLE001  암호가 걸렸거나 손상된 파일
@@ -193,7 +203,7 @@ async def add_materials(
         return profile_view(s, skipped=skipped, rejected=[], read=read, error="올린 자료에서 읽을 내용을 찾지 못했어요" if files else "")
     s.materials += new
     try:
-        _, rejected = extract_profile(model(), new, s.profile)
+        _, rejected = await run_in_threadpool(extract_profile, model(), new, s.profile)
     except Exception as e:  # noqa: BLE001  모델 호출 실패를 화면에 알린다
         return profile_view(s, skipped=skipped, rejected=[], read=read, error=f"자료는 받았지만 사업 모델을 정리하지 못했어요. 잠시 뒤 다시 시도하거나 글로 2~3줄 설명해 주세요({str(e)[:80]})")
     return profile_view(s, skipped=skipped, rejected=rejected, read=read)
@@ -227,7 +237,15 @@ def confirm(sid: str, body: ConfirmIn) -> dict[str, Any]:
     return profile_view(s)
 
 
+class _Cancelled(Exception):
+    pass
+
+
+STAGE_WEIGHT = {"decompose": 10, "explore": 70, "classify": 5, "jurisdiction": 5, "precedent": 5, "track": 5}
+
+
 def _run_analysis(s: Session) -> None:
+    from legaldoctor import metrics
     from legaldoctor.outputs import application_docx, application_html, build_report, consult_html, regmap_html
     from legaldoctor.pipeline.runner import build_stages, run
 
@@ -241,8 +259,15 @@ def _run_analysis(s: Session) -> None:
             for x in job["stages"]:
                 if x["key"] == stage.name:
                     x["done"] = True
+            first = (result.summary or "").strip().splitlines()[:1]
+            _log(job, f"{stage.label} 끝" + (f": {first[0][:120]}" if first else ""))
+            if job.get("cancel"):
+                raise _Cancelled()
 
+        _log(job, "사업을 행위 단위로 나누고 걸리는 규제를 찾기 시작했어요")
+        before = metrics.snapshot()
         state = run(s.profile.to_business_text(), stages=stages, on_stage=on_stage)
+        metrics.record("analyze", state.timings, before, halted=state.halted_at)
         report = build_report(state, s.profile)
         s.outputs = {
             "regmap.html": regmap_html(report),
@@ -261,6 +286,10 @@ def _run_analysis(s: Session) -> None:
             "disclaimer": DISCLAIMER,
         }
         job["status"] = "done"
+        _log(job, "분석을 마쳤어요")
+    except _Cancelled:
+        job["status"] = "cancelled"
+        _log(job, "중단했어요")
     except Exception as e:  # noqa: BLE001
         job["status"] = "error"
         job["error"] = f"분석 중 문제가 생겼어요. 잠시 뒤 다시 시도해 주세요({str(e)[:120]})"
@@ -273,7 +302,18 @@ def _job_view(s: Session) -> dict[str, Any]:
     if not job:
         return {"status": "idle"}
     end = job.get("ended") or time.time()
-    return {k: v for k, v in job.items() if k != "started"} | {"elapsed": round(end - job["started"])}
+    done = sum(STAGE_WEIGHT.get(x["key"], 5) for x in job.get("stages", []) if x["done"])
+    pct = 100 if job.get("status") == "done" else max(2, min(98, done))
+    return {k: v for k, v in job.items() if k not in ("started", "cancel")} | {"elapsed": round(end - job["started"]), "percent": pct}
+
+
+@app.post("/api/sessions/{sid}/analyze/cancel")
+def analyze_cancel(sid: str) -> dict[str, Any]:
+    s = get(sid)
+    if s.job.get("status") == "running":
+        s.job["cancel"] = True
+        _log(s.job, "중단을 요청했어요. 지금 단계가 끝나면 멈춰요")
+    return _job_view(s)
 
 
 @app.post("/api/sessions/{sid}/analyze", dependencies=[rate_limit("heavy")])
@@ -323,10 +363,125 @@ def checkup_demo(module: str) -> dict[str, str]:
     return {"text": p.read_text(encoding="utf-8")}
 
 
-@app.post("/api/checkup", dependencies=[rate_limit("heavy")])
-async def checkup(module: str = Form(...), text: str = Form(""), files: list[UploadFile] = File(default=[])) -> dict[str, Any]:
-    from legaldoctor.checkup import MODULES, checkup_html, run_checkup
+# 계약·노무 검진: ① 조항 뽑기(이용자가 검진할 항목을 고름) → ② 고른 항목을 묶음 단위로 검진(결과를 바로 보여 줌)
+CHECKUP_JOBS: dict[str, dict[str, Any]] = {}  # 검진 id → 상태(메모리에만 둠)
+
+
+JOB_TTL = 6 * 3600  # 검진 기록은 서버 메모리에 6시간만 둠(개인정보 최소 보관)
+
+
+def _sweep() -> None:
+    now = time.time()
+    for k in [k for k, j in CHECKUP_JOBS.items() if now - (j.get("ended") or j["started"]) > JOB_TTL]:
+        CHECKUP_JOBS.pop(k, None)
+
+
+def _log(job: dict[str, Any], text: str) -> None:
+    job.setdefault("log", []).append({"t": round(time.time() - job["started"]), "text": text})
+
+
+def _item_view(i, module) -> dict[str, Any]:
+    from legaldoctor.checkup import category_risk
+
+    laws = [f"「{f.law}」 {f.locator}" for f in i.findings if f.grade in ("명시 규제", "의제 리스크", "해석 리스크")][:2]
+    return {"id": i.id, "label": i.label, "quote": i.quote[:140], "summary": i.summary, "expected_risk": category_risk(module, i),
+            "risk": i.risk, "verdict": i.verdict, "lawyer": i.lawyer, "laws": laws, "checked": bool(i.verdict)}
+
+
+def _checkup_html_for(job: dict[str, Any]) -> str:
+    from legaldoctor.checkup import CheckupResult, checkup_html, load_causes
+
+    m = job["module"]
+    done = sorted([i for i in job["items"] if i.verdict], key=lambda i: ({"높음": 0, "중간": 1, "낮음": 2}.get(i.risk, 9), i.id))
+    causes = [c for c in load_causes() if c["no"] in m.causes]
+    left = len(job["items"]) - len(done)
+    notes = [f"아직 검진하지 않은 항목 {left}개"] if left else []
+    return checkup_html(CheckupResult(m, done, job.get("questions") or [], causes, notes, job.get("halted"), []))
+
+
+def _view(cid: str) -> dict[str, Any]:
+    job = CHECKUP_JOBS.get(cid)
+    if not job:
+        raise HTTPException(404, "검진 기록이 없음")
+    end = job.get("ended") or time.time()
+    m = job.get("module")
+    total = len(job.get("run_ids") or []) or 1
+    done = sum(1 for i in job.get("items", []) if i.id in (job.get("run_ids") or []) and i.verdict)
+    pct = 100 if job["status"] == "done" else (5 if job["phase"] == "extract" else round(5 + 95 * done / total))
+    return {
+        "id": cid, "status": job["status"], "phase": job["phase"], "elapsed": round(end - job.get("run_started", job["started"])), "percent": pct,
+        "run_ids": job.get("run_ids") or [],
+        "log": job.get("log", []), "error": job.get("error"), "skipped": job.get("skipped", []),
+        "title": m.title if m else "", "causes": [f"{c['no']}. {c['name']}" for c in job.get("causes", [])],
+        "items": [_item_view(i, m) for i in job.get("items", [])], "disclaimer": DISCLAIMER,
+    }
+
+
+def _extract_job(cid: str, module_key: str, body: str) -> None:
+    from legaldoctor.checkup import MODULES, extract_items, load_causes
+
+    job = CHECKUP_JOBS[cid]
+    m = MODULES[module_key]
+    t0 = time.perf_counter()
+    try:
+        _log(job, "계약서·설명에서 검진할 조항과 사실을 찾고 있어요")
+        items, questions, _dropped = extract_items(model(), m, body)
+        job.update(items=items, questions=questions, causes=[c for c in load_causes() if c["no"] in m.causes])
+        if not items:
+            job.update(status="error", error="검진할 조항·사실을 자료에서 찾지 못했어요")
+            return
+        hi = sum(1 for i in items if _item_view(i, m)["expected_risk"] == "높음")
+        _log(job, f"검진할 항목 {len(items)}개를 찾았어요(위험도 높은 범주 {hi}개). 검진할 항목을 골라 주세요")
+        job["status"] = "select"
+    except Exception as e:  # noqa: BLE001
+        job.update(status="error", error=f"조항을 뽑지 못했어요. 잠시 뒤 다시 시도해 주세요({str(e)[:120]})")
+    finally:
+        job["timings"] = {"extract": time.perf_counter() - t0}
+        job["ended"] = time.time()
+
+
+def _check_job(cid: str, ids: list[str]) -> None:
+    from legaldoctor import metrics
+    from legaldoctor.checkup import check_items
     from legaldoctor.explore.engine import build_explore
+
+    job = CHECKUP_JOBS[cid]
+    m = job["module"]
+    before = metrics.snapshot()
+    t0 = time.perf_counter()
+    targets = [i for i in job["items"] if i.id in ids and not i.verdict]
+
+    def on_item(i):
+        laws = ", ".join(_item_view(i, m)["laws"]) or "직접 다루는 조문 없음"
+        _log(job, f"[{i.risk}] {i.label}: {i.verdict} · {laws}")
+
+    try:
+        if job.get("explore") is None:
+            # 검진은 범주마다 정해 둔 법령을 바로 원문 대조한다(시연 1분 목표). 검색·가설·해석례는 규제 분석에서 씀
+            job["explore"] = build_explore(model(), load_settings(), cases=False, use_search=False, use_hypotheses=False, use_shadow=False)
+        n = len(targets)
+        _log(job, f"고른 {n}개 항목을 {(n + 2) // 3}묶음으로 나눠 법령을 찾고 원문과 대조해요")
+        halted = check_items(m, job["body"], targets, job["explore"], on_item=on_item, cancelled=lambda: job.get("cancel"))
+        if job.get("cancel"):
+            job["status"] = "cancelled"
+            _log(job, "중단했어요. 끝난 항목까지는 검진표에 들어가 있어요")
+        else:
+            job["halted"] = halted
+            left = sum(1 for i in job["items"] if not i.verdict)
+            _log(job, "검진을 마쳤어요" + (f". 남은 항목 {left}개도 이어서 고를 수 있어요" if left else ""))
+            job["status"] = "done"
+    except Exception as e:  # noqa: BLE001
+        job.update(status="error", error=f"검진 중 문제가 생겼어요. 잠시 뒤 다시 시도해 주세요({str(e)[:120]})")
+    finally:
+        job["ended"] = time.time()
+        metrics.record("checkup", {"extract": job.get("timings", {}).get("extract", 0), "check": time.perf_counter() - t0}, before,
+                       module=m.key, items=len(targets), status=job["status"])
+
+
+@app.post("/api/checkup", dependencies=[rate_limit("light")])
+async def checkup(module: str = Form(...), text: str = Form(""), files: list[UploadFile] = File(default=[])) -> dict[str, Any]:
+    """① 조항 뽑기를 시작한다. 결과(항목 목록)는 GET /api/checkup/{id}/status"""
+    from legaldoctor.checkup import MODULES
 
     if module not in MODULES:
         raise HTTPException(400, "검진 종류를 고르세요")
@@ -335,29 +490,59 @@ async def checkup(module: str = Form(...), text: str = Form(""), files: list[Upl
     for f in files:
         data = await f.read()
         try:
-            texts += [m.text for m in from_file(data, f.filename or "파일") if m.text]
+            texts += [m.text for m in await run_in_threadpool(from_file, data, f.filename or "파일") if m.text]
         except UnsupportedFile as e:
             skipped.append(str(e))
+        except Exception:  # noqa: BLE001
+            skipped.append(f"{f.filename}: 파일을 열지 못함(암호가 걸렸거나 손상된 파일일 수 있음)")
     body = "\n".join(t for t in texts if t.strip()).strip()
     if not body:
-        raise HTTPException(400, "계약서나 설명을 넣어 주세요")
-    res = run_checkup(model(), MODULES[module], body, build_explore(model(), load_settings(), cases=False))
+        raise HTTPException(400, "계약서나 설명을 넣어 주세요" + (f" ({' / '.join(skipped)})" if skipped else ""))
+    _sweep()
     cid = secrets.token_urlsafe(10)
-    CHECKUPS[cid] = checkup_html(res)
-    return {
-        "id": cid,
-        "title": res.module.title,
-        "causes": [f"{c['no']}. {c['name']}" for c in res.causes],
-        "items": [{"risk": i.risk, "label": i.label, "verdict": i.verdict, "quote": i.quote[:120], "lawyer": i.lawyer} for i in res.items],
-        "questions": res.questions,
-        "halted": res.halted,
-        "skipped": skipped,
-        "disclaimer": DISCLAIMER,
-    }
+    CHECKUP_JOBS[cid] = {"status": "running", "phase": "extract", "started": time.time(), "module": MODULES[module], "body": body, "items": [], "skipped": skipped}
+    threading.Thread(target=_extract_job, args=(cid, module, body), daemon=True).start()
+    return _view(cid)
+
+
+class RunIn(BaseModel):
+    ids: list[str]
+
+
+@app.post("/api/checkup/{cid}/run", dependencies=[rate_limit("heavy")])
+def checkup_run(cid: str, body: RunIn) -> dict[str, Any]:
+    """② 고른 항목을 검진한다. 이미 검진한 항목은 건너뜀. 남은 항목은 같은 주소로 다시 고를 수 있음"""
+    job = CHECKUP_JOBS.get(cid)
+    if not job:
+        raise HTTPException(404, "검진 기록이 없음")
+    if job["status"] == "running":
+        return _view(cid)
+    ids = [i.id for i in job["items"] if i.id in set(body.ids) and not i.verdict]
+    if not ids:
+        raise HTTPException(400, "검진할 항목을 골라 주세요")
+    job.update(status="running", phase="check", run_ids=ids, cancel=False, run_started=time.time(), ended=None)
+    threading.Thread(target=_check_job, args=(cid, ids), daemon=True).start()
+    return _view(cid)
+
+
+@app.post("/api/checkup/{cid}/cancel")
+def checkup_cancel(cid: str) -> dict[str, Any]:
+    job = CHECKUP_JOBS.get(cid)
+    if not job:
+        raise HTTPException(404, "검진 기록이 없음")
+    job["cancel"] = True
+    _log(job, "중단을 요청했어요. 지금 묶음이 끝나면 멈춰요")
+    return _view(cid)
+
+
+@app.get("/api/checkup/{cid}/status")
+def checkup_status(cid: str) -> dict[str, Any]:
+    return _view(cid)
 
 
 @app.get("/api/checkup/{cid}")
 def checkup_page(cid: str) -> HTMLResponse:
-    if cid not in CHECKUPS:
+    job = CHECKUP_JOBS.get(cid)
+    if not job or not any(i.verdict for i in job.get("items", [])):
         raise HTTPException(404, "검진표가 없음")
-    return HTMLResponse(CHECKUPS[cid])
+    return HTMLResponse(_checkup_html_for(job))

@@ -48,7 +48,8 @@ def test_run_checkup_protection_gap_is_high_risk():
     assert pl.risk == "높음" and pl.lawyer and "보호 규정 못 찾음" in pl.verdict
     assert res.causes[0]["no"] == 13
     html = checkup_html(res)
-    assert "투자계약 검진" in html and "법률 자문이 아닙니다" in html and "변호사 심화자문 권함" in html
+    assert "투자계약 검진" in html and "법률 자문이 아닙니다" in html and "변호사 권장조치" in html
+    assert "심화자문" not in html  # 항목마다 변호사 연결을 권하는 문구는 넣지 않음
 
 
 def test_labor_module_categories():

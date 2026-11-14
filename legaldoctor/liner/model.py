@@ -75,7 +75,20 @@ class LinerModel:
         return content
 
     def chat_json(self, messages: list[dict[str, Any]], **kw: Any) -> Any:
-        """JSON 응답을 받는다. 파싱에 실패하면 한 번 더 묻는다(응답이 잘리거나 형식이 깨지는 경우)."""
+        """JSON 응답을 받는다. 파싱에 실패하면 한 번 더 묻는다(응답이 잘리거나 형식이 깨지는 경우).
+        같은 질문의 답은 캐시에서 바로 꺼낸다(legaldoctor.cache)."""
+        from legaldoctor import cache
+
+        ck = cache.key("chat_json", self._settings.liner_model, messages, kw)
+        hit = cache.get("model", ck)
+        if hit is not None:
+            cache.HITS["model"] += 1
+            return hit
+        out = self._chat_json(messages, **kw)
+        cache.put("model", ck, out)
+        return out
+
+    def _chat_json(self, messages: list[dict[str, Any]], **kw: Any) -> Any:
         try:
             return extract_json(self.chat(messages, **kw))
         except LinerModelError as e:

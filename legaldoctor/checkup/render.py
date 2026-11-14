@@ -36,7 +36,7 @@ def checkup_html(res: CheckupResult) -> str:
         f"<h1><span>스타트업 리걸닥터</span> · {e(m.title)}</h1>",
         f"<div class='meta'>대비하는 사인: {e(cause_text)} · 사인 분류는 스타트업 부검보고서 체계</div>",
         f"<div class='disc'>{e(DISCLAIMER)}</div>",
-        f"<div class='sum'><div>검진 항목 <b>{len(res.items)}</b></div><div>위험 높음 <b style='color:#c92a2a'>{hi}</b></div><div>변호사 심화자문 권함 <b style='color:#1971c2'>{len(res.lawyer_items)}</b></div></div>",
+        f"<div class='sum'><div>검진 항목 <b>{len(res.items)}</b></div><div>위험 높음 <b style='color:#c92a2a'>{hi}</b></div></div>",
     ]
     if res.halted:
         parts.append(f"<p class='disc'>원문 대조가 멈춤: {e(res.halted)}</p>")
@@ -49,7 +49,7 @@ def checkup_html(res: CheckupResult) -> str:
     if len(res.causes) > 1:
         parts.append("<p class='meta'>함께 보는 사인: " + e(", ".join(f"{c['no']}. {c['name']}" for c in res.causes[1:])) + "</p>")
 
-    parts.append("<h2>항목별 검진 결과</h2><table><tr><th>위험</th><th>항목</th><th>자료 원문</th><th>법령 대조</th><th>지금 할 일</th></tr>")
+    parts.append("<h2>항목별 검진 결과</h2><table><tr><th>위험</th><th>항목</th><th>자료 원문</th><th>법령 대조</th><th>변호사 권장조치</th></tr>")
     for i in res.items:
         laws = []
         shown = [x for x in i.findings if x.grade not in ("규정 공백", "원문 확인 불가")]
@@ -64,19 +64,13 @@ def checkup_html(res: CheckupResult) -> str:
             q = f"<div class='q'>“{e(f.quote[:100])}”</div>" if f.quote else ""
             laws.append(f"<div>{name} · {e(f.point)}{q}</div>")
         law_cell = f"<b>{e(i.verdict)}</b>" + "".join(laws)
-        lawyer = "<div class='lawyer'>변호사 심화자문 권함</div>" if i.lawyer else ""
         parts.append(
             f"<tr><td>{_risk(i.risk)}<div class='chain'>{e(LINK_LABEL.get(i.link, ''))}</div></td>"
             f"<td><b>{e(i.label)}</b><div>{e(i.summary)}</div><div class='chain'>부담: {e(i.party)}</div></td>"
-            f"<td><div class='q'>“{e(i.quote)}”</div></td><td>{law_cell}</td><td>{e(i.action)}{lawyer}</td></tr>"
+            f"<td><div class='q'>“{e(i.quote)}”</div></td><td>{law_cell}</td><td>{e(i.action)}</td></tr>"
         )
     parts.append("</table>")
     if res.questions:
         parts.append("<h2>확인이 필요한 사실</h2><ul>" + "".join(f"<li>{e(q)}</li>" for q in res.questions) + "</ul>")
-    if res.lawyer_items:
-        parts.append(
-            "<h2>변호사 심화자문으로 가져갈 것</h2><ol>"
-            + "".join(f"<li>{e(i.label)}: “{e(i.quote[:80])}”</li>" for i in res.lawyer_items)
-            + "</ol><p class='meta'>이 검진표를 그대로 들고 가면 사실관계 파악 시간을 줄일 수 있음</p>"
-        )
+    parts.append("<p class='meta'>변호사 권장조치는 구태언 변호사가 같은 유형의 조항·사실에 일반적으로 권하는 조치를 정리한 것이며 개별 사안에 대한 법률 자문이 아닙니다. <a href='../../terms'>이용약관</a></p>")
     return _doc(f"스타트업 리걸닥터 {m.title}", "".join(parts), CSS)

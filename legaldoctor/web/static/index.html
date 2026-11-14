@@ -57,17 +57,32 @@ canvas{width:100%;height:320px;border:1px solid var(--line);border-radius:10px;b
 .result h3{margin:14px 0 4px;font-size:16px}
 .result pre{white-space:pre-wrap;font:inherit;margin:0}
 .warn{color:var(--accent);font-size:13px}
-#prog{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100% - 32px));background:var(--card);border:2px solid var(--accent);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:14px 16px;z-index:50}
-#prog .t{display:flex;align-items:center;gap:10px;font-weight:600}
+#ov{position:fixed;inset:0;background:rgba(15,17,20,.35);z-index:40}
+#prog{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(460px,calc(100% - 32px));background:var(--card);border:2px solid var(--accent);border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,.25);padding:18px 18px 14px;z-index:50}
+#prog .t{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
 #prog .sp{width:18px;height:18px;border:3px solid var(--accent-soft);border-top-color:var(--accent);border-radius:50%;animation:sp 0.9s linear infinite;flex:none}
 @keyframes sp{to{transform:rotate(360deg)}}
 #prog .el{margin-left:auto;color:var(--sub);font-weight:400;font-size:13px;white-space:nowrap}
-#prog ol{list-style:none;margin:10px 0 0;padding:0;font-size:13px}
-#prog li{padding:2px 0 2px 20px;position:relative;color:var(--sub)}
-#prog li::before{content:"";position:absolute;left:4px;top:8px;width:8px;height:8px;border-radius:50%;border:2px solid var(--line)}
-#prog li.done{color:var(--ink)}#prog li.done::before{background:var(--ok);border-color:var(--ok)}
-#prog li.now{color:var(--accent);font-weight:600}#prog li.now::before{border-color:var(--accent);background:var(--accent-soft)}
+.bar{height:12px;background:var(--chip);border-radius:6px;overflow:hidden;margin:14px 0 4px}
+.bar>i{display:block;height:100%;width:0;background:var(--accent);border-radius:6px;transition:width .5s}
+#prog .pc{display:flex;justify-content:space-between;font-size:13px;color:var(--sub)}
+#prog .pc b{color:var(--accent);font-size:15px}
 #prog .ph{color:var(--sub);font-size:12px;margin-top:8px}
+#prog .stop{margin-top:12px;width:100%;background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:10px;padding:8px;font:inherit;font-weight:600;cursor:pointer}
+#prog .stop:disabled{opacity:.5;cursor:default}
+#logp{position:fixed;top:16px;right:16px;bottom:16px;width:min(340px,calc(100% - 32px));background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:45;display:flex;flex-direction:column}
+#logp .lh{display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);font-weight:700;font-size:14px}
+#logp .lh button{margin-left:auto;border:0;background:transparent;color:var(--sub);cursor:pointer;font:inherit}
+#logl{flex:1;overflow-y:auto;padding:10px 12px;font-size:13px}
+#logl .m{background:var(--chip);border-radius:10px;padding:7px 9px;margin:0 0 7px}
+#logl .m .tm{color:var(--sub);font-size:11px;margin-right:6px}
+@media (max-width:900px){#logp{top:auto;height:38vh}}
+#logp[hidden],#prog[hidden],#ov[hidden]{display:none}
+.sel{border:1px solid var(--line);border-radius:10px;padding:7px 10px;margin-top:6px;display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.sel input{margin-top:4px}
+.sel.done{opacity:.75;cursor:default}
+.pend{color:var(--sub);font-size:12px}
+.hist{margin-top:14px}.hist li{margin:3px 0}.hist a{cursor:pointer}
 #notice{display:none;margin:10px 0;padding:10px 12px;border-radius:10px;font-size:14px;border:1px solid var(--line);background:var(--chip)}
 #notice.err{border-color:var(--accent);background:var(--accent-soft)}
 #notice.ok{border-color:var(--ok)}
@@ -133,6 +148,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
       </div>
       <div class="hint" id="ckFiles"></div>
       <div id="ckResult"></div>
+      <div class="hist" id="ckHist"></div>
     </div>
     <div id="notice" role="status"></div>
     <p class="warn" id="msg"></p>
@@ -151,27 +167,37 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
     <div class="result" id="result"></div>
   </aside>
 </main>
-<div id="prog" hidden role="status" aria-live="polite"><div class="t"><span class="sp"></span><span id="progT"></span><span class="el" id="progEl"></span></div><ol id="progS"></ol><div class="ph" id="progH"></div></div>
-<footer><div id="disc"></div><div class="hint" style="margin-top:6px">올린 자료는 분석에만 쓰고 저장하지 않습니다. 분석을 위해 내용이 AI 모델 서비스(라이너)로 전송됩니다. <a href="privacy" target="_blank">개인정보 처리 안내</a></div></footer>
+<div id="ov" hidden></div>
+<div id="prog" hidden role="dialog" aria-modal="true" aria-live="polite"><div class="t"><span class="sp"></span><span id="progT"></span><span class="el" id="progEl"></span></div>
+<div class="bar"><i id="progBar"></i></div><div class="pc"><span id="progS"></span><b id="progP">0%</b></div><div class="ph" id="progH"></div>
+<button class="stop" id="progStop" hidden>중단</button></div>
+<div id="logp" hidden aria-live="polite"><div class="lh">진행 상황<button id="logClose">닫기</button></div><div id="logl"></div></div>
+<footer><div id="disc"></div><div class="hint" style="margin-top:6px">올린 자료는 분석에만 쓰고 저장하지 않습니다. 분석을 위해 내용이 AI 모델 서비스(라이너)로 전송됩니다. <a href="terms" target="_blank">이용약관</a> · <a href="privacy" target="_blank">개인정보 처리방침</a></div></footer>
 <script>
 const $=s=>document.querySelector(s);
 let sid=null,editing=false,last=null;
 async function api(path,opt={}){const r=await fetch(path,opt);if(!r.ok){throw new Error((await r.json().catch(()=>({detail:r.statusText}))).detail)}return r.json()}
 async function session(){if(!sid){sid=(await api('api/sessions',{method:'POST'})).id}return sid}
-// 진행 표시: 기다리는 동안 무엇을 하는지, 얼마나 지났는지 보여 준다
-let progT0=0,progIv=null,progPlan=null;
+// 진행 안내창(가운데, 진행률 막대, 중단 버튼)과 오른쪽 진행 대화창
+let progT0=0,progIv=null,progFake=null,onStop=null;
 function fmt(s){return s<60?`${s}초`:`${Math.floor(s/60)}분 ${s%60}초`}
-function drawSteps(steps){$('#progS').innerHTML=steps.map(s=>`<li class="${s.state}">${esc(s.label)}</li>`).join('')}
-function showProg(title,plan,hint){
-  document.querySelectorAll('.btn').forEach(b=>b.disabled=true);
-  $('#progT').textContent=title;$('#progH').textContent=hint||'';$('#prog').hidden=false;
-  progT0=Date.now();progPlan=plan||null;clearInterval(progIv);
-  const tick=()=>{const el=Math.round((Date.now()-progT0)/1000);$('#progEl').textContent=fmt(el);
-    if(progPlan){let acc=0,cur=progPlan.length-1;for(let i=0;i<progPlan.length;i++){acc+=progPlan[i][1];if(el<acc){cur=i;break}}
-      drawSteps(progPlan.map((p,i)=>({label:p[0],state:i<cur?'done':i===cur?'now':'todo'})))}};
+function setPct(p,step){p=Math.max(0,Math.min(100,Math.round(p)));$('#progBar').style.width=p+'%';$('#progP').textContent=p+'%';if(step!==undefined)$('#progS').textContent=step}
+function showProg(title,opt={}){
+  $('#progT').textContent=title;$('#progH').textContent=opt.hint||'';$('#progS').textContent=opt.step||'';
+  $('#ov').hidden=false;$('#prog').hidden=false;setPct(0);
+  onStop=opt.onStop||null;const sb=$('#progStop');sb.hidden=!onStop;sb.disabled=false;sb.textContent='중단';
+  progT0=Date.now();clearInterval(progIv);progFake=opt.fake||null;
+  const tick=()=>{const el=(Date.now()-progT0)/1000;$('#progEl').textContent=fmt(Math.round(el));
+    if(progFake)setPct(90*(1-Math.exp(-el/progFake)))};  // 서버 진행률이 없을 때 예상 시간으로 채움(90%에서 멈춤)
   tick();progIv=setInterval(tick,1000)}
-function hideProg(){clearInterval(progIv);$('#prog').hidden=true;document.querySelectorAll('.btn').forEach(b=>b.disabled=false)}
-function busy(on,text){if(on)showProg(text||'읽고 있어요');else hideProg()}
+function hideProg(){clearInterval(progIv);$('#prog').hidden=true;$('#ov').hidden=true;onStop=null}
+$('#progStop').onclick=()=>{if(!onStop)return;$('#progStop').disabled=true;$('#progStop').textContent='중단하는 중...';onStop()};
+function logShow(){$('#logp').hidden=false}
+function logSet(lines){$('#logl').innerHTML=lines.map(l=>`<div class="m"><span class="tm">${fmt(l.t||0)}</span>${esc(l.text)}</div>`).join('');const L=$('#logl');L.scrollTop=L.scrollHeight}
+function logAdd(text){const L=$('#logl');L.insertAdjacentHTML('beforeend',`<div class="m"><span class="tm">${fmt(Math.round((Date.now()-progT0)/1000))}</span>${esc(text)}</div>`);L.scrollTop=L.scrollHeight}
+$('#logClose').onclick=()=>$('#logp').hidden=true;
+function busy(on,text){if(on)showProg(text||'읽고 있어요',{fake:20});else hideProg()}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function notice(kind,html){const n=$('#notice');n.className=kind;n.style.display='block';n.innerHTML='<button aria-label="닫기" onclick="this.parentNode.style.display=\'none\'">닫기</button>'+html;n.scrollIntoView({block:'nearest',behavior:'smooth'})}
 function esc(s){return (s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 
@@ -195,12 +221,15 @@ function render(v){
   if(notes.length)$('#msg').textContent=notes.join(' / ');
 }
 
-const READ_PLAN=[['파일 받기',3],['쪽마다 글과 화면 읽기',8],['사업 모델 12개 항목 정리',60]];
 async function sendForm(fd,label){
   await session();$('#notice').style.display='none';
-  showProg(label,fd.has('files')?READ_PLAN:[['내용 읽기',3],['사업 모델 12개 항목 정리',60]],'보통 10~40초 걸려요. 쪽수가 많으면 조금 더 걸립니다');
-  try{const v=await api(`api/sessions/${sid}/materials`,{method:'POST',body:fd});render(v);afterRead(v)}
-  catch(e){notice('err',`<b>자료를 처리하지 못했어요.</b> ${esc(e.message)}<br>잠시 뒤 다시 올리거나, 사업 내용을 글로 2~3줄 적어 주세요.`)}
+  const ac=new AbortController();
+  showProg(label,{fake:18,step:fd.has('files')?'쪽마다 글과 화면을 읽고 사업 모델 12개 항목을 정리해요':'사업 모델 12개 항목을 정리해요',hint:'보통 10~40초 걸려요',onStop:()=>ac.abort()});
+  logShow();$('#logl').innerHTML='';logAdd(fd.has('files')?'자료를 받았어요. 쪽마다 글과 화면을 읽고 있어요':'설명을 받았어요');
+  try{const v=await api(`api/sessions/${sid}/materials`,{method:'POST',body:fd,signal:ac.signal});render(v);afterRead(v);
+    const f=v.slots.filter(s=>s.value).length;logAdd(`사업 모델 12개 항목 중 ${f}개를 채웠어요`)}
+  catch(e){if(e.name==='AbortError'){notice('err','읽기를 중단했어요.');logAdd('중단했어요')}
+    else notice('err',`<b>자료를 처리하지 못했어요.</b> ${esc(e.message)}<br>잠시 뒤 다시 올리거나, 사업 내용을 글로 2~3줄 적어 주세요.`)}
   finally{hideProg()}
 }
 function afterRead(v){
@@ -242,22 +271,74 @@ document.querySelectorAll('#menu button').forEach(b=>b.onclick=()=>{
   document.querySelector('aside').hidden=ops;document.querySelector('main').classList.toggle('single',ops);
 });
 
-// 계약·노무 검진
-let ckModule='invest';
+// 계약·노무 검진: ① 조항 뽑기 → 항목 고르기 → ② 고른 항목 검진(끝나는 대로 표시) → 남은 항목 이어서
+let ckModule='invest',ck=null;
 document.querySelectorAll('#ckMods button').forEach(b=>b.onclick=()=>{ckModule=b.dataset.m;document.querySelectorAll('#ckMods button').forEach(x=>x.classList.toggle('pick',x===b))});
-$('#ckFile').onchange=e=>{$('#ckFiles').textContent=[...e.target.files].map(f=>f.name).join(', ')};
-$('#ckDemo').onclick=async()=>{try{$('#ckText').value=(await api('api/checkup/demo/'+ckModule)).text}catch(e){$('#msg').textContent=e.message}};
+$('#ckFile').onchange=e=>{const fs=[...e.target.files];$('#ckFiles').textContent=fs.map(f=>f.name).join(', ');
+  if(fs.length&&$('#ckText').dataset.demo==='1'){$('#ckText').value='';$('#ckText').dataset.demo=''}};  // 가상 예시와 올린 파일이 섞이지 않게
+$('#ckText').oninput=()=>{$('#ckText').dataset.demo=''};
+$('#ckDemo').onclick=async()=>{try{$('#ckText').value=(await api('api/checkup/demo/'+ckModule)).text;$('#ckText').dataset.demo='1';$('#ckFile').value='';$('#ckFiles').textContent=''}catch(e){notice('err',esc(e.message))}};
 const RC={'높음':'#c92a2a','중간':'#e8590c','낮음':'#2b8a3e'};
+const riskTag=r=>`<span class="risk" style="background:${RC[r]||'#495057'}">${esc(r)}</span>`;
+function ckRender(j){
+  ck=j;const done=j.items.filter(i=>i.checked),left=j.items.filter(i=>!i.checked);
+  const hi=done.filter(i=>i.risk==='높음').length;
+  let h=`<h3>${esc(j.title)} · ${esc(j.causes.join(', '))}</h3>`;
+  if(done.length)h+=`<p class="hint">검진한 항목 ${done.length} · 위험 높음 ${hi}</p><div class="row"><a class="btn" href="api/checkup/${j.id}" target="_blank">검진표 열기</a></div>`+
+    done.map(i=>`<div class="ck-item">${riskTag(i.risk)}<b>${esc(i.label)}</b> · ${esc(i.verdict)}<div class="hint">“${esc(i.quote)}”</div>${i.laws.length?`<div class="hint">${esc(i.laws.join(' · '))}</div>`:''}</div>`).join('');
+  const running=j.status==='running'&&j.phase==='check';
+  if(left.length){
+    h+=`<h3 style="margin-top:16px">${done.length?'남은 항목':'검진할 항목을 골라 주세요'} <span class="hint">· 위험도 순, 항목 3개당 약 10초</span></h3>`+
+      left.map(i=>{const inRun=running&&(ck.run_ids||[]).includes(i.id);
+        return `<label class="sel">${inRun?'<span class="pend">검진 중</span>':`<input type="checkbox" value="${i.id}" ${!done.length&&i.expected_risk==='높음'?'checked':''}>`}<span>${riskTag(i.expected_risk)}<b>${esc(i.label)}</b><div class="hint">“${esc(i.quote)}”</div></span></label>`}).join('');
+    if(!running)h+=`<div class="row"><button class="btn" id="ckGo">선택한 항목 검진</button><button class="btn ghost" id="ckAll">모두 선택</button></div>`;
+  }
+  if(j.skipped&&j.skipped.length)h+=`<p class="hint">못 읽은 파일: ${esc(j.skipped.join(' / '))}</p>`;
+  $('#ckResult').innerHTML=h+`<p class="hint">변호사 권장조치는 구태언 변호사가 같은 유형의 조항에 일반적으로 권하는 조치이며 법률 자문이 아닙니다. <a href="terms" target="_blank">이용약관</a></p>`;
+  const go=$('#ckGo');if(go)go.onclick=ckGoRun;const all=$('#ckAll');if(all)all.onclick=()=>document.querySelectorAll('#ckResult .sel input').forEach(x=>x.checked=true);
+}
+async function ckPoll(id,until){
+  for(;;){const j=await api(`api/checkup/${id}/status`);
+    logSet(j.log||[]);
+    if(j.phase==='check'){setPct(j.percent,`${j.items.filter(i=>(j.run_ids||[]).includes(i.id)&&i.checked).length}/${(j.run_ids||[]).length} 항목 완료`);ckRender(j)}
+    if(until(j))return j;
+    if(j.status==='error')throw new Error(j.error||'검진 중 문제가 생겼어요');
+    await sleep(2000)}
+}
 $('#ckRun').onclick=async()=>{
   const fd=new FormData();fd.append('module',ckModule);fd.append('text',$('#ckText').value);[...$('#ckFile').files].forEach(f=>fd.append('files',f));
-  $('#notice').style.display='none';showProg('검진하고 있어요',[['조항·사실 뽑기',40],['관련 법령 찾기',60],['법령 원문과 대조',150],['검진표 만들기',60]],'보통 3~5분 걸려요. 이 창을 닫지 말고 기다려 주세요');
-  try{const r=await api('api/checkup',{method:'POST',body:fd});
-    const hi=r.items.filter(i=>i.risk==='높음').length, lw=r.items.filter(i=>i.lawyer).length;
-    $('#ckResult').innerHTML=`<h3>${esc(r.title)} · ${esc(r.causes.join(', '))}</h3><p class="hint">검진 항목 ${r.items.length} · 위험 높음 ${hi} · 변호사 심화자문 권함 ${lw}</p>`+
-      `<div class="row"><a class="btn" href="api/checkup/${r.id}" target="_blank">검진표 열기</a></div>`+
-      r.items.map(i=>`<div class="ck-item"><span class="risk" style="background:${RC[i.risk]||'#495057'}">${esc(i.risk)}</span><b>${esc(i.label)}</b> · ${esc(i.verdict)}<div class="hint">“${esc(i.quote)}”</div>${i.lawyer?'<div class="hint" style="color:#1971c2">변호사 심화자문 권함</div>':''}</div>`).join('')+
-      (r.halted?`<p class="warn">${esc(r.halted)}</p>`:'')+`<p class="hint">※ ${esc(r.disclaimer)}</p>`;
-  }catch(e){notice('err',`<b>검진을 마치지 못했어요.</b> ${esc(e.message)}`)}finally{hideProg()}};
+  $('#notice').style.display='none';$('#ckResult').innerHTML='';ck=null;  // 다시 검진하면 이전 결과를 지움(이전 결과는 아래 검진 기록에서 다시 볼 수 있음)
+  let stop=false;showProg('검진할 조항을 찾고 있어요',{fake:12,step:'계약서·설명 읽는 중',hint:'보통 10~20초 걸려요',onStop:()=>{stop=true}});
+  logShow();$('#logl').innerHTML='';
+  try{const j0=await api('api/checkup',{method:'POST',body:fd});
+    const j=await ckPoll(j0.id,x=>x.status!=='running'||stop);
+    if(stop){notice('err','검진을 중단했어요.');return}
+    ckRender(j);notice('ok',`검진할 항목 ${j.items.length}개를 찾았어요. 위험도 높은 항목을 먼저 골라 두었어요. 고른 뒤 "선택한 항목 검진"을 눌러 주세요.`);
+  }catch(e){notice('err',`<b>검진을 시작하지 못했어요.</b> ${esc(e.message)}`)}finally{hideProg()}};
+async function ckGoRun(){
+  const ids=[...document.querySelectorAll('#ckResult .sel input:checked')].map(x=>x.value);
+  if(!ids.length){notice('err','검진할 항목을 하나 이상 골라 주세요.');return}
+  const id=ck.id;
+  showProg('고른 항목을 검진하고 있어요',{step:`0/${ids.length} 항목 완료`,hint:'끝난 항목은 바로 화면에 보여요. 중단 버튼을 누르기 전까지 계속 진행해요',onStop:()=>api(`api/checkup/${id}/cancel`,{method:'POST'}).catch(()=>{})});
+  logShow();
+  try{await api(`api/checkup/${id}/run`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ids})});
+    const j=await ckPoll(id,x=>x.status!=='running');ckRender(j);
+    const left=j.items.filter(i=>!i.checked).length;
+    notice('ok',(j.status==='cancelled'?'중단했어요. 끝난 항목까지 검진표에 들어가 있어요.':'검진을 마쳤어요.')+(left?` 남은 항목 ${left}개도 골라서 이어서 검진할 수 있어요.`:''));
+    histAdd({kind:'checkup',id,title:j.title,sub:`항목 ${j.items.filter(i=>i.checked).length}개 · 위험 높음 ${j.items.filter(i=>i.checked&&i.risk==='높음').length}`});
+  }catch(e){notice('err',`<b>검진을 마치지 못했어요.</b> ${esc(e.message)}`)}finally{hideProg()}}
+
+// 검진 기록: 이 브라우저에만 저장(서버를 다시 시작하면 내용은 만료됨)
+function histGet(){try{return JSON.parse(localStorage.getItem('ld_hist')||'[]')}catch(e){return[]}}
+function histAdd(x){try{const h=histGet().filter(y=>!(y.kind===x.kind&&y.id===x.id));h.unshift({...x,at:new Date().toLocaleString('ko-KR')});localStorage.setItem('ld_hist',JSON.stringify(h.slice(0,20)))}catch(e){}histDraw()}
+function histDraw(){const h=histGet();const el=$('#ckHist');if(!el)return;
+  el.innerHTML=h.length?`<h3>검진 기록 <span class="hint">· 이 브라우저에만 남아요</span></h3><ul>`+h.map((x,k)=>`<li><a data-k="${k}">${esc(x.title)}</a> <span class="hint">${esc(x.sub||'')} · ${esc(x.at)}</span></li>`).join('')+`</ul>`:'';
+  el.querySelectorAll('a').forEach(a=>a.onclick=()=>histOpen(h[+a.dataset.k]))}
+async function histOpen(x){
+  try{if(x.kind==='checkup'){const j=await api(`api/checkup/${x.id}/status`);ckRender(j);$('#ckResult').scrollIntoView({behavior:'smooth'})}
+    else{window.open(`api/sessions/${x.id}/out/regmap.html`,'_blank')}}
+  catch(e){notice('err','이 기록은 만료됐어요(서버가 다시 시작되면 지난 결과는 사라져요). 다시 검진해 주세요.')}}
+histDraw();
 
 // 스무고개
 function showQ(v){
@@ -285,25 +366,27 @@ function showResult(r){
     const core=(r.core||[]).length?`<p class="hint">핵심 규제: ${r.core.map(c=>esc(`「${c.law}」 ${c.locator}`)).join(', ')}</p>`:'';
     $('#result').innerHTML=`<h3>권하는 길: ${esc(r.track||'')}</h3><p class="hint">${counts}</p>`+core+links+(r.halted_at?`<p class="warn">분석이 멈춘 단계: ${esc(r.halt_reason)}</p>`:'')+r.stages.map(s=>`<details><summary>${esc(s.stage)}</summary><pre>${esc(s.summary)}</pre></details>`).join('');
     $('#result').scrollIntoView({block:'start',behavior:'smooth'})}
-function jobSteps(j){let now=false;return (j.stages||[]).map(s=>{if(s.done)return{label:s.label,state:'done'};if(!now){now=true;return{label:s.label,state:'now'}}return{label:s.label,state:'todo'}})}
 async function pollJob(){
-  for(;;){await new Promise(r=>setTimeout(r,2000));
+  for(;;){await sleep(2000);
     const j=await api(`api/sessions/${sid}/analyze`);
-    if(j.stages&&j.stages.length){progPlan=null;drawSteps(jobSteps(j))}
+    const cur=(j.stages||[]).find(s=>!s.done);setPct(j.percent||0,cur?`${cur.label} 중`:'마무리 중');logSet(j.log||[]);
     if(j.status==='done')return j.result;
+    if(j.status==='cancelled')throw Object.assign(new Error('분석을 중단했어요'),{cancel:true});
     if(j.status==='error')throw new Error(j.error||'분석 중 문제가 생겼어요');
     if(j.status==='idle')throw new Error('분석이 시작되지 않았어요. 다시 눌러 주세요');}
 }
 $('#okBtn').onclick=async()=>{await session();const edits={};
   if(editing)document.querySelectorAll('.slot input').forEach(i=>{const s=last.slots.find(x=>x.key===i.dataset.k);if(i.value.trim()&&i.value.trim()!==(s.value||''))edits[i.dataset.k]=i.value.trim()});
-  $('#notice').style.display='none';
-  showProg('규제를 살펴보고 있어요',[['분석 준비',5]],'보통 2분 안팎 걸려요. 이 창을 닫지 말고 기다려 주세요');
+  $('#notice').style.display='none';$('#result').innerHTML='';
+  showProg('규제를 살펴보고 있어요',{step:'분석 준비 중',hint:'보통 1~2분 걸려요. 중단 버튼을 누르기 전까지 계속 진행해요',onStop:()=>api(`api/sessions/${sid}/analyze/cancel`,{method:'POST'}).catch(()=>{})});
+  logShow();$('#logl').innerHTML='';
   try{editing=false;$('#editBtn').textContent='고칠 곳 있어요';
     render(await api(`api/sessions/${sid}/confirm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}));
     const st=await api(`api/sessions/${sid}/analyze`,{method:'POST'});
-    showResult(st.status==='done'?st.result:await pollJob());
-    notice('ok','분석이 끝났어요. 아래 "규제 지도"부터 열어 보세요.');
-  }catch(e){notice('err',`<b>분석을 마치지 못했어요.</b> ${esc(e.message)}`)}finally{hideProg()}};
+    const r=st.status==='done'?st.result:await pollJob();
+    showResult(r);notice('ok','분석이 끝났어요. 아래 "규제 지도"부터 열어 보세요.');
+    histAdd({kind:'analyze',id:sid,title:'규제팡 규제 분석',sub:`${r.track||''} · ${(r.core||[]).map(c=>c.law).slice(0,2).join(', ')}`});
+  }catch(e){notice('err',e.cancel?'분석을 중단했어요.':`<b>분석을 마치지 못했어요.</b> ${esc(e.message)}`)}finally{hideProg()}};
 api('api/sessions',{method:'POST'}).then(r=>{sid=r.id;return api('api/sessions/'+sid)}).then(render).catch(()=>{});
 </script>
 </body>
