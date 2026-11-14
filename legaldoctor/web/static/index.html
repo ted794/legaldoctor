@@ -90,7 +90,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
     </div>
 
     <div class="pane" id="p-file">
-      <label class="drop" id="drop">사업소개서·IR 자료를 여기에 끌어다 놓거나 눌러서 고르세요<br><span class="hint">PDF, PPTX, DOCX, HWPX, 사진. 한글(.hwp)은 PDF로 저장해서 올려 주세요.</span>
+      <label class="drop" id="drop">사업소개서·IR 자료를 여기에 끌어다 놓거나 눌러서 고르세요<br><span class="hint">PDF, PPTX, DOCX, HWPX, 사진. 한글(.hwp)은 PDF로 저장해서 올려 주세요. 다른 사람의 개인정보와 공개하면 안 되는 영업비밀은 빼고 올려 주세요.</span>
         <input type="file" id="fileIn" multiple hidden accept=".pdf,.pptx,.docx,.hwpx,.txt,.md,.png,.jpg,.jpeg,.webp"></label>
       <div class="row hint" id="fileList"></div>
     </div>
@@ -135,7 +135,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
     <div class="result" id="result"></div>
   </aside>
 </main>
-<footer id="disc"></footer>
+<footer><div id="disc"></div><div class="hint" style="margin-top:6px">올린 자료는 분석에만 쓰고 저장하지 않습니다. 분석을 위해 내용이 AI 모델 서비스(라이너)로 전송됩니다. <a href="privacy" target="_blank">개인정보 처리 안내</a></div></footer>
 <script>
 const $=s=>document.querySelector(s);
 let sid=null,editing=false,last=null;

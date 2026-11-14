@@ -138,6 +138,17 @@ def index() -> FileResponse:
     return FileResponse(STATIC / "index.html")
 
 
+@app.get("/privacy")
+def privacy() -> FileResponse:
+    return FileResponse(STATIC / "privacy.html")
+
+
+@app.get("/api/info")
+def info() -> dict[str, str]:
+    """운영자 표시. 값은 배포 서버의 .env(LD_OPERATOR, LD_CONTACT)에서 읽어 저장소에 운영 정보를 남기지 않는다."""
+    return {"operator": os.getenv("LD_OPERATOR", ""), "contact": os.getenv("LD_CONTACT", "")}
+
+
 @app.post("/api/sessions")
 def create_session() -> dict[str, str]:
     sid = secrets.token_urlsafe(12)
