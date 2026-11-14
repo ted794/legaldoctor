@@ -48,6 +48,7 @@ ul,ol{margin:4px 0;padding-left:20px}
 h2.core{color:#A51C30;border-bottom-color:#A51C30}
 .coretbl td.rk{font-weight:700;color:#A51C30;text-align:center;width:28px}
 .coretbl td.why{color:#A51C30;font-size:12px;font-weight:600;width:180px}
+.ls{display:inline-block;margin-left:4px;padding:0 5px;border:1px solid #1971c2;border-radius:4px;color:#1971c2;font-size:10px;white-space:nowrap}
 details{margin:4px 0 8px}summary{cursor:pointer;color:#5b6573;font-size:12px;padding:4px 0}
 @media print{.page{padding:0}a{color:inherit;text-decoration:none}@page{size:A4;margin:14mm}}
 """
@@ -74,6 +75,10 @@ def _law_cell(row) -> str:
 
 
 
+def _src(x) -> str:
+    return "<span class='ls'>Liner Search</span>" if "Liner Search" in (x.found_by or []) else ""
+
+
 def _row_tr(x) -> str:
     quote = f"<div class='q'>“{e(x.quote)}”</div>" if x.quote else ""
     chain = f"<div class='chain'>{' → '.join(e(c) for c in x.chain)}</div>" if len(x.chain) > 1 else ""
@@ -81,7 +86,7 @@ def _row_tr(x) -> str:
     if x.reg_status:
         prec += f"<div class='chain'><b>{e(x.reg_status)}</b></div>"
     mins = f"<div class='chain'>소관 {e(x.ministry)}</div>" if x.ministry else ""
-    return f"<tr><td>{_grade(x.grade)}</td><td>{e(x.type)}</td><td>{_law_cell(x)}{mins}</td><td>{e(x.point)}{quote}{chain}{prec}</td></tr>"
+    return f"<tr><td>{_grade(x.grade)}</td><td>{e(x.type)}</td><td>{_law_cell(x)}{_src(x)}{mins}</td><td>{e(x.point)}{quote}{chain}{prec}</td></tr>"
 
 
 def _rows_table(rows) -> str:
@@ -99,7 +104,7 @@ def _core_block(r: Report) -> str:
         return ""
     act = dict(r.activities)
     trs = "".join(
-        f"<tr><td class='rk'>{i}</td><td>{_grade(x.grade)}<div class='chain'>{e(x.type)}</div></td><td>{_law_cell(x)}"
+        f"<tr><td class='rk'>{i}</td><td>{_grade(x.grade)}<div class='chain'>{e(x.type)}</div></td><td>{_law_cell(x)}{_src(x)}"
         + (f"<div class='chain'>소관 {e(x.ministry)}</div>" if x.ministry else "")
         + f"</td><td>{e(x.point)}<div class='chain'>{e(x.activity_id)}. {e(act.get(x.activity_id, ''))}</div></td><td class='why'>{e(' · '.join(x.reasons) or '-')}</td></tr>"
         for i, x in enumerate(r.core, 1)
@@ -108,6 +113,27 @@ def _core_block(r: Report) -> str:
         "<h2 class='core'>핵심 규제</h2><p class='meta'>판정, 규제 유형, 닮은 승인 사례와 같은 규정인지, 특례 선례 수, 특례 뒤 미개정 여부로 매긴 순위. 법령 계열마다 하나씩 골랐음</p>"
         f"<table class='coretbl'><tr><th>#</th><th>판정</th><th>근거</th><th>요지</th><th>왜 핵심인가</th></tr>{trs}</table>"
     )
+
+
+def _search_block(r: Report) -> str:
+    st = r.search_stats or {}
+    if not st.get("used") and not r.leads:
+        return ""
+    found = [x for x in r.rows if "Liner Search" in (x.found_by or [])]
+    laws = list(dict.fromkeys(f"「{x.law}」 {x.locator}" for x in found))
+    out = ["<h2>Liner Search가 찾은 단서</h2>"]
+    out.append(
+        f"<p class='meta'>행위마다 Liner Search로 규제 법령과 정부 해석을 찾고, 나온 법령 단서는 국가법령정보 원문과 대조했음. "
+        f"법령 단서 {st.get('clues', 0)}건 가운데 원문 대조를 통과해 규제 지도에 오른 조문 {len(laws)}개, 정부 자료 단서 {len(r.leads)}건</p>"
+    )
+    if laws:
+        out.append("<p><b>원문 대조를 통과한 조문:</b> " + e(", ".join(laws[:12])) + (" 외" if len(laws) > 12 else "") + "</p>")
+    if r.leads:
+        out.append("<p><b>확인해 볼 정부 자료(원문 대조 전 단서):</b></p><ul>")
+        for l in r.leads:
+            out.append(f"<li>{e(l['kind'])}: <a href='{e(l['url'])}'>{e(l['title'])}</a> · {e(l['note'])}</li>")
+        out.append("</ul>")
+    return "".join(out)
 
 
 # 규제 지도 ---------------------------------------------------------------
@@ -135,11 +161,7 @@ def regmap_html(r: Report) -> str:
         for s in r.similar + r.positive:
             parts.append(f"<li><a href='{e(s['url'])}'>{e(s['title'])}</a> · {e(s['type'])} · {e(s['date'] or '')}</li>")
         parts.append("</ul>")
-    if r.leads:
-        parts.append("<h2>확인해 볼 정부 자료(원문 대조 전 단서)</h2><ul>")
-        for l in r.leads:
-            parts.append(f"<li>{e(l['kind'])}: <a href='{e(l['url'])}'>{e(l['title'])}</a> · {e(l['note'])}</li>")
-        parts.append("</ul>")
+    parts.append(_search_block(r))
     parts.append(_track_block(r))
     return _doc("스타트업 리걸닥터 규제 지도", "".join(parts))
 

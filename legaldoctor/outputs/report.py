@@ -37,6 +37,7 @@ class MapRow:
     precedent_ids: list[str] = field(default_factory=list)
     score: float = 0.0
     reasons: list[str] = field(default_factory=list)
+    found_by: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -60,6 +61,7 @@ class Report:
     halted_at: str | None = None
     halt_reason: str | None = None
     core: list[MapRow] = field(default_factory=list)
+    search_stats: dict = field(default_factory=dict)
     made_on: str = field(default_factory=lambda: date.today().isoformat())
 
     @property
@@ -120,6 +122,7 @@ def build_report(state: CaseState, profile=None) -> Report:
             f.from_cache,
             f.reg_status,
             list(f.precedents),
+            found_by=list(getattr(f, "found_by", []) or []),
         )
         for f in findings
     ]
@@ -154,7 +157,7 @@ def build_report(state: CaseState, profile=None) -> Report:
         questions_for_lawyer=uniq(_q_lawyer(r) for r in core + sorted(rows, key=lambda r: -r.score))[:6],
         similar=((prec.payload.get("approved") if prec else None) or [])[:6],
         positive=((prec.payload.get("positive") if prec else None) or [])[:3],
-        leads=leads[:5],
+        leads=leads[:8],
         track=tp.get("overall", "신속확인"),
         track_plans=[(p.activity_id, p.track, p.reason) for p in tp.get("plans", [])],
         window=tp.get("window", WINDOWS["industry"]),
@@ -164,4 +167,5 @@ def build_report(state: CaseState, profile=None) -> Report:
         halted_at=state.halted_at,
         halt_reason=state.halt_reason,
         core=core,
+        search_stats=(ex.payload.get("search_stats") if ex else None) or {},
     )

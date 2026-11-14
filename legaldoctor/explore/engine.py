@@ -29,6 +29,7 @@ from .types import Candidate, Finding, Lead, Rejected
 
 DELEGATION = re.compile(r"대통령령|총리령|[가-힣]+부령|부령으로|고시|장관이\s*정하")
 ANNEX_REF = re.compile(r"별표\s*(\d+(?:의\d+)?)")
+FOUND_BY = {"검색 단서": "Liner Search", "관련 법령": "모델 가설", "의제 가설": "모델 가설", "선례": "사례 DB", "고정 대조": "고정 대조"}
 GRADE_ORDER = {"명시 규제": 0, "의제 리스크": 1, "해석 리스크": 2, "규정 공백": 3, "원문 확인 불가": 4}
 
 PICK_SYSTEM = """너는 법령 목차를 보고 특정 행위와 관련된 조문을 고르는 보조자다.
@@ -136,6 +137,12 @@ class Explore:
                 "leads": [l for l in leads if is_gov(l.url)],
                 "rejected": rejected,
                 "similar": similar,
+                "search_stats": {
+                    "clues": sum(1 for c in cands if c.origin == "검색 단서"),
+                    "verified": sum(1 for f in findings if "Liner Search" in f.found_by),
+                    "leads": sum(1 for l in leads if is_gov(l.url)),
+                    "used": self.use_search,
+                },
             },
             evidence=[
                 Evidence(kind="law_cache" if f.from_cache else "law_drf", title=f.law, locator=f.locator, url=f.url, quote=f.quote, from_cache=f.from_cache)
@@ -240,9 +247,9 @@ class Explore:
             point = v.point or c.point
             if c.origin == "의제 가설" and c.point:
                 point = f"{point} ({c.point})"
-            out.append(
-                Finding(c.activity_id, grade, layer, doc.meta.name, loc, point, v.quote, doc.source_url, doc.meta.ministry, [f"{doc.meta.name} {loc}"], doc.from_cache)
-            )
+            fd = Finding(c.activity_id, grade, layer, doc.meta.name, loc, point, v.quote, doc.source_url, doc.meta.ministry, [f"{doc.meta.name} {loc}"], doc.from_cache)
+            fd.found_by = [FOUND_BY.get(c.origin, c.origin)]
+            out.append(fd)
         return out, rej
 
     def _definition(self, doc: LawDoc, term: str) -> tuple[str, str, str] | None:
@@ -347,10 +354,14 @@ class Explore:
 
     def _dedupe_findings(self, fs: list[Finding]) -> list[Finding]:
         best: dict[tuple, Finding] = {}
+        srcs: dict[tuple, list[str]] = {}
         for f in fs:
             k = (f.activity_id, f.law, f.locator)
+            srcs[k] = list(dict.fromkeys(srcs.get(k, []) + f.found_by))  # 같은 조문을 여러 출처가 냈으면 모두 남김
             if k not in best or GRADE_ORDER[f.grade] < GRADE_ORDER[best[k].grade]:
                 best[k] = f
+        for k, f in best.items():
+            f.found_by = srcs[k]
         return list(best.values())
 
     def _summary(self, acts, findings: list[Finding]) -> str:
