@@ -19,7 +19,7 @@ from urllib.parse import quote
 
 import httpx
 
-from regpang.config import BROWSER_USER_AGENT, LAW_CACHE_DIR
+from legaldoctor.config import BROWSER_USER_AGENT, LAW_CACHE_DIR
 
 from .model import Annex, Article, LawDoc, LawMeta, article_key
 

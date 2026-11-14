@@ -9,7 +9,7 @@ import io
 from html import escape as e
 from pathlib import Path
 
-from regpang.disclaimer import DISCLAIMER, DISCLAIMER_SHORT
+from legaldoctor.disclaimer import DISCLAIMER, DISCLAIMER_SHORT
 
 from .report import Report
 

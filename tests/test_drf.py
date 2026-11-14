@@ -3,9 +3,9 @@ import json
 import httpx
 import pytest
 
-from regpang.config import Settings
-from regpang.law import drf
-from regpang.law.drf import DrfClient, DrfUnavailable, cache_path, public_url
+from legaldoctor.config import Settings
+from legaldoctor.law import drf
+from legaldoctor.law.drf import DrfClient, DrfUnavailable, cache_path, public_url
 
 AUTH_FAIL = {
     "result": "사용자 정보 검증에 실패하였습니다.",
@@ -72,7 +72,7 @@ def test_no_oc_means_offline(tmp_path, monkeypatch):
 
 
 def test_web_body_parser():
-    from regpang.law.web import parse_body
+    from legaldoctor.law.web import parse_body
 
     page = """<div>가상법</div><div>[시행 2026. 6. 3.] [법률 제1호, 2025. 12. 2., 일부개정]</div><div>가상부 (가상과), 044-000-0000</div>
 <p>제1장 총칙</p><p>제2조(정의) 이 법에서 사용하는 용어의 뜻은 다음과 같다. &lt;개정 2018. 10. 16., 2025. 12. 2.&gt;</p>
@@ -90,8 +90,8 @@ def test_web_body_parser():
 def test_lawsource_falls_back_to_web():
     from types import SimpleNamespace
 
-    from regpang.law.model import LawDoc, LawMeta
-    from regpang.law.source import LawSource
+    from legaldoctor.law.model import LawDoc, LawMeta
+    from legaldoctor.law.source import LawSource
 
     class DownDrf:
         def search(self, *a, **k):
@@ -107,7 +107,7 @@ def test_lawsource_falls_back_to_web():
 
 
 def test_clean_name():
-    from regpang.law.web import clean_name
+    from legaldoctor.law.web import clean_name
 
     assert clean_name("도시 및 주거환경정비법 ( 약칭: 도시정비법 )") == "도시 및 주거환경정비법"
     assert clean_name("수의사법") == "수의사법"

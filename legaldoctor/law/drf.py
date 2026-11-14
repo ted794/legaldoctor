@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 
 import httpx
 
-from regpang.config import LAW_CACHE_DIR, Settings
+from legaldoctor.config import LAW_CACHE_DIR, Settings
 
 DRF_BASE = "https://www.law.go.kr/DRF"
 AUTH_FAIL_MARKER = "사용자 정보 검증에 실패"

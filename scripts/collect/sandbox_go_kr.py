@@ -20,9 +20,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from regpang.casedb.http import PoliteClient  # noqa: E402
-from regpang.casedb.sources import save_source  # noqa: E402
-from regpang.casedb.sandbox_go_kr import (  # noqa: E402
+from legaldoctor.casedb.http import PoliteClient  # noqa: E402
+from legaldoctor.casedb.sources import save_source  # noqa: E402
+from legaldoctor.casedb.sandbox_go_kr import (  # noqa: E402
     DETAIL_URL,
     LIST_URL,
     SOURCE_NAME,

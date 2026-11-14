@@ -2,12 +2,12 @@ import io
 
 from test_explore import ACTS, FakeDrf, ScriptedModel, state_with
 
-from regpang.explore.engine import Explore
-from regpang.explore.precedent import CaseIndex
-from regpang.law.source import LawSource
-from regpang.outputs import application_docx, build_report, consult_html, regmap_html, write_all
-from regpang.outputs.render import application_html
-from regpang.pipeline.rules import Classify, Jurisdiction, Precedent, Track
+from legaldoctor.explore.engine import Explore
+from legaldoctor.explore.precedent import CaseIndex
+from legaldoctor.law.source import LawSource
+from legaldoctor.outputs import application_docx, build_report, consult_html, regmap_html, write_all
+from legaldoctor.outputs.render import application_html
+from legaldoctor.pipeline.rules import Classify, Jurisdiction, Precedent, Track
 
 
 def full_state():

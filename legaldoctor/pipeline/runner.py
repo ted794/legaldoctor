@@ -17,12 +17,12 @@ STAGES: Sequence[S.Stage] = (
 
 def build_stages(model, settings=None, *, use_search: bool = True, cases=None) -> list[S.Stage]:
     """실제 실행용 단계 목록. 구현된 단계부터 차례로 바꿔 끼운다."""
-    from regpang.config import load_settings
-    from regpang.explore import build_explore
+    from legaldoctor.config import load_settings
+    from legaldoctor.explore import build_explore
 
     from .decompose import Decompose
 
-    from regpang.explore.precedent import load_index
+    from legaldoctor.explore.precedent import load_index
 
     from .rules import Classify, Jurisdiction, Precedent, Track
 

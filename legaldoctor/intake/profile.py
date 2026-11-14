@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-from regpang.liner import LinerModel
+from legaldoctor.liner import LinerModel
 
 from .materials import Material
 

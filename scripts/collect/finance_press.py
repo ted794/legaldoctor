@@ -17,15 +17,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from regpang.casedb.finance_press import (  # noqa: E402
+from legaldoctor.casedb.finance_press import (  # noqa: E402
     DETAIL_URL,
     LIST_URL,
     parse_detail,
     parse_list,
     total_pages,
 )
-from regpang.casedb.http import PoliteClient  # noqa: E402
-from regpang.casedb.sources import now_iso  # noqa: E402
+from legaldoctor.casedb.http import PoliteClient  # noqa: E402
+from legaldoctor.casedb.sources import now_iso  # noqa: E402
 
 CACHE = ROOT / "out" / "casedb_cache" / "finance_press"
 OUT = ROOT / "data" / "sandbox" / "raw" / "finance_press_rounds.json"

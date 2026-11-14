@@ -1,6 +1,6 @@
 import pytest
 
-from regpang.liner.model import LinerModelError, extract_json
+from legaldoctor.liner.model import LinerModelError, extract_json
 
 
 def test_plain():

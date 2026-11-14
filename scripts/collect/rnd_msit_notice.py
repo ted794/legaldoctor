@@ -21,10 +21,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from regpang.casedb.http import PoliteClient  # noqa: E402
-from regpang.casedb.normalize import clean_text, norm_company, norm_date  # noqa: E402
-from regpang.casedb.schema import Case  # noqa: E402
-from regpang.casedb.sources import now_iso, save_source  # noqa: E402
+from legaldoctor.casedb.http import PoliteClient  # noqa: E402
+from legaldoctor.casedb.normalize import clean_text, norm_company, norm_date  # noqa: E402
+from legaldoctor.casedb.schema import Case  # noqa: E402
+from legaldoctor.casedb.sources import now_iso, save_source  # noqa: E402
 
 BASE = "https://www.msit.go.kr"
 SOURCE_NAME = "과기정통부 공고(연구개발특구 신기술 실증특례 지정, msit.go.kr)"

@@ -18,10 +18,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from regpang.casedb.http import PoliteClient  # noqa: E402
-from regpang.casedb.normalize import case_type, clean_text, norm_company, norm_date  # noqa: E402
-from regpang.casedb.schema import Case  # noqa: E402
-from regpang.casedb.sources import now_iso, save_source  # noqa: E402
+from legaldoctor.casedb.http import PoliteClient  # noqa: E402
+from legaldoctor.casedb.normalize import case_type, clean_text, norm_company, norm_date  # noqa: E402
+from legaldoctor.casedb.schema import Case  # noqa: E402
+from legaldoctor.casedb.sources import now_iso, save_source  # noqa: E402
 
 BASE = "https://smartcity.kaia.re.kr"
 PAGE_URL = BASE + "/sandbox/apply/applyCase.do"

@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from regpang.explore.precedent import parse_regulation  # noqa: E402
+from legaldoctor.explore.precedent import parse_regulation  # noqa: E402
 
 # 분야가 겹치지 않게 고른 사례(모빌리티·헬스케어·핀테크·식품·순환경제 등)
 PICKS = [

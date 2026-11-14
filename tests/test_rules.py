@@ -1,9 +1,9 @@
 from collections import Counter
 
-from regpang.explore.precedent import CaseIndex, parse_regulation
-from regpang.explore.types import Finding
-from regpang.pipeline.rules import Classify, Jurisdiction, Precedent, Track, choose_window, classify_finding, ministry_of, track_for
-from regpang.pipeline.types import CaseState, StageResult
+from legaldoctor.explore.precedent import CaseIndex, parse_regulation
+from legaldoctor.explore.types import Finding
+from legaldoctor.pipeline.rules import Classify, Jurisdiction, Precedent, Track, choose_window, classify_finding, ministry_of, track_for
+from legaldoctor.pipeline.types import CaseState, StageResult
 
 
 def F(aid, grade, law="가상법", loc="제3조", quote="", point="", ministry="", precedents=()):

@@ -1,4 +1,4 @@
-from regpang.pipeline import Evidence, StageResult, run
+from legaldoctor.pipeline import Evidence, StageResult, run
 
 
 class FakeStage:

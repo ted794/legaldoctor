@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from regpang.liner import LinerModel
+from legaldoctor.liner import LinerModel
 
 from .types import CaseState, Evidence, StageResult
 

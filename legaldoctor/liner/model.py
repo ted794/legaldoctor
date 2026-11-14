@@ -13,7 +13,7 @@ from typing import Any
 
 import httpx
 
-from regpang.config import Settings
+from legaldoctor.config import Settings
 
 DEFAULT_MAX_TOKENS = 8000
 

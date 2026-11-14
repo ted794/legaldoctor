@@ -17,8 +17,8 @@ import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from regpang.config import DATA_DIR
-from regpang.explore.precedent import norm_law, parse_regulation
+from legaldoctor.config import DATA_DIR
+from legaldoctor.explore.precedent import norm_law, parse_regulation
 
 STATUS_PATH = DATA_DIR / "sandbox" / "regulation_status.jsonl"
 SPECIAL_TYPES = ("실증특례", "임시허가", "혁신금융서비스", "특구특례")

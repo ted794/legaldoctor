@@ -19,9 +19,9 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-from regpang.config import DATA_DIR
-from regpang.explore.precedent import CASES_PATH, CaseIndex, norm_law
-from regpang.law.model import parse_article_ref
+from legaldoctor.config import DATA_DIR
+from legaldoctor.explore.precedent import CASES_PATH, CaseIndex, norm_law
+from legaldoctor.law.model import parse_article_ref
 
 SET_PATH = DATA_DIR / "eval" / "set.json"
 _SUFFIX = re.compile(r"(시행령|시행규칙)$")
@@ -99,9 +99,9 @@ def count_false(laws_src, cited: list[tuple[str, str | None]]) -> int | None:
     return false if checked else None
 
 
-def run_regpang(item: dict, model, settings, records, use_search=True) -> tuple[Score, dict]:
-    from regpang.outputs import build_report
-    from regpang.pipeline.runner import build_stages, run
+def run_doctor(item: dict, model, settings, records, use_search=True) -> tuple[Score, dict]:
+    from legaldoctor.outputs import build_report
+    from legaldoctor.pipeline.runner import build_stages, run
 
     t = time.time()
     state = run(item["input"], stages=build_stages(model, settings, use_search=use_search, cases=holdout_index(item, records)))
@@ -124,24 +124,24 @@ def run_baseline(item: dict, model, laws_src) -> Score:
 
 
 def evaluate(model, settings, *, only: str | None = None, baseline: bool = True, use_search: bool = True, set_path: Path = SET_PATH) -> dict[str, Any]:
-    from regpang.law import DrfClient
-    from regpang.law.source import LawSource
+    from legaldoctor.law import DrfClient
+    from legaldoctor.law.source import LawSource
 
     items = json.loads(set_path.read_text(encoding="utf-8"))["items"]
     if only:
         items = [i for i in items if i["id"] == only]
     records = [json.loads(l) for l in CASES_PATH.read_text(encoding="utf-8").splitlines() if l.strip()]
-    from regpang.law.web import WebLaw
+    from legaldoctor.law.web import WebLaw
 
     laws_src = LawSource(DrfClient(settings), web=WebLaw())
     results = []
     for it in items:
         row: dict[str, Any] = {"id": it["id"], "title": it["title"], "gold": it["gold"]}
         try:
-            s, extra = run_regpang(it, model, settings, records, use_search)
-            row["regpang"] = asdict(s) | extra
+            s, extra = run_doctor(it, model, settings, records, use_search)
+            row["doctor"] = asdict(s) | extra
         except Exception as e:  # noqa: BLE001
-            row["regpang"] = {"error": f"{type(e).__name__}: {e}"[:300]}
+            row["doctor"] = {"error": f"{type(e).__name__}: {e}"[:300]}
         if baseline:
             try:
                 row["baseline"] = asdict(run_baseline(it, model, laws_src))
@@ -153,7 +153,7 @@ def evaluate(model, settings, *, only: str | None = None, baseline: bool = True,
 
 def summarize(results: list[dict]) -> dict[str, Any]:
     out = {}
-    for who in ("regpang", "baseline"):
+    for who in ("doctor", "baseline"):
         rows = [r[who] for r in results if who in r and "error" not in r[who]]
         if not rows:
             continue
@@ -178,7 +178,7 @@ def to_markdown(res: dict[str, Any]) -> str:
     s = res["summary"]
     pct = lambda v: f"{v * 100:.0f}%"
     lines = ["# 스타트업 리걸닥터 평가 결과", "", "| 항목 | 리걸닥터 | 범용 프롬프트(같은 모델 단독) |", "|---|---:|---:|"]
-    rp, bl = s.get("regpang", {}), s.get("baseline", {})
+    rp, bl = s.get("doctor", {}), s.get("baseline", {})
     def cell(d, k, fmt=str):
         return fmt(d[k]) if d and d.get(k) is not None else "-"
     n = rp.get("n") or bl.get("n") or 0
@@ -196,7 +196,7 @@ def to_markdown(res: dict[str, Any]) -> str:
         lines.append(f"| {label} | {cell(rp, k, fmt)} | {cell(bl, k, fmt)} |")
     lines += ["", "## 사례별", "", "| 사례 | 정답 트랙 | 리걸닥터 법령 적중 | 범용 법령 적중 | 리걸닥터 허위 | 범용 허위 |", "|---|---|---:|---:|---:|---:|"]
     for r in res["results"]:
-        a, b = r.get("regpang", {}), r.get("baseline", {})
+        a, b = r.get("doctor", {}), r.get("baseline", {})
         lines.append(
             f"| {r['title']} | {r['gold']['track']} | {pct(a['family_hit']) if 'family_hit' in a else a.get('error', '-')[:30]} | {pct(b['family_hit']) if 'family_hit' in b else '-'} | {a.get('false_articles', '-')} | {b.get('false_articles', '-')} |"
         )

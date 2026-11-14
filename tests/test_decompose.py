@@ -1,4 +1,4 @@
-from regpang.pipeline.decompose import parse_activities
+from legaldoctor.pipeline.decompose import parse_activities
 
 BIZ = "로봇은 단지 안 보도와 차도를 다니고 공동현관 출입 시스템과 엘리베이터를 연동한다."
 

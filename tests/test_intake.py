@@ -4,8 +4,8 @@ import zipfile
 
 from PIL import Image
 
-from regpang.intake import BMProfile, Interview, from_data_url, from_file
-from regpang.intake.profile import merge_slots
+from legaldoctor.intake import BMProfile, Interview, from_data_url, from_file
+from legaldoctor.intake.profile import merge_slots
 
 
 def test_docx_and_pptx():
@@ -62,7 +62,7 @@ def test_drawing_data_url_and_resize():
 def test_hwp_rejected_with_guidance():
     import pytest
 
-    from regpang.intake import UnsupportedFile
+    from legaldoctor.intake import UnsupportedFile
 
     with pytest.raises(UnsupportedFile, match="PDF"):
         from_file(b"x", "old.hwp")

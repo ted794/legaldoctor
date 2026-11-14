@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from html import escape as e
 
-from regpang.disclaimer import DISCLAIMER
-from regpang.outputs.render import BASE_CSS, _doc
+from legaldoctor.disclaimer import DISCLAIMER
+from legaldoctor.outputs.render import BASE_CSS, _doc
 
 from .engine import CheckupResult
 

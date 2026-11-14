@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from regpang.casedb import Case, case_type, clean_text, dedupe, field_of, load_cases, norm_date, write_cases
-from regpang.casedb.finance_press import parse_table
-from regpang.casedb.ict_nipa import parse_list as nipa_list
-from regpang.casedb.industry_kiat import js_args
-from regpang.casedb.match import company_tokens, match
-from regpang.casedb.mobility_kotsa import parse_list as kotsa_list
-from regpang.casedb.sandbox_go_kr import parse_detail, to_case
+from legaldoctor.casedb import Case, case_type, clean_text, dedupe, field_of, load_cases, norm_date, write_cases
+from legaldoctor.casedb.finance_press import parse_table
+from legaldoctor.casedb.ict_nipa import parse_list as nipa_list
+from legaldoctor.casedb.industry_kiat import js_args
+from legaldoctor.casedb.match import company_tokens, match
+from legaldoctor.casedb.mobility_kotsa import parse_list as kotsa_list
+from legaldoctor.casedb.sandbox_go_kr import parse_detail, to_case
 
 
 def test_norm_date_variants():

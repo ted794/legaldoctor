@@ -16,11 +16,11 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
-from regpang.law.model import LawDoc, article_label, parse_article_ref
-from regpang.law.source import LawSource
-from regpang.pipeline.types import CaseState, Evidence, EvidenceGateError, StageResult
+from legaldoctor.law.model import LawDoc, article_label, parse_article_ref
+from legaldoctor.law.source import LawSource
+from legaldoctor.pipeline.types import CaseState, Evidence, EvidenceGateError, StageResult
 
-from regpang.casedb.law_status import SPECIAL_TYPES, judge_status
+from legaldoctor.casedb.law_status import SPECIAL_TYPES, judge_status
 
 from .hypotheses import hypothesize, is_gov, search_clues
 from .judge import judge
@@ -345,10 +345,10 @@ class Explore:
 
 
 def build_explore(model, settings, *, use_search: bool = True, cases=None) -> Explore:
-    from regpang.law import DrfClient
-    from regpang.liner import LinerSearch
+    from legaldoctor.law import DrfClient
+    from legaldoctor.liner import LinerSearch
 
-    from regpang.law.web import WebLaw
+    from legaldoctor.law.web import WebLaw
 
     from .precedent import load_index
 

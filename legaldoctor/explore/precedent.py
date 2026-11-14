@@ -15,8 +15,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-from regpang.config import DATA_DIR
-from regpang.law.model import parse_article_ref
+from legaldoctor.config import DATA_DIR
+from legaldoctor.law.model import parse_article_ref
 
 CASES_PATH = DATA_DIR / "sandbox" / "cases.jsonl"
 _LAW_SUFFIX = r"(?:법률|법|시행령|시행규칙|규칙|규정|고시|기준|지침|요령|훈령|예규|세칙|조례)"

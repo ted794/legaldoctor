@@ -15,8 +15,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from regpang.casedb.http import PoliteClient  # noqa: E402
-from regpang.casedb.ict_nipa import (  # noqa: E402
+from legaldoctor.casedb.http import PoliteClient  # noqa: E402
+from legaldoctor.casedb.ict_nipa import (  # noqa: E402
     DETAIL_URL,
     FORMS,
     LIST_URL,
@@ -26,7 +26,7 @@ from regpang.casedb.ict_nipa import (  # noqa: E402
     parse_total,
     to_case,
 )
-from regpang.casedb.sources import now_iso, save_source  # noqa: E402
+from legaldoctor.casedb.sources import now_iso, save_source  # noqa: E402
 
 CACHE = ROOT / "out" / "casedb_cache" / "ict_nipa"
 

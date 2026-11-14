@@ -4,14 +4,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from regpang.explore.engine import Explore
-from regpang.explore.hypotheses import parse_clues, parse_hypotheses
-from regpang.explore.judge import judge
-from regpang.law.drf import DrfUnavailable
-from regpang.law.model import article_key, parse_article_ref
-from regpang.law.source import LawSource, parse_law_service
-from regpang.pipeline.decompose import Activity
-from regpang.pipeline.types import CaseState, EvidenceGateError, StageResult
+from legaldoctor.explore.engine import Explore
+from legaldoctor.explore.hypotheses import parse_clues, parse_hypotheses
+from legaldoctor.explore.judge import judge
+from legaldoctor.law.drf import DrfUnavailable
+from legaldoctor.law.model import article_key, parse_article_ref
+from legaldoctor.law.source import LawSource, parse_law_service
+from legaldoctor.pipeline.decompose import Activity
+from legaldoctor.pipeline.types import CaseState, EvidenceGateError, StageResult
 
 LAW = {
     "법령": {
@@ -181,7 +181,7 @@ def test_parse_hypotheses_and_clues():
 
 
 def test_precedent_layer_pulls_in_law_and_attaches_cases():
-    from regpang.explore.precedent import CaseIndex
+    from legaldoctor.explore.precedent import CaseIndex
 
     class NoHypoModel(ScriptedModel):
         def chat_json(self, messages, **kw):
@@ -200,8 +200,8 @@ def test_precedent_layer_pulls_in_law_and_attaches_cases():
 
 
 def test_reg_status_after_special():
-    from regpang.casedb.law_status import collect_targets, judge_status
-    from regpang.law.model import LawDoc, LawMeta, Article
+    from legaldoctor.casedb.law_status import collect_targets, judge_status
+    from legaldoctor.law.model import LawDoc, LawMeta, Article
 
     doc = LawDoc(LawMeta("가상법", "법률", effective="20200101"), [Article("3", "", "본문", effective="20210101"), Article("4", "", "본문")])
     assert judge_status(doc, "3", "2022-05-01")[0] == "현존 규제"
@@ -219,7 +219,7 @@ def test_reg_status_after_special():
 
 
 def test_engine_marks_existing_regulation():
-    from regpang.explore.precedent import CaseIndex
+    from legaldoctor.explore.precedent import CaseIndex
 
     ix = CaseIndex.from_records(
         [{"id": "c1", "field": "industry", "type": "실증특례", "title": "배달로봇 보도 주행", "regulation": "가상로봇법 제10조의2", "source_url": "u", "approved_date": "2027-01-01"}]

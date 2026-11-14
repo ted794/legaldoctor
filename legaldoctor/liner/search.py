@@ -16,7 +16,7 @@ from typing import Any, Iterable, Iterator
 
 import httpx
 
-from regpang.config import BROWSER_USER_AGENT, Settings
+from legaldoctor.config import BROWSER_USER_AGENT, Settings
 
 
 class LinerSearchError(RuntimeError):

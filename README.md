@@ -2,7 +2,7 @@
 
 스타트업이 죽는 28가지 사인을 죽기 전에 검진합니다.
 
-법을 잘 모르는 창업자가 변호사를 찾기 전에 무료로 써 보는 규제·법률 사전상담 에이전트입니다. 라이너 .EXE-THON 2026 출품작입니다. 저장소와 명령 이름은 `regpang`입니다.
+법을 잘 모르는 창업자가 변호사를 찾기 전에 무료로 써 보는 규제·법률 사전상담 에이전트입니다. 라이너 .EXE-THON 2026 출품작입니다. 저장소와 명령 이름은 `legaldoctor`입니다.
 
 | 메뉴 | 대비하는 사인 | 상태 |
 |---|---|---|
@@ -34,8 +34,8 @@
 스타트업이 죽는 사인 28가지(스타트업 부검보고서 분류) 가운데 투자계약과 노무를 먼저 검진합니다. 계약서나 인력 운영 설명을 넣으면 위험 조항을 원문 구절과 함께 뽑고, 같은 원문 대조 엔진으로 법령을 확인해 검진표를 만듭니다.
 
 ```bash
-uv run regpang checkup invest --file data/checkup/demo_invest.md   # 13장 투자계약 독소조항
-uv run regpang checkup labor --file data/checkup/demo_labor.md     # 21장 노무 리스크
+uv run legaldoctor checkup invest --file data/checkup/demo_invest.md   # 13장 투자계약 독소조항
+uv run legaldoctor checkup labor --file data/checkup/demo_labor.md     # 21장 노무 리스크
 ```
 
 - 검진표: 막을 사인의 진단 사슬, 항목별 위험도·자료 원문·법령 대조·지금 할 일, 변호사 심화자문으로 가져갈 항목
@@ -48,24 +48,24 @@ Python 3.11 이상이 필요합니다.
 
 ```bash
 cp .env.example .env    # LINER_API_KEY, LAW_OC 값을 채운다
-uv run regpang doctor   # 연결 점검
-uv run regpang run --case demo
+uv run legaldoctor doctor   # 연결 점검
+uv run legaldoctor run --case demo
 ```
 
 uv가 없으면 다음처럼 실행합니다.
 
 ```bash
 python3 -m venv .venv && . .venv/bin/activate && pip install -e .
-regpang doctor
-regpang run --case demo
+legaldoctor doctor
+legaldoctor run --case demo
 ```
 
-`regpang run "사업 설명"`처럼 직접 설명을 넣을 수도 있습니다.
+`legaldoctor run "사업 설명"`처럼 직접 설명을 넣을 수도 있습니다.
 
 ### 웹 화면
 
 ```bash
-uv run regpang web      # http://127.0.0.1:8000
+uv run legaldoctor web      # http://127.0.0.1:8000
 ```
 
 법을 모르는 창업자가 편한 방법으로 사업을 알려 줄 수 있게 네 가지 입력을 받습니다. 어느 것으로 시작해도 되고 섞어 써도 됩니다.
@@ -80,8 +80,8 @@ uv run regpang web      # http://127.0.0.1:8000
 명령행으로도 같은 접수를 할 수 있습니다.
 
 ```bash
-uv run regpang intake --file 소개서.pdf --image 구성도.png --text "사업 설명"
-uv run regpang run --profile out/profile.json
+uv run legaldoctor intake --file 소개서.pdf --image 구성도.png --text "사업 설명"
+uv run legaldoctor run --profile out/profile.json
 ```
 
 ### 환경변수
@@ -107,7 +107,7 @@ uv run regpang run --profile out/profile.json
 
 ### 판정 규칙(③~⑥)
 
-유형 판정, 소관 판별, 선례 대조, 트랙 제안은 모델 없이 규칙표로 정합니다(`regpang/pipeline/rules.py`). 같은 입력에 같은 결과가 나오고 근거를 그대로 보여 줄 수 있습니다.
+유형 판정, 소관 판별, 선례 대조, 트랙 제안은 모델 없이 규칙표로 정합니다(`legaldoctor/pipeline/rules.py`). 같은 입력에 같은 결과가 나오고 근거를 그대로 보여 줄 수 있습니다.
 
 - 유형: 금지·제한, 진입 규제, 인증·검사, 기준·규격, 행위 의무, 해석상 제한, 근거 불명확
 - 트랙: 근거 불명확·의제 리스크·해석상 제한이면 신속확인, 금지·제한이면 실증특례, 허가·인증 근거가 있고 같은 규정의 임시허가 선례가 많으면 임시허가
@@ -143,7 +143,7 @@ Liner Search가 찾은 단서는 그대로 쓰지 않습니다. 조문 번호와
 ## 디렉터리
 
 ```
-regpang/
+legaldoctor/
   config.py        환경변수 읽기
   disclaimer.py    고지 문구
   liner/           Liner Model, Liner Search 클라이언트
@@ -181,7 +181,7 @@ python3 scripts/check_secrets.py --history   # 전체 이력 검사
 
 ```bash
 uv run python scripts/make_eval_set.py   # data/eval/set.json (공개 승인 사례 10건)
-uv run regpang eval                      # out/eval/report.md
+uv run legaldoctor eval                      # out/eval/report.md
 ```
 
 입력에서는 법령명·조문·특례 결과를 지우고, 평가 사례와 제목이 같거나 승인일이 같거나 늦은 사례는 선례 검색에서 뺍니다. 같은 모델에 범용 프롬프트로 물은 결과와 나란히 채점합니다.

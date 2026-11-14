@@ -11,7 +11,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
-from regpang.liner import LinerModel
+from legaldoctor.liner import LinerModel
 
 from .materials import Material
 from .profile import SLOT_KEYS, SLOT_LABEL, BMProfile, merge_slots, slots_help

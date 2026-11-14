@@ -9,8 +9,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 
-from regpang.pipeline.rules import WINDOWS, Window, classify_finding, ministry_of
-from regpang.pipeline.types import CaseState
+from legaldoctor.pipeline.rules import WINDOWS, Window, classify_finding, ministry_of
+from legaldoctor.pipeline.types import CaseState
 
 GRADE_RANK = {"명시 규제": 0, "의제 리스크": 1, "해석 리스크": 2, "규정 공백": 3, "원문 확인 불가": 4}
 
@@ -120,7 +120,7 @@ def build_report(state: CaseState, profile=None) -> Report:
 
     facts = list((dec.payload.get("questions") if dec else None) or [])
     if profile is not None:
-        from regpang.intake.profile import SLOT_LABEL
+        from legaldoctor.intake.profile import SLOT_LABEL
 
         facts += [f"{SLOT_LABEL[k]}: 아직 확인되지 않음" for k in profile.missing()]
 

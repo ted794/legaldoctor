@@ -15,16 +15,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from regpang.casedb.law_status import assess_all, save  # noqa: E402
-from regpang.config import load_settings  # noqa: E402
-from regpang.law import DrfClient  # noqa: E402
-from regpang.law.source import LawSource  # noqa: E402
+from legaldoctor.casedb.law_status import assess_all, save  # noqa: E402
+from legaldoctor.config import load_settings  # noqa: E402
+from legaldoctor.law import DrfClient  # noqa: E402
+from legaldoctor.law.source import LawSource  # noqa: E402
 
 
 def main() -> int:
     limit = int(sys.argv[sys.argv.index("--limit") + 1]) if "--limit" in sys.argv else None
     records = [json.loads(l) for l in (ROOT / "data/sandbox/cases.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
-    from regpang.law.web import WebLaw
+    from legaldoctor.law.web import WebLaw
 
     rows = assess_all(records, LawSource(DrfClient(load_settings()), web=WebLaw()), limit=limit)
     save(rows)

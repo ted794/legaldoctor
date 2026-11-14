@@ -1,4 +1,4 @@
-from regpang.evaluate import family, holdout_index, score, summarize, to_markdown
+from legaldoctor.evaluate import family, holdout_index, score, summarize, to_markdown
 
 GOLD = {"laws": ["식품위생법", "식품위생법 시행규칙"], "articles": ["식품위생법 시행규칙 36"], "track": "실증특례", "field": "industry"}
 
@@ -29,7 +29,7 @@ def test_holdout_excludes_same_title_and_later():
 def test_summary_and_markdown():
     s = score(GOLD, [("식품위생법", "37")], "실증특례", "industry", 2.0, 0).__dict__
     b = score(GOLD, [("없는법", "3")], "임시허가", "ict", 1.0, 1).__dict__
-    res = {"results": [{"id": "x", "title": "t", "gold": GOLD, "regpang": s, "baseline": b}]}
+    res = {"results": [{"id": "x", "title": "t", "gold": GOLD, "doctor": s, "baseline": b}]}
     res["summary"] = summarize(res["results"])
     assert res["summary"]["baseline"]["false_articles"] == 1
     md = to_markdown(res)

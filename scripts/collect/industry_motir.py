@@ -17,9 +17,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from regpang.casedb.http import PoliteClient  # noqa: E402
-from regpang.casedb.industry_motir import BASE, BOARD, SOURCE_NAME, VIEW, hwpx_cells_text, parse_notice, to_case  # noqa: E402
-from regpang.casedb.sources import now_iso, save_source  # noqa: E402
+from legaldoctor.casedb.http import PoliteClient  # noqa: E402
+from legaldoctor.casedb.industry_motir import BASE, BOARD, SOURCE_NAME, VIEW, hwpx_cells_text, parse_notice, to_case  # noqa: E402
+from legaldoctor.casedb.sources import now_iso, save_source  # noqa: E402
 
 KEYWORD = "규제특례 승인"
 

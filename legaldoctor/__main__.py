@@ -1,12 +1,12 @@
-"""스타트업 리걸닥터 명령행(저장소·명령 이름은 regpang).
+"""스타트업 리걸닥터 명령행.
 
-  regpang doctor            Liner Model·Liner Search·국가법령정보 연결 점검
-  regpang run "사업 설명"     판단 점검표 실행
-  regpang run --case demo   가상 시연 사례로 실행
-  regpang intake --file 소개서.pdf --image 구성도.png --text "..."
+  legaldoctor doctor            Liner Model·Liner Search·국가법령정보 연결 점검
+  legaldoctor run "사업 설명"     판단 점검표 실행
+  legaldoctor run --case demo   가상 시연 사례로 실행
+  legaldoctor intake --file 소개서.pdf --image 구성도.png --text "..."
                             자료를 읽고 스무고개 질문으로 BM 프로필을 만든다
-  regpang run --profile out/profile.json
-  regpang web               웹 화면 실행(http://localhost:8000)
+  legaldoctor run --profile out/profile.json
+  legaldoctor web               웹 화면 실행(http://localhost:8000)
 """
 
 from __future__ import annotations
@@ -15,8 +15,8 @@ import argparse
 import json
 import sys
 
-from regpang.config import CASES_DIR, load_settings
-from regpang.disclaimer import DISCLAIMER
+from legaldoctor.config import CASES_DIR, load_settings
+from legaldoctor.disclaimer import DISCLAIMER
 
 
 def _ok(label: str, msg: str) -> None:
@@ -28,8 +28,8 @@ def _fail(label: str, msg: str) -> None:
 
 
 def cmd_doctor(_: argparse.Namespace) -> int:
-    from regpang.law import DrfClient, DrfUnavailable
-    from regpang.liner import LinerModel, LinerSearch
+    from legaldoctor.law import DrfClient, DrfUnavailable
+    from legaldoctor.liner import LinerModel, LinerSearch
 
     s = load_settings()
     bad = 0
@@ -72,8 +72,8 @@ def _load_case(name: str) -> str:
 def cmd_intake(args: argparse.Namespace) -> int:
     from pathlib import Path
 
-    from regpang.intake import DONT_KNOW, Interview, UnsupportedFile, extract_profile, from_file, from_text
-    from regpang.liner import LinerModel
+    from legaldoctor.intake import DONT_KNOW, Interview, UnsupportedFile, extract_profile, from_file, from_text
+    from legaldoctor.liner import LinerModel
 
     model = LinerModel(load_settings())
     materials = []
@@ -112,7 +112,7 @@ def cmd_intake(args: argparse.Namespace) -> int:
 
 
 def _print_profile(profile) -> None:
-    from regpang.intake.profile import SLOT_LABEL
+    from legaldoctor.intake.profile import SLOT_LABEL
 
     print(f"\n== 파악한 사업 모델 ==\n{profile.summary}")
     for k, v in profile.slots.items():
@@ -124,8 +124,8 @@ def _print_profile(profile) -> None:
 def cmd_eval(args: argparse.Namespace) -> int:
     from pathlib import Path
 
-    from regpang.evaluate import evaluate, to_markdown
-    from regpang.liner import LinerModel
+    from legaldoctor.evaluate import evaluate, to_markdown
+    from legaldoctor.liner import LinerModel
 
     s = load_settings()
     res = evaluate(LinerModel(s), s, only=args.only, baseline=not args.no_baseline, use_search=not args.no_search)
@@ -141,10 +141,10 @@ def cmd_eval(args: argparse.Namespace) -> int:
 def cmd_checkup(args: argparse.Namespace) -> int:
     from pathlib import Path
 
-    from regpang.checkup import MODULES, checkup_html, run_checkup
-    from regpang.explore.engine import build_explore
-    from regpang.intake import from_file
-    from regpang.liner import LinerModel
+    from legaldoctor.checkup import MODULES, checkup_html, run_checkup
+    from legaldoctor.explore.engine import build_explore
+    from legaldoctor.intake import from_file
+    from legaldoctor.liner import LinerModel
 
     s = load_settings()
     module = MODULES[args.module]
@@ -168,18 +168,18 @@ def cmd_checkup(args: argparse.Namespace) -> int:
 def cmd_web(args: argparse.Namespace) -> int:
     import uvicorn
 
-    uvicorn.run("regpang.web.app:app", host=args.host, port=args.port)
+    uvicorn.run("legaldoctor.web.app:app", host=args.host, port=args.port)
     return 0
 
 
 def cmd_run(args: argparse.Namespace) -> int:
-    from regpang.liner import LinerModel
-    from regpang.pipeline.runner import build_stages, run
+    from legaldoctor.liner import LinerModel
+    from legaldoctor.pipeline.runner import build_stages, run
 
     if args.profile:
         from pathlib import Path
 
-        from regpang.intake import BMProfile
+        from legaldoctor.intake import BMProfile
 
         prof = BMProfile.from_dict(json.loads(Path(args.profile).read_text(encoding="utf-8")))
         business = prof.to_business_text()
@@ -199,7 +199,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     if "decompose" in state.results:
         from pathlib import Path
 
-        from regpang.outputs import build_report, html_to_pdf, write_all
+        from legaldoctor.outputs import build_report, html_to_pdf, write_all
 
         paths = write_all(build_report(state, prof if args.profile else None), Path(args.out))
         if args.pdf:
@@ -215,7 +215,7 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(prog="regpang", description="스타트업 리걸닥터: 규제·법률 사전상담 에이전트")
+    p = argparse.ArgumentParser(prog="legaldoctor", description="스타트업 리걸닥터: 규제·법률 사전상담 에이전트")
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("doctor", help="API 연결 점검").set_defaults(func=cmd_doctor)
     pr = sub.add_parser("run", help="판단 점검표 실행")

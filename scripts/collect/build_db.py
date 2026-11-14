@@ -22,11 +22,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from regpang.casedb import Case, write_cases  # noqa: E402
-from regpang.casedb.match import company_tokens, match, norm_title  # noqa: E402
-from regpang.casedb.sandbox_go_kr import to_case as sbx_to_case  # noqa: E402
-from regpang.casedb.sources import load_meta, load_source, now_iso  # noqa: E402
-from regpang.casedb.store import CASES_PATH, DATA_DIR  # noqa: E402
+from legaldoctor.casedb import Case, write_cases  # noqa: E402
+from legaldoctor.casedb.match import company_tokens, match, norm_title  # noqa: E402
+from legaldoctor.casedb.sandbox_go_kr import to_case as sbx_to_case  # noqa: E402
+from legaldoctor.casedb.sources import load_meta, load_source, now_iso  # noqa: E402
+from legaldoctor.casedb.store import CASES_PATH, DATA_DIR  # noqa: E402
 
 SECONDARY = ["ict_nipa", "industry_kiat", "industry_motir", "mobility_kotsa", "smartcity_kaia", "rnd_msit", "circular_mcee"]
 FIELD_KO = {
@@ -197,7 +197,7 @@ def write_coverage_md(out, stats, unmatched_lists, base_only, fin_added) -> None
         w(f"| {m.get('source_name', k)} | {tot if tot != '' else '(공고 단위)'} | {v['count']} | {v['matched']} | {v['added_unmatched']} | {v['base_without_counterpart'] if k not in ('rnd_msit', 'industry_motir', 'circular_mcee') else '-'} |")
     w(f"| 금융 보도자료 보충(sandbox.fintech.or.kr) | - | {stats['finance_gapfill']['added']} | - | {stats['finance_gapfill']['added']} | - |")
     w("")
-    w("짝짓기: 같은 분야 안에서 과제명 유사도·기업명·승인일 근접도 점수(regpang/casedb/match.py)로 1:1 매칭. 출처는 표 순서대로 합치며, 앞에서 이미 들어간 레코드(통합포털 + 앞 출처가 더한 것)와 짝을 짓는다. 짝 없는 레코드는 별도 레코드로 넣고 `extra.not_in_integrated_portal=true`로 표시.")
+    w("짝짓기: 같은 분야 안에서 과제명 유사도·기업명·승인일 근접도 점수(legaldoctor/casedb/match.py)로 1:1 매칭. 출처는 표 순서대로 합치며, 앞에서 이미 들어간 레코드(통합포털 + 앞 출처가 더한 것)와 짝을 짓는다. 짝 없는 레코드는 별도 레코드로 넣고 `extra.not_in_integrated_portal=true`로 표시.")
     w("")
     w("## 2. 분야×유형: 우리 DB vs 공식 누계")
     w("")

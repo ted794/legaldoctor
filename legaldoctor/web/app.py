@@ -14,9 +14,9 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from pydantic import BaseModel
 
-from regpang.config import load_settings
-from regpang.disclaimer import DISCLAIMER
-from regpang.intake import (
+from legaldoctor.config import load_settings
+from legaldoctor.disclaimer import DISCLAIMER
+from legaldoctor.intake import (
     BMProfile,
     Interview,
     Material,
@@ -26,9 +26,9 @@ from regpang.intake import (
     from_file,
     from_text,
 )
-from regpang.intake.interview import to_dict as interview_dict
-from regpang.intake.profile import SLOT_KEYS, SLOT_LABEL, SLOTS, SlotValue
-from regpang.liner import LinerModel
+from legaldoctor.intake.interview import to_dict as interview_dict
+from legaldoctor.intake.profile import SLOT_KEYS, SLOT_LABEL, SLOTS, SlotValue
+from legaldoctor.liner import LinerModel
 
 STATIC = Path(__file__).parent / "static"
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
@@ -168,8 +168,8 @@ def confirm(sid: str, body: ConfirmIn) -> dict[str, Any]:
 
 @app.post("/api/sessions/{sid}/analyze")
 def analyze(sid: str) -> dict[str, Any]:
-    from regpang.outputs import application_docx, application_html, build_report, consult_html, regmap_html
-    from regpang.pipeline.runner import build_stages, run
+    from legaldoctor.outputs import application_docx, application_html, build_report, consult_html, regmap_html
+    from legaldoctor.pipeline.runner import build_stages, run
 
     s = get(sid)
     if not s.profile.slots:
@@ -208,7 +208,7 @@ def output(sid: str, name: str):
         return Response(
             data,
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            headers={"Content-Disposition": "attachment; filename*=UTF-8''regpang_application.docx"},
+            headers={"Content-Disposition": "attachment; filename*=UTF-8''legaldoctor_application.docx"},
         )
     return HTMLResponse(data)
 
@@ -219,7 +219,7 @@ CHECKUPS: dict[str, str] = {}  # 검진 id → 검진표 HTML(메모리에만 �
 
 @app.get("/api/checkup/demo/{module}")
 def checkup_demo(module: str) -> dict[str, str]:
-    from regpang.config import DATA_DIR
+    from legaldoctor.config import DATA_DIR
 
     p = DATA_DIR / "checkup" / f"demo_{module}.md"
     if module not in ("invest", "labor") or not p.exists():
@@ -229,8 +229,8 @@ def checkup_demo(module: str) -> dict[str, str]:
 
 @app.post("/api/checkup")
 async def checkup(module: str = Form(...), text: str = Form(""), files: list[UploadFile] = File(default=[])) -> dict[str, Any]:
-    from regpang.checkup import MODULES, checkup_html, run_checkup
-    from regpang.explore.engine import build_explore
+    from legaldoctor.checkup import MODULES, checkup_html, run_checkup
+    from legaldoctor.explore.engine import build_explore
 
     if module not in MODULES:
         raise HTTPException(400, "검진 종류를 고르세요")

@@ -13,10 +13,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from regpang.config import DATA_DIR
-from regpang.explore.types import Candidate, Finding
-from regpang.pipeline.decompose import Activity
-from regpang.pipeline.types import CaseState, EvidenceGateError, StageResult
+from legaldoctor.config import DATA_DIR
+from legaldoctor.explore.types import Candidate, Finding
+from legaldoctor.pipeline.decompose import Activity
+from legaldoctor.pipeline.types import CaseState, EvidenceGateError, StageResult
 
 from .modules import Module
 
@@ -150,7 +150,7 @@ def grade_item(item: CheckItem, module: Module) -> None:
 
 
 def run_checkup(model, module: Module, text: str, explore) -> CheckupResult:
-    """explore: regpang.explore.Explore (cases=None 권장). 테스트에서는 가짜를 넣는다."""
+    """explore: legaldoctor.explore.Explore (cases=None 권장). 테스트에서는 가짜를 넣는다."""
     items, questions, dropped = extract(model, module, text)
     causes = [c for c in load_causes() if c["no"] in module.causes]
     if not items:

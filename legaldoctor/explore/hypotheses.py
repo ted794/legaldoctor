@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from regpang.liner import LinerSearch
+from legaldoctor.liner import LinerSearch
 
 from .types import Candidate, Lead
 

@@ -1,4 +1,4 @@
-from regpang.liner.search import collect, iter_sse_events
+from legaldoctor.liner.search import collect, iter_sse_events
 
 SAMPLE = """:ping
 

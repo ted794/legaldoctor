@@ -2,10 +2,10 @@ from pathlib import Path
 
 from test_explore import FakeDrf
 
-from regpang.checkup import INVEST, LABOR, checkup_html, load_causes, run_checkup
-from regpang.checkup.engine import parse_items
-from regpang.explore.engine import Explore
-from regpang.law.source import LawSource
+from legaldoctor.checkup import INVEST, LABOR, checkup_html, load_causes, run_checkup
+from legaldoctor.checkup.engine import parse_items
+from legaldoctor.explore.engine import Explore
+from legaldoctor.law.source import LawSource
 
 TEXT = (Path(__file__).resolve().parent.parent / "data/checkup/demo_invest.md").read_text(encoding="utf-8")
 
