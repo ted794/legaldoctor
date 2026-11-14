@@ -12,6 +12,8 @@ from datetime import date
 from legaldoctor.pipeline.rules import WINDOWS, Window, classify_finding, ministry_of
 from legaldoctor.pipeline.types import CaseState
 
+from .rank import core_regulations, rank_rows
+
 GRADE_RANK = {"명시 규제": 0, "의제 리스크": 1, "해석 리스크": 2, "규정 공백": 3, "원문 확인 불가": 4}
 
 
@@ -32,6 +34,9 @@ class MapRow:
     precedents: int
     from_cache: bool
     reg_status: str = ""
+    precedent_ids: list[str] = field(default_factory=list)
+    score: float = 0.0
+    reasons: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -54,6 +59,7 @@ class Report:
     permits: list[str]
     halted_at: str | None = None
     halt_reason: str | None = None
+    core: list[MapRow] = field(default_factory=list)
     made_on: str = field(default_factory=lambda: date.today().isoformat())
 
     @property
@@ -113,10 +119,17 @@ def build_report(state: CaseState, profile=None) -> Report:
             len(f.precedents),
             f.from_cache,
             f.reg_status,
+            list(f.precedents),
         )
         for f in findings
     ]
-    rows.sort(key=lambda r: (r.activity_id, GRADE_RANK.get(r.grade, 9)))
+    prec = state.results.get("precedent")
+    similar_ids = {c["id"] for c in ((prec.payload.get("approved") if prec else None) or []) + ((prec.payload.get("positive") if prec else None) or [])}
+    for sc in rank_rows(rows, similar_ids):
+        sc.row.score, sc.row.reasons = sc.score, sc.reasons
+    core = [sc.row for sc in core_regulations(rows, similar_ids)]
+    # 행위 안에서는 점수 순. 판정이 없는 행(규정 공백 등)은 뒤로
+    rows.sort(key=lambda r: (r.activity_id, -r.score, GRADE_RANK.get(r.grade, 9)))
 
     facts = list((dec.payload.get("questions") if dec else None) or [])
     if profile is not None:
@@ -127,7 +140,6 @@ def build_report(state: CaseState, profile=None) -> Report:
     def uniq(xs):
         return list(dict.fromkeys(x for x in xs if x))
 
-    prec = state.results.get("precedent")
     trk = state.results.get("track")
     jur = state.results.get("jurisdiction")
     tp = trk.payload if trk else {}
@@ -138,8 +150,8 @@ def build_report(state: CaseState, profile=None) -> Report:
         activities=[(a.id, a.action) for a in acts],
         rows=rows,
         facts_to_confirm=uniq(facts)[:10],
-        questions_for_gov=uniq(_q_gov(r) for r in rows)[:8],
-        questions_for_lawyer=uniq(_q_lawyer(r) for r in rows)[:6],
+        questions_for_gov=uniq(_q_gov(r) for r in sorted(rows, key=lambda r: -r.score))[:8],
+        questions_for_lawyer=uniq(_q_lawyer(r) for r in core + sorted(rows, key=lambda r: -r.score))[:6],
         similar=((prec.payload.get("approved") if prec else None) or [])[:6],
         positive=((prec.payload.get("positive") if prec else None) or [])[:3],
         leads=leads[:5],
@@ -151,4 +163,5 @@ def build_report(state: CaseState, profile=None) -> Report:
         permits=uniq(f"「{r.law}」 {r.locator}" for r in rows if r.type in ("진입 규제", "인증·검사") and r.grade != "원문 확인 불가"),
         halted_at=state.halted_at,
         halt_reason=state.halt_reason,
+        core=core,
     )
