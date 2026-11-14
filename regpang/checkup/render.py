@@ -51,13 +51,13 @@ def checkup_html(res: CheckupResult) -> str:
     parts.append("<h2>항목별 검진 결과</h2><table><tr><th>위험</th><th>항목</th><th>자료 원문</th><th>법령 대조</th><th>지금 할 일</th></tr>")
     for i in res.items:
         laws = []
-        for f in i.findings[:4]:
+        for f in [x for x in i.findings if x.grade not in ("규정 공백", "원문 확인 불가")][:2]:
             if f.grade in ("규정 공백", "원문 확인 불가"):
                 continue
             loc = "" if f.locator == "-" else f" {e(f.locator)}"
             name = f"「{e(f.law)}」{loc}"
             name = f'<a href="{e(f.url)}">{name}</a>' if f.url else name
-            q = f"<div class='q'>“{e(f.quote[:160])}”</div>" if f.quote else ""
+            q = f"<div class='q'>“{e(f.quote[:100])}”</div>" if f.quote else ""
             laws.append(f"<div>{name} · {e(f.point)}{q}</div>")
         law_cell = f"<b>{e(i.verdict)}</b>" + "".join(laws)
         lawyer = "<div class='lawyer'>변호사 심화자문 권함</div>" if i.lawyer else ""
