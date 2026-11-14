@@ -138,6 +138,33 @@ def cmd_eval(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_checkup(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from regpang.checkup import MODULES, checkup_html, run_checkup
+    from regpang.explore.engine import build_explore
+    from regpang.intake import from_file
+    from regpang.liner import LinerModel
+
+    s = load_settings()
+    module = MODULES[args.module]
+    texts = [args.text or ""]
+    for f in args.file or []:
+        texts += [m.text for m in from_file(Path(f).read_bytes(), f) if m.text]
+    text = "\n".join(t for t in texts if t).strip()
+    if not text:
+        sys.exit("--text 또는 --file이 필요함")
+    model = LinerModel(s)
+    res = run_checkup(model, module, text, build_explore(model, s, use_search=not args.no_search, cases=False))
+    for i in res.items:
+        print(f"[{i.risk}] {i.label} · {i.verdict} · {i.quote[:60]}")
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(checkup_html(res), encoding="utf-8")
+    print(f"\n검진표: {out}\n※ {DISCLAIMER}")
+    return 0
+
+
 def cmd_web(args: argparse.Namespace) -> int:
     import uvicorn
 
@@ -211,6 +238,13 @@ def main(argv: list[str] | None = None) -> int:
     pe.add_argument("--no-search", action="store_true", help="Liner Search 단서 생략(빠름)")
     pe.add_argument("--out", default="out/eval")
     pe.set_defaults(func=cmd_eval)
+    pc = sub.add_parser("checkup", help="운영 단계 검진(invest: 투자계약 13장, labor: 노무 21장)")
+    pc.add_argument("module", choices=["invest", "labor"])
+    pc.add_argument("--text", help="설명 글")
+    pc.add_argument("--file", action="append", help="계약서 등 파일")
+    pc.add_argument("--no-search", action="store_true")
+    pc.add_argument("--out", default="out/checkup.html")
+    pc.set_defaults(func=cmd_checkup)
     pw = sub.add_parser("web", help="웹 화면 실행")
     pw.add_argument("--host", default="127.0.0.1")
     pw.add_argument("--port", type=int, default=8000)

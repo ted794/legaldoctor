@@ -58,8 +58,12 @@ class Explore:
         workers: int = 4,
         per_activity: int = 8,
         use_search: bool = True,
+        hint: str = "",
+        extra_candidates: list[Candidate] | None = None,
     ):
         self.cases = cases  # precedent.CaseIndex | None
+        self.hint = hint  # 검진 모듈이 주는 검토 관점(예: 투자계약 조항)
+        self.extra_candidates = extra_candidates or []  # 모듈이 고정으로 대조할 법령
         self.model = model
         self.search = search
         self.laws = laws
@@ -77,7 +81,7 @@ class Explore:
         act_by_id = {a.id: a for a in acts}
         notes: list[str] = []
 
-        cands = hypothesize(self.model, state.business, acts)
+        cands = list(self.extra_candidates) + hypothesize(self.model, state.business, acts, hint=self.hint)
         leads: list[Lead] = []
         if self.use_search:
             with ThreadPoolExecutor(self.workers) as ex:
@@ -134,7 +138,7 @@ class Explore:
         seen: set[tuple] = set()
         per: dict[str, int] = {}
         out = []
-        order = {"관련 법령": 0, "선례": 1, "의제 가설": 2, "검색 단서": 3}
+        order = {"고정 대조": -1, "관련 법령": 0, "선례": 1, "의제 가설": 2, "검색 단서": 3}
         for c in sorted(cands, key=lambda c: order[c.origin]):
             key = (c.activity_id, _norm(c.law), _norm(c.term), parse_article_ref(c.article) or "")
             if key in seen or per.get(c.activity_id, 0) >= self.per_activity:
@@ -201,7 +205,8 @@ class Explore:
             if hit and hit[0:2] not in [t[0:2] for t in targets]:
                 targets.append(hit)
         if not targets:
-            for k in self._pick_articles(doc, action):
+            terms = [t.strip() for t in re.split(r"[,，/·]", c.term) if t.strip()]
+            for k in self._pick_articles(doc, action, terms):
                 a = doc.article(k)
                 if a:
                     targets.append((a.label, a.text, "조문"))
@@ -241,8 +246,14 @@ class Explore:
         loc = art.label if art else "정의 조항"
         return (loc, f'"{match}"이란 {defs[match]}', "정의")
 
-    def _pick_articles(self, doc: LawDoc, action: str) -> list[str]:
-        toc = "\n".join(f"{a.label} {a.title}" for a in doc.articles if a.title)[:5000]
+    def _pick_articles(self, doc: LawDoc, action: str, terms: list[str] | None = None) -> list[str]:
+        """목차에서 관련 조문을 고르게 한다. 용어가 있으면 그 용어가 나오는 조문으로 목차를 좁힌다(큰 법령 대비)."""
+        arts = [a for a in doc.articles if a.title]
+        if terms:
+            focused = [a for a in arts if any(t in a.title or t in a.text for t in terms)]
+            if focused:
+                arts = focused
+        toc = "\n".join(f"{a.label} {a.title}" for a in arts)[:5000]
         if not toc:
             return []
         data = self.model.chat_json(
@@ -345,7 +356,7 @@ def build_explore(model, settings, *, use_search: bool = True, cases=None) -> Ex
         model,
         LinerSearch(settings) if use_search else None,
         LawSource(DrfClient(settings), web=WebLaw()),
-        cases=cases if cases is not None else load_index(),
+        cases=None if cases is False else (cases if cases is not None else load_index()),
         use_search=use_search,
     )
 

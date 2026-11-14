@@ -16,7 +16,7 @@ class Candidate:
     term: str = ""  # 정의 조항에서 찾을 용어
     article: str = ""  # '제10조의2' 등
     point: str = ""
-    origin: Literal["의제 가설", "관련 법령", "검색 단서", "선례"] = "관련 법령"
+    origin: Literal["의제 가설", "관련 법령", "검색 단서", "선례", "고정 대조"] = "관련 법령"
 
 
 @dataclass
