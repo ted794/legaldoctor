@@ -19,6 +19,9 @@ import httpx
 from legaldoctor.config import BROWSER_USER_AGENT, Settings
 
 
+SEARCH_CALLS = [0]  # 진단 1건당 비용 측정용 호출 수
+
+
 class LinerSearchError(RuntimeError):
     pass
 
@@ -96,6 +99,7 @@ class LinerSearch:
         self._timeout = timeout
 
     def search(self, query: str, *, mode: str = "general") -> SearchResult:
+        SEARCH_CALLS[0] += 1
         body = {"messages": [{"role": "user", "content": query}], "mode": mode}
         headers = {
             "x-api-key": self._settings.liner_api_key,
