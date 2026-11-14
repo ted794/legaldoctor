@@ -45,7 +45,7 @@ def test_run_checkup_protection_gap_is_high_risk():
     eng = Explore(Model(), None, LawSource(FakeDrf()), use_search=False, workers=1)
     res = run_checkup(Model(), INVEST, TEXT, eng)
     pl = next(i for i in res.items if i.category == "personal_liability")
-    assert pl.risk == "높음" and pl.lawyer and "보호 공백" in pl.verdict
+    assert pl.risk == "높음" and pl.lawyer and "보호 규정 못 찾음" in pl.verdict
     assert res.causes[0]["no"] == 13
     html = checkup_html(res)
     assert "투자계약 검진" in html and "법률 자문이 아닙니다" in html and "변호사 심화자문 권함" in html

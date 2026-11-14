@@ -22,6 +22,8 @@ from .modules import Module
 
 CAUSES_PATH = DATA_DIR / "checkup" / "causes.json"
 RISK_ORDER = {"높음": 0, "중간": 1, "낮음": 2}
+# 창업자 개인 책임을 제한하는 보호 법령(적용 대상 투자자 범위가 정해져 있음)
+PROTECTIVE_LAWS = {"벤처투자 촉진에 관한 법률", "벤처투자 촉진에 관한 법률 시행령", "벤처기업육성에 관한 특별법"}
 
 EXTRACT_SYSTEM = """너는 스타트업 법률 검진을 돕는 보조자다. 창업자가 낸 {input_label}에서 아래 범주에 해당하는 조항이나 사실을 뽑는다.
 
@@ -135,6 +137,14 @@ def grade_item(item: CheckItem, module: Module) -> None:
         item.verdict = module.grade_text["규정 공백"]
         if module.key == "invest" and item.category in ("personal_liability", "insolvency"):
             risk = "높음"  # 보호 규정이 없으면 계약대로 개인에게 집행될 수 있음(27장)
+    if module.key == "invest" and item.category in ("personal_liability", "insolvency"):
+        # 계약을 뒷받침하는 법(민법 연대채무 등)과 창업자를 보호하는 법을 구분한다(13·27장)
+        laws = {f.law for f in item.findings if f.grade in ("명시 규제", "의제 리스크")}
+        if laws & PROTECTIVE_LAWS:
+            item.verdict = "보호 규정 있음: 이 투자자 업권이 적용 대상인지 확인 필요(27장)"
+        else:
+            item.verdict = "보호 규정 못 찾음: 계약대로 개인에게 집행될 수 있음(27장)"
+        risk = "높음"
     item.risk = risk
     item.lawyer = risk == "높음"
 
