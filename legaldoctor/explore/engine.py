@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 from concurrent.futures import TimeoutError as FutureTimeout
 from typing import Any
 
@@ -64,6 +64,7 @@ class Explore:
         use_hypotheses: bool = True,
         use_shadow: bool = True,
         search_timeout: float | None = None,
+        shadow_timeout: float | None = 30.0,
         hint: str = "",
         extra_candidates: list[Candidate] | None = None,
     ):
@@ -79,6 +80,8 @@ class Explore:
         self.use_hypotheses = use_hypotheses  # 모델이 후보 법령·의제 가설을 세움(검진은 고정 대조 법령만으로 빠르게 볼 수 있음)
         self.use_shadow = use_shadow  # 법령해석례 대조
         self.search_timeout = search_timeout  # 이 시간 안에 온 검색 단서만 씀(늦은 결과는 기다리지 않음)
+        self.shadow_timeout = shadow_timeout  # 해석례 대조는 보조 근거라 이 시간 안에 끝난 것만 씀
+        self.progress = None  # progress(문구 또는 None, 0~1): 화면 진행률·기록용. 예외를 던지면 탐색을 멈춘다(중단 버튼)
         self._lock = threading.Lock()
 
     # 진입점 --------------------------------------------------------------
@@ -91,6 +94,8 @@ class Explore:
         notes: list[str] = []
 
         t0 = time.perf_counter()
+        say = self.progress or (lambda _text, _frac: None)
+        say(f"행위 {len(acts)}개마다 관련 법령 후보를 세우고 검색 단서를 모으고 있어요", 0.02)
         cands = list(self.extra_candidates)
         leads: list[Lead] = []
         # 모델 가설과 Liner Search 단서 수집은 서로 기다릴 이유가 없으므로 함께 돌린다
@@ -118,20 +123,29 @@ class Explore:
 
         findings: list[Finding] = []
         rejected: list[Rejected] = []
+        law_names = sorted({c.law for c in cands})
+        say(f"후보 {len(cands)}건(법령 {len(law_names)}개)을 찾았어요. 법령 원문을 받고 있어요", 0.35)
         # 원문을 먼저 받아 둔다(같은 법령 중복 조회 방지). 법령끼리는 독립이라 함께 받는다
         with ThreadPoolExecutor(self.workers) as ex:
-            list(ex.map(self.laws.load, sorted({c.law for c in cands})))
+            list(ex.map(self.laws.load, law_names))
         t2 = time.perf_counter()
+        say(f"후보 {len(cands)}건을 법령 원문과 한 조문씩 대조하고 있어요", 0.45)
+        n, step = len(cands), max(1, len(cands) // 10)
         with ThreadPoolExecutor(self.workers) as ex:
-            for f, r in ex.map(lambda c: self._verify(c, act_by_id[c.activity_id].action), cands):
+            for k, (f, r) in enumerate(ex.map(lambda c: self._verify(c, act_by_id[c.activity_id].action), cands), 1):
                 findings += f
                 rejected += r
+                if k % step == 0 or k == n:
+                    hit = sum(1 for x in findings if x.grade in ("명시 규제", "의제 리스크"))
+                    say(f"원문 대조 {k}/{n} · 걸리는 조문 {hit}개" if k == n or k % (step * 3) == 0 else None, 0.45 + 0.35 * k / max(1, n))
         t3 = time.perf_counter()
 
         findings += self._chain(findings)
         if self.use_shadow:
-            findings += self._shadow(findings, act_by_id)
+            say("위임 법령과 법령해석례를 확인하고 있어요", 0.82)
+            findings += self._shadow(findings, act_by_id, notes)
         t4 = time.perf_counter()
+        say(None, 1.0)
         notes.append(f"소요: 가설·검색 {t1 - t0:.0f}초, 원문 조회 {t2 - t1:.0f}초, 원문 대조 {t3 - t2:.0f}초, 위임·해석례 {t4 - t3:.0f}초")
         timings = {"hypothesis_search": t1 - t0, "law_fetch": t2 - t1, "verify": t3 - t2, "chain_shadow": t4 - t3}
         findings += self._gaps(acts, cands, findings)
@@ -321,7 +335,7 @@ class Explore:
         return out
 
     # 4층: 그림자 규제(법령해석례) --------------------------------------------
-    def _shadow(self, findings: list[Finding], act_by_id: dict[str, Any]) -> list[Finding]:
+    def _shadow(self, findings: list[Finding], act_by_id: dict[str, Any], notes: list[str] | None = None) -> list[Finding]:
         out: list[Finding] = []
         pairs = sorted({(f.activity_id, f.law) for f in findings if f.grade in ("명시 규제", "의제 리스크") and f.layer != "위임 사슬"})
 
@@ -343,10 +357,18 @@ class Explore:
                     )
             return res
 
-        # 행위·법령 쌍마다 독립이므로 함께 돌린다(순서는 쌍 순서대로 유지)
-        with ThreadPoolExecutor(self.workers) as ex:
-            for res in ex.map(one, pairs):
-                out += res
+        # 행위·법령 쌍마다 독립이므로 함께 돌린다. 해석례는 보조 근거라 시간 상한 안에 끝난 쌍만 쓴다(순서는 쌍 순서대로 유지)
+        if not pairs:
+            return out
+        ex = ThreadPoolExecutor(self.workers)
+        futs = [ex.submit(one, pr) for pr in pairs]
+        done, pending = wait(futs, timeout=self.shadow_timeout)
+        ex.shutdown(wait=False, cancel_futures=True)
+        for fut in futs:
+            if fut in done and fut.exception() is None:
+                out += fut.result()
+        if pending and notes is not None:
+            notes.append(f"법령해석례 대조 {len(pairs)}쌍 가운데 {len(pending)}쌍은 {self.shadow_timeout:.0f}초 안에 끝나지 않아 이번 결과에서 뺌")
         return out
 
     # 규정 공백 -----------------------------------------------------------
