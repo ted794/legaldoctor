@@ -140,9 +140,10 @@ class Explore:
                     say(f"원문 대조 {k}/{n} · 걸리는 조문 {hit}개" if k == n or k % (step * 3) == 0 else None, 0.45 + 0.35 * k / max(1, n))
         t3 = time.perf_counter()
 
+        say("걸리는 조문이 위임한 시행령·시행규칙을 확인하고 있어요", 0.82)
         findings += self._chain(findings)
         if self.use_shadow:
-            say("위임 법령과 법령해석례를 확인하고 있어요", 0.82)
+            say("법령해석례를 확인하고 있어요", 0.92)
             findings += self._shadow(findings, act_by_id, notes)
         t4 = time.perf_counter()
         say(None, 1.0)
@@ -314,6 +315,11 @@ class Explore:
     # 2층: 위임 사슬 -------------------------------------------------------
     def _chain(self, findings: list[Finding]) -> list[Finding]:
         out: list[Finding] = []
+        # 시행령·시행규칙 원문을 법령마다 한 번씩 미리 함께 받아 둔다(하나씩 받으면 법령이 많을 때 1분 넘게 걸림)
+        names = sorted({f.law + s for f in findings if f.grade in ("명시 규제", "의제 리스크") and f.locator.startswith("제") for s in (" 시행령", " 시행규칙")})
+        if names:
+            with ThreadPoolExecutor(self.workers) as ex:
+                list(ex.map(self.laws.load, names))
         for f in [f for f in findings if f.grade in ("명시 규제", "의제 리스크") and f.locator.startswith("제")]:
             doc = self.laws.load(f.law)
             key = parse_article_ref(f.locator)
