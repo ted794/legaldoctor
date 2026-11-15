@@ -25,7 +25,7 @@ p{margin:2px 0 3px}
 b{font-weight:600}
 .fig{width:86%;display:block;margin:3px auto 2px;border:1px solid var(--line);border-radius:4px}
 .cap{color:var(--sub);font-size:7.8pt;margin:0 0 3px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two{break-inside:avoid;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .foot{margin-top:7px;color:var(--sub);font-size:7.8pt;border-top:1px solid var(--line);padding-top:3px}
 a{color:var(--c);text-decoration:none}
 </style></head><body>
@@ -53,28 +53,28 @@ a{color:var(--c);text-decoration:none}
 <table>
 <tr><td class="k">접수</td><td>스무고개 문답, 글, 사업소개서·계약서(PDF·PPTX·DOCX·HWPX), 손그림. 이해한 사업 모델 12개 항목마다 출처 자료를 붙임</td></tr>
 <tr><td class="k">규제팡</td><td>판단 점검표 6단계: 사업 분해 → 5층 규제 탐색(정의 대조·위임 사슬·의제 가설·법령해석례·선례) → 규제 유형 → 소관 → 선례·현존 규제 → 트랙(신속확인·실증특례·임시허가)과 창구</td></tr>
-<tr><td class="k">계약·노무 검진</td><td>투자계약(창업자 개인 책임, 보호 공백)과 노무(근로자성, 체불, 포괄임금, 직무발명)의 위험 조항을 원문 그대로 뽑아 법령과 대조</td></tr>
+<tr><td class="k">계약·노무 검진</td><td>투자계약·노무·개인정보·거래·지배구조의 위험 조항과 사실을 원문 그대로 뽑아 법령과 대조. 경영 지표 검진은 런웨이·LTV/CAC 등을 숫자로 계산. 28개 사인 모두 검진</td></tr>
 <tr><td class="k">결과물</td><td>규제 지도, 신속확인 신청서 초안(ICT·산업융합·규제자유특구 서식), 변호사 상담 준비서(A4 1장), 검진표</td></tr>
 <tr><td class="k">출구</td><td>규정 공백은 신속확인으로 정부에 묻고, 깊은 검토는 상담 준비서를 들고 이용자가 고른 변호사에게 감</td></tr>
 </table>
 <p>판정은 명시 규제·의제 리스크·해석 리스크·규정 공백·원문 확인 불가로 나누고, 특례 뒤 개정되지 않은 규정은 현존 규제로 표시함(개정 이력만으로 해소를 단정하지 않음). 유형·소관·트랙은 규칙표로 판정해 재현됨.</p>
 
-<h2>3. 평가: 공개 승인 사례 20건</h2>
-<p>사업 설명만 넣고 승인 결과와 대조함. 평가 세트 10건과 규칙을 고칠 때 보지 않은 검증 세트 10건을 합친 값임. 입력에서 법령명·조문·특례 결과를 지우고, 같은 사례와 그 뒤 승인 사례는 선례 검색에서 뺌. 비교 대상은 같은 Liner Model에 범용 프롬프트로 물은 결과임(2026.11.14 실행).</p>
+<h2>3. 평가: 공개 승인 사례 40건</h2>
+<p>사업 설명만 넣고 승인 결과와 대조함. 평가 세트 10건과 규칙을 고칠 때 보지 않은 검증 세트 30건을 합친 값임. 입력에서 법령명·조문·특례 결과를 지우고, 같은 사례와 그 뒤 승인 사례는 선례 검색에서 뺌. 비교 대상은 같은 Liner Model에 범용 프롬프트로 물은 결과임(2026.11.14~15 실행).</p>
 <div class="two">
 <table>
 <tr><th>항목</th><th class="n">리걸닥터</th><th class="n">범용</th></tr>
-<tr class="hi"><td>핵심 법령 적중(시행령·시행규칙 포함)</td><td class="n">76%</td><td class="n">68%</td></tr>
-<tr class="hi"><td>핵심 법령 적중(정확한 법령명)</td><td class="n">73%</td><td class="n">53%</td></tr>
-<tr class="hi"><td>조문 적중</td><td class="n">48%</td><td class="n">25%</td></tr>
-<tr class="hi"><td>허위 조문</td><td class="n">0건</td><td class="n">5건</td></tr>
+<tr class="hi"><td>핵심 법령 적중(정확한 법령명)</td><td class="n">65%</td><td class="n">49%</td></tr>
+<tr class="hi"><td>핵심 법령 적중(시행령·시행규칙 포함)</td><td class="n">67%</td><td class="n">64%</td></tr>
+<tr class="hi"><td>조문 적중</td><td class="n">36%</td><td class="n">23%</td></tr>
+<tr class="hi"><td>허위 조문</td><td class="n">0건</td><td class="n">10건</td></tr>
 </table>
 <table>
 <tr><th>항목</th><th class="n">리걸닥터</th><th class="n">범용</th></tr>
-<tr><td>트랙 일치</td><td class="n">14/20</td><td class="n">16/20</td></tr>
-<tr><td>창구 일치</td><td class="n">10/20</td><td class="n">15/20</td></tr>
-<tr><td>평균 소요</td><td class="n">114초</td><td class="n">5초</td></tr>
-<tr><td colspan="3">검증 세트만 보면 법령 계열 67% 대 57%, 조문 46% 대 25%. 트랙·창구 판정과 속도는 개선 과제임</td></tr>
+<tr><td>트랙 일치</td><td class="n">25/40</td><td class="n">30/40</td></tr>
+<tr><td>창구 일치</td><td class="n">20/40</td><td class="n">27/40</td></tr>
+<tr><td>평균 소요</td><td class="n">105초</td><td class="n">5초</td></tr>
+<tr><td colspan="3">검증 30건만 보면 법령명 61% 대 46%, 조문 32% 대 22%, 허위 0 대 7. 트랙·창구 판정과 속도는 개선 과제임</td></tr>
 </table>
 </div>
 
@@ -101,7 +101,7 @@ a{color:var(--c);text-decoration:none}
 <tr><td>샌드박스 사무국·지자체</td><td>신속확인·민원 접수 전 조문·선례 정리, 현존 규제 목록으로 규제 개선 과제 발굴</td><td>회신 전 조사 시간</td></tr>
 </table>
 <ul>
-<li><b>단기(대회 뒤 6개월):</b> 28개 사인 중 법률 사인 22개로 넓힘(현재 13개). 운영 중인 웹 서비스에 온라인 부검보고서 각 장을 연결</li>
+<li><b>단기(대회 뒤 6개월):</b> 28개 사인 검진 메뉴별로 공개 사례 세트를 만들어 정확도를 검증. 운영 중인 웹 서비스에 온라인 부검보고서 각 장을 연결</li>
 <li><b>중기:</b> 같은 엔진을 다른 조직·직무에 맞춰 묶음 제공(AC·VC 포트폴리오 검진, 법무팀 출시 전 검토, 샌드박스 사무국 접수 지원). 다른 AI 도구에서 부르는 연결 도구(MCP)</li>
 <li><b>장기:</b> 소상공인·외국인 노동자·육아맘 리걸닥터처럼 대상별로 넓혀 기업·개인 법률 자문 전반의 첫 관문, 전 국민 리걸닥터</li>
 </ul>

@@ -49,7 +49,8 @@ def checkup_html(res: CheckupResult) -> str:
     if len(res.causes) > 1:
         parts.append("<p class='meta'>함께 보는 사인: " + e(", ".join(f"{c['no']}. {c['name']}" for c in res.causes[1:])) + "</p>")
 
-    parts.append("<h2>항목별 검진 결과</h2><table><tr><th>위험</th><th>항목</th><th>자료 원문</th><th>법령 대조</th><th>변호사 권장조치</th></tr>")
+    basis = "계산·판정" if getattr(res.module, "kind", "law") == "metrics" else "법령 대조"
+    parts.append(f"<h2>항목별 검진 결과</h2><table><tr><th>위험</th><th>항목</th><th>자료 원문</th><th>{basis}</th><th>변호사 권장조치</th></tr>")
     for i in res.items:
         laws = []
         shown = [x for x in i.findings if x.grade not in ("규정 공백", "원문 확인 불가")]

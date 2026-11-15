@@ -358,7 +358,9 @@ def checkup_demo(module: str) -> dict[str, str]:
     from legaldoctor.config import DATA_DIR
 
     p = DATA_DIR / "checkup" / f"demo_{module}.md"
-    if module not in ("invest", "labor") or not p.exists():
+    from legaldoctor.checkup import MODULES
+
+    if module not in MODULES or not p.exists():
         raise HTTPException(404, "예시가 없음")
     return {"text": p.read_text(encoding="utf-8")}
 
@@ -424,6 +426,21 @@ def _extract_job(cid: str, module_key: str, body: str) -> None:
     m = MODULES[module_key]
     t0 = time.perf_counter()
     try:
+        if m.kind == "metrics":
+            # 경영 지표는 숫자를 뽑아 규칙표로 바로 계산하므로 고르는 단계 없이 한 번에 끝냄
+            from legaldoctor.checkup.metrics_check import metric_items
+
+            _log(job, "자료에서 현금·소진액·매출·인원 같은 숫자를 찾고 있어요")
+            items = metric_items(model(), body)
+            job.update(items=items, questions=[], causes=[c for c in load_causes() if c["no"] in m.causes], run_ids=[i.id for i in items], phase="check")
+            if not items:
+                job.update(status="error", error="계산할 숫자나 사실을 자료에서 찾지 못했어요. 현금, 월 소진액, 월 매출을 적어 주세요")
+                return
+            for i in items:
+                _log(job, f"[{i.risk}] {i.label}: {i.verdict}")
+            _log(job, "검진을 마쳤어요")
+            job["status"] = "done"
+            return
         _log(job, "계약서·설명에서 검진할 조항과 사실을 찾고 있어요")
         items, questions, _dropped = extract_items(model(), m, body)
         job.update(items=items, questions=questions, causes=[c for c in load_causes() if c["no"] in m.causes])
