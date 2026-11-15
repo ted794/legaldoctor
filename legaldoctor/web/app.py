@@ -39,6 +39,7 @@ app = FastAPI(title="스타트업 리걸닥터")
 # 남용 방지 -------------------------------------------------------------------
 # 분석·검진은 Liner 유료 API를 수십 번 부른다. IP별 시간당 한도와 서버 전체 하루 한도를 둔다.
 # 앞단 nginx가 X-Real-IP를 넣어 준다(앱은 127.0.0.1에만 열어 둠). 값은 환경변수로 바꿀 수 있음
+import json
 import os
 import threading
 import time
@@ -151,10 +152,35 @@ def terms() -> FileResponse:
     return FileResponse(STATIC / "terms.html")
 
 
+# 상단 확장 서비스 메뉴. 저장소에는 개념 이름만 두고, 실제 서비스 이름과 주소는 배포 서버 .env의 LD_NAV(JSON)로 넣는다
+DEFAULT_NAV = [
+    {"label": "규제 변화 알림", "note": "준비 중"},
+    {"label": "전문가 지식 커뮤니티", "note": "준비 중"},
+    {"label": "전문가 협업 네트워크", "note": "준비 중"},
+]
+
+
+def _nav() -> list[dict[str, str]]:
+    raw = os.getenv("LD_NAV", "").strip()
+    if not raw:
+        return DEFAULT_NAV
+    try:
+        items = json.loads(raw)
+    except ValueError:
+        return DEFAULT_NAV
+    out = []
+    for x in items if isinstance(items, list) else []:
+        if not isinstance(x, dict) or not str(x.get("label") or "").strip():
+            continue
+        url = str(x.get("url") or "")
+        out.append({"label": str(x["label"])[:40], "note": str(x.get("note") or "")[:20], "url": url if url.startswith("https://") else ""})
+    return out[:5] or DEFAULT_NAV
+
+
 @app.get("/api/info")
-def info() -> dict[str, str]:
-    """운영자 표시. 값은 배포 서버의 .env(LD_OPERATOR, LD_CONTACT)에서 읽어 저장소에 운영 정보를 남기지 않는다."""
-    return {"operator": os.getenv("LD_OPERATOR", ""), "contact": os.getenv("LD_CONTACT", "")}
+def info() -> dict[str, Any]:
+    """운영자 표시와 상단 메뉴. 값은 배포 서버의 .env(LD_OPERATOR, LD_CONTACT, LD_NAV)에서 읽어 저장소에 운영 정보를 남기지 않는다."""
+    return {"operator": os.getenv("LD_OPERATOR", ""), "contact": os.getenv("LD_CONTACT", ""), "nav": _nav()}
 
 
 @app.post("/api/sessions")
