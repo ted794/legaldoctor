@@ -4,17 +4,17 @@
 @font-face{font-family:NK;src:url(fonts/NotoSansKR-400.woff2);font-weight:400}
 @font-face{font-family:NK;src:url(fonts/NotoSansKR-600.woff2);font-weight:600}
 @font-face{font-family:NK;src:url(fonts/NotoSansKR-700.woff2);font-weight:700}
-@page{size:A4;margin:13mm 14mm 12mm}
+@page{size:A4;margin:11mm 13mm 10mm}
 :root{--c:#A51C30;--ink:#1b1f24;--sub:#5b6573;--line:#dee2e6;--soft:#FBF2F3}
 *{box-sizing:border-box}
-body{font-family:NK,sans-serif;color:var(--ink);font-size:8.9pt;line-height:1.5;margin:0;word-break:keep-all}
+body{font-family:NK,sans-serif;color:var(--ink);font-size:8.5pt;line-height:1.42;margin:0;word-break:keep-all}
 h1{font-size:17pt;margin:0;color:var(--c);letter-spacing:-.3px}
 h1 small{font-size:10pt;color:var(--sub);font-weight:400;margin-left:6px}
 .meta{color:var(--sub);font-size:8.3pt;margin:2px 0 6px}
 .lead{background:var(--soft);border-left:3px solid var(--c);padding:5px 9px;margin:0 0 4px;font-size:9.3pt}
-h2{font-size:10.6pt;color:var(--c);margin:9px 0 3px;padding-bottom:2px;border-bottom:1.2px solid var(--c)}
-table{width:100%;border-collapse:collapse;margin:3px 0 4px;font-size:8.4pt}
-th,td{border:1px solid var(--line);padding:2.5px 6px;vertical-align:top;text-align:left}
+h2{font-size:10.2pt;color:var(--c);margin:7px 0 2px;padding-bottom:2px;border-bottom:1.2px solid var(--c)}
+table{width:100%;border-collapse:collapse;margin:2px 0 3px;font-size:8.1pt}
+th,td{border:1px solid var(--line);padding:2px 5px;vertical-align:top;text-align:left}
 th{background:#f4f5f7;font-weight:600}
 td.k{width:15%;font-weight:600;white-space:nowrap}
 td.n,th.n{text-align:right;white-space:nowrap;width:17%}
@@ -23,7 +23,7 @@ ul{margin:2px 0 3px;padding-left:15px}
 li{margin:1px 0}
 p{margin:2px 0 3px}
 b{font-weight:600}
-.fig{width:100%;margin:3px 0 2px;border:1px solid var(--line);border-radius:4px}
+.fig{width:86%;display:block;margin:3px auto 2px;border:1px solid var(--line);border-radius:4px}
 .cap{color:var(--sub);font-size:7.8pt;margin:0 0 3px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .foot{margin-top:7px;color:var(--sub);font-size:7.8pt;border-top:1px solid var(--line);padding-top:3px}
@@ -32,7 +32,7 @@ a{color:var(--c);text-decoration:none}
 
 <h1>스타트업 리걸닥터<small>Startup Legal Doctor</small></h1>
 <div class="meta">라이너 .EXE-THON 2026 기획서 · 개인 참가 구태언 · 저장소 <a href="https://github.com/ted794/legaldoctor">github.com/ted794/legaldoctor</a></div>
-<p class="lead">법을 잘 모르는 창업자가 변호사를 찾기 전에 무료로 쓰는 규제·법률 사전상담 에이전트임. 스타트업이 죽는 28가지 사인을 죽기 전에 검진하고, 위험이 높은 항목은 변호사 심화자문으로 넘김.</p>
+<p class="lead">법을 잘 모르는 창업자가 변호사를 찾기 전에 무료로 쓰는 규제·법률 사전상담 에이전트임. 스타트업이 죽는 28가지 사인을 죽기 전에 검진하고, 15년 창업 법률 현장의 판단 순서와 권장조치를 그대로 담음.</p>
 
 <h2>1. 누가, 어떤 문제로, 얼마나 불편한가</h2>
 <p>개발자가 15년간 스타트업 창업진흥 변호사로 상담하며 가장 자주 부딪힌 병목임. 창업자는 무엇을 물어야 할지 모른 채 상담에 오고, 변호사는 매번 기초 조사부터 다시 함.</p>
@@ -55,13 +55,9 @@ a{color:var(--c);text-decoration:none}
 <tr><td class="k">규제팡</td><td>판단 점검표 6단계: 사업 분해 → 5층 규제 탐색(정의 대조·위임 사슬·의제 가설·법령해석례·선례) → 규제 유형 → 소관 → 선례·현존 규제 → 트랙(신속확인·실증특례·임시허가)과 창구</td></tr>
 <tr><td class="k">계약·노무 검진</td><td>투자계약(창업자 개인 책임, 보호 공백)과 노무(근로자성, 체불, 포괄임금, 직무발명)의 위험 조항을 원문 그대로 뽑아 법령과 대조</td></tr>
 <tr><td class="k">결과물</td><td>규제 지도, 신속확인 신청서 초안(ICT·산업융합·규제자유특구 서식), 변호사 상담 준비서(A4 1장), 검진표</td></tr>
-<tr><td class="k">출구</td><td>규정 공백은 신속확인으로 정부에 묻고, 위험이 높은 항목은 변호사 심화자문으로 연결</td></tr>
+<tr><td class="k">출구</td><td>규정 공백은 신속확인으로 정부에 묻고, 깊은 검토는 상담 준비서를 들고 이용자가 고른 변호사에게 감</td></tr>
 </table>
-<ul>
-<li>판정은 명시 규제, 의제 리스크, 해석 리스크, 규정 공백, 원문 확인 불가로 나눔. 모르는 것은 모른다고 표시함</li>
-<li>같은 규정으로 특례를 받은 뒤 조문이 바뀌지 않았으면 현존 규제로 표시함. 개정 이력이 있어도 규제가 풀렸다고 단정하지 않음</li>
-<li>유형·소관·트랙은 규칙표로 판정해 같은 입력에 같은 결과가 나옴</li>
-</ul>
+<p>판정은 명시 규제·의제 리스크·해석 리스크·규정 공백·원문 확인 불가로 나누고, 특례 뒤 개정되지 않은 규정은 현존 규제로 표시함(개정 이력만으로 해소를 단정하지 않음). 유형·소관·트랙은 규칙표로 판정해 재현됨.</p>
 
 <h2>3. 평가: 공개 승인 사례 20건</h2>
 <p>사업 설명만 넣고 승인 결과와 대조함. 평가 세트 10건과 규칙을 고칠 때 보지 않은 검증 세트 10건을 합친 값임. 입력에서 법령명·조문·특례 결과를 지우고, 같은 사례와 그 뒤 승인 사례는 선례 검색에서 뺌. 비교 대상은 같은 Liner Model에 범용 프롬프트로 물은 결과임(2026.11.14 실행).</p>
@@ -83,35 +79,40 @@ a{color:var(--c);text-decoration:none}
 </div>
 
 <h2>4. Liner API 활용</h2>
-<table>
-<tr><th style="width:24%">API</th><th>쓰는 곳</th></tr>
-<tr><td>Liner Model (liner-mark-1.0)</td><td>글·문서·그림에서 사업 모델 추출(이미지 입력), 스무고개 질문 생성, 사업 분해, 후보 법령·의제 가설 생성, 원문 조문 적용 판정(근거 구절 필수), 계약 위험 조항 추출</td></tr>
-<tr><td>Liner Search (/agents/search)</td><td>행위·조항별 규제 단서, 정부 해석·보도해명 단서 수집</td></tr>
-</table>
-<p>Liner가 낸 단서는 국가법령정보 원문으로 대조한 뒤에만 결과물에 넣음. 진단 1건 실측(2026.11.14) 규제팡은 Liner Model 122회 호출·토큰 11.6만 개로 약 $0.24, 투자계약 검진은 183회·17.9만 개로 약 $0.34임(공개 단가 입력 100만 토큰당 $1, 출력 $6 기준). Liner Search 호출 10~11회는 별도이며 창업자에게는 무료로 제공함.</p>
+<p><b>Liner Model(liner-mark-1.0)</b>은 글·문서·그림에서 사업 모델 추출, 스무고개 질문, 사업 분해, 후보 법령·의제 가설, 원문 조문 적용 판정(근거 구절 필수), 계약 위험 조항 추출을 맡음. <b>Liner Search</b>는 행위별 규제 단서와 정부 해석·보도해명을 찾음. 둘 다 후보만 내고 확정은 국가법령정보 원문이 함. 진단 1건 Liner Model 비용은 약 $0.24~0.34(2026.11.14 실측), 같은 질문은 판정 캐시로 다시 부르지 않음.</p>
 
-<h2>5. 확장 가능성</h2>
-<ul>
-<li><b>스타트업 생애 전체:</b> 「스타트업 부검보고서」의 28가지 사인 가운데 규제 사인 6종(규제팡)과 투자계약·노무(검진)를 구현함. 같은 엔진으로 개인정보·데이터, 거래·자금, 지배구조·승계, 엑싯 검진을 붙임</li>
-<li><b>기업·개인 법률 자문 전반:</b> 같은 엔진으로 대상과 이슈를 넓힘. 소상공인 리걸닥터, 외국인 노동자 리걸닥터, 육아맘 리걸닥터처럼 분야별로 늘려 궁극적으로 전 국민 리걸닥터를 목표로 함</li>
-<li><b>다른 조직·직무:</b> "사업 분해 → 규정 탐색 → 원문 대조 → 선례 → 문서 초안" 구조는 규정을 다루는 업무에 그대로 옮겨 씀</li>
-</ul>
+<h2>5. 무료 법률 AI와 무엇이 다른가</h2>
 <table>
-<tr><th style="width:24%">대상</th><th>쓰임</th><th style="width:32%">줄어드는 것</th></tr>
-<tr><td>변호사·변리사</td><td>정리된 상담 준비서로 심층상담 시작</td><td>상담 1건당 기초 조사 보통 8시간 → 약 2분</td></tr>
-<tr><td>액셀러레이터·VC</td><td>투자 검토 단계의 규제·계약 리스크 선별</td><td>포트폴리오 실사 선행 조사</td></tr>
+<tr><th style="width:17%">구분</th><th>법제처 AI 법령검색</th><th>앨리비(BHSN)</th><th>스타트업 리걸닥터</th></tr>
+<tr><td class="k">답하는 질문</td><td>"이 법을 찾아 줘"(법령 검색)</td><td>"이 계약서를 관리·검토해 줘"(기업 계약 업무)</td><td>"내 사업이 무엇 때문에 죽을 수 있나"(물을 것을 모르는 창업자)</td></tr>
+<tr><td class="k">출발점</td><td>이용자의 질문</td><td>계약서</td><td>사업 설명·그림·스무고개로 사실을 먼저 확인</td></tr>
+<tr><td class="k">고유 자산</td><td>법령·판례·해석례 데이터</td><td>계약 관리·전자서명·법률 특화 모델</td><td>샌드박스 사례 2,859건과 특례 뒤 현존 규제 판정, 28개 사인 진단 사슬, 15년 현장의 판단 순서·변호사 권장조치</td></tr>
+<tr><td class="k">다음 길</td><td>법령 열람</td><td>계약 체결·이행 관리</td><td>신속확인 신청서 초안, 트랙·창구 판정, 변호사 상담 준비서</td></tr>
+</table>
+<p class="cap">법제처는 지능형 법령검색을 2024.12 개통하고 생성형 AI 법령검색을 2027년 제공 예정(2026.6 착수), 앨리비는 2026.7부터 계약 기본 기능을 무료 제공(각 기관·언론 공개 자료, 2026.11 확인). 리걸닥터는 이들과 경쟁하기보다 그 앞단, 창업자가 무엇을 물어야 할지 정해 주는 자리를 맡음.</p>
+
+<h2>6. 기대효과와 중장기 발전</h2>
+<table>
+<tr><th style="width:22%">조직·직무</th><th>쓰는 방식</th><th style="width:34%">줄어드는 시간·비용</th></tr>
+<tr class="hi"><td>창업자</td><td>변호사를 찾기 전 무료 사전검진, 신속확인 신청</td><td>첫 답 1주 → 1~2분, 자문료 100만~1,000만 원 → 진단 1건 약 350원</td></tr>
+<tr><td>변호사·변리사</td><td>상담 준비서로 심층상담 시작</td><td>상담 1건 기초 조사 보통 8시간 → 약 2분</td></tr>
+<tr><td>액셀러레이터·VC</td><td>투자 전 규제·계약 리스크 선별, 포트폴리오 정기 검진</td><td>실사 선행 조사, 투자계약 검진 1건 약 30초</td></tr>
 <tr><td>기업 법무팀</td><td>신사업 출시 전 내부 검토</td><td>외부 자문 전 쟁점 정리</td></tr>
-<tr><td>샌드박스 사무국·지자체</td><td>신속확인·민원 접수 전 관련 조문과 선례 정리</td><td>회신 전 조사 시간</td></tr>
+<tr><td>샌드박스 사무국·지자체</td><td>신속확인·민원 접수 전 조문·선례 정리, 현존 규제 목록으로 규제 개선 과제 발굴</td><td>회신 전 조사 시간</td></tr>
 </table>
-
-<h2>6. 기존 부분과 새로 만든 부분</h2>
 <ul>
-<li><b>새로 만든 부분:</b> 코드와 데이터 전부. 대회 개발 기간(2026.11.12~11.25)에 새 저장소에서 작성함. 다른 제품이나 저장소의 코드를 가져오지 않음</li>
-<li><b>기존 저작물:</b> 검진 메뉴의 사인 분류와 진단 사슬은 참가자가 대회 전부터 집필해 온 「스타트업 부검보고서」의 28가지 사인 체계를 옮긴 것임. 원고 본문과 사례는 넣지 않음</li>
-<li><b>데이터:</b> 국가법령정보센터 법령 원문, 공개 규제샌드박스 승인 사례, 가상 시연 자료만 씀. 개인정보와 내부 자료는 쓰지 않음</li>
+<li><b>단기(대회 뒤 6개월):</b> 28개 사인 중 법률 사인 22개로 넓힘(현재 13개). 운영 중인 웹 서비스에 온라인 부검보고서 각 장을 연결</li>
+<li><b>중기:</b> 같은 엔진을 다른 조직·직무에 맞춰 묶음 제공(AC·VC 포트폴리오 검진, 법무팀 출시 전 검토, 샌드박스 사무국 접수 지원). 다른 AI 도구에서 부르는 연결 도구(MCP)</li>
+<li><b>장기:</b> 소상공인·외국인 노동자·육아맘 리걸닥터처럼 대상별로 넓혀 기업·개인 법률 자문 전반의 첫 관문, 전 국민 리걸닥터</li>
 </ul>
 
-<h2>7. 만든 사람</h2>
+<h2>7. 신뢰와 이해충돌 관리</h2>
+<p>개발자는 현직 변호사이므로 서비스를 수임 통로로 쓰지 않음. 서비스 안에서 변호사 소개나 자문 권유를 하지 않고, 입력 자료는 저장하지 않아(메모리 6시간) 운영자나 변호사가 열람하지 않음. 그래서 이용자의 상대방이 다른 의뢰인이어도 비밀정보가 변호사에게 흘러가지 않음. 결과물의 "변호사 권장조치"는 같은 유형에 일반적으로 권하는 조치이며, 이용약관에 위임이나 변호사와 의뢰인 관계가 생기지 않는다고 밝힘. 소속 법인 업무와 분리한 개인 비영리 프로젝트로 운영하고, 나중에 유료 상담을 붙이면 수임 전 이해충돌 확인 절차를 거침.</p>
+
+<h2>8. 기존 부분과 새로 만든 부분</h2>
+<p>코드와 데이터는 모두 대회 기간(2026.11.12~11.25)에 새 저장소에서 작성함. 기존 저작물은 검진 메뉴의 사인 분류와 진단 사슬뿐이며 참가자가 집필해 온 「스타트업 부검보고서」의 28가지 사인 체계를 옮긴 것임(원고 본문·사례 미포함). 데이터는 법령 원문, 공개 샌드박스 승인 사례, 가상 시연 자료만 씀.</p>
+
+<h2>9. 만든 사람</h2>
 <p>구태언. 1995년부터 검사와 기업 변호사로 31년간 법조에서 일했고 24년간 IT 분야, 15년간 스타트업 창업진흥 변호사로 활동함. 대한변협 공인 IT전문 변호사이며 국내 대형로펌 파트너 변호사이자 AI산업 자문그룹 대표. 코리아스타트업포럼 공동창립자(2016년 출범 때 운영위원, 2018년 사단법인 이사), 부의장(2024~2026), 현 이사 겸 운영위원. 2021년 대통령표창(벤처창업진흥유공).</p>
 
 <div class="foot">모든 결과물은 법률 자문이 아니며 변호사 상담과 신속확인 신청을 준비하는 참고 자료임.</div>
