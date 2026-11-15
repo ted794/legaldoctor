@@ -1,13 +1,173 @@
-{"no": 23, "items": [
-{"id":"23-01","type":"통계","title":"한국 인허가 부담은 OECD 평균보다 무겁다","body":"OECD 상품시장규제(PMR) 2023 지표에서 한국의 '인허가(Licences and Permits)' 항목 점수는 3.6으로 OECD 평균보다 높게 나타났다. 점수가 높을수록 부담이 크다는 뜻이다. OECD는 한국의 인허가 제도가 평균적인 회원국보다 부담스럽고 더 간소화할 여지가 있다고 평가했다.","quote":"Korea’s licensing regime is more burdensome than the average OECD economy and could be further streamlined.","quote_lang":"en","source":{"title":"OECD Product Market Regulation (PMR) indicators: How does Korea compare?","author":"OECD","publisher":"OECD","year":"2024","url":"https://oecd.org/content/dam/oecd/en/topics/policy-sub-issues/product-market-regulation/Korea_PMR%20country%20note.pdf","kind":"보고서"}},
-{"id":"23-02","type":"선행신호","title":"에너지·교통·통신은 진입장벽이 높은 업종","body":"같은 OECD 국가 노트는 한국의 에너지·교통·전자통신 분야 진입 및 경쟁 장벽이 OECD 평균보다 높다고 짚었다. 전문직과 소매 분야의 경쟁 장벽 점수도 평균을 웃돌았다. 사업 영역이 이런 업종에 걸쳐 있다면 면허·인가 요건부터 조사해야 한다는 신호로 볼 수 있다.","quote":"In Korea regulatory barriers to entry and competition in the energy, transport, and e-communications sectors are higher than the OECD average.","quote_lang":"en","source":{"title":"OECD Product Market Regulation (PMR) indicators: How does Korea compare?","author":"OECD","publisher":"OECD","year":"2024","url":"https://oecd.org/content/dam/oecd/en/topics/policy-sub-issues/product-market-regulation/Korea_PMR%20country%20note.pdf","kind":"보고서"}},
-{"id":"23-03","type":"교훈","title":"침묵은 동의, 위험에 비례한 인허가","body":"OECD는 인허가 부담을 줄이는 방법으로 인허가 목록 관리와 정기 정비, '침묵은 동의' 원칙, 활동 위험에 맞춘 절차 설계를 제시했다. 한국 규제샌드박스의 신속확인에서 30일 내 회신이 없으면 규제가 없는 것으로 보는 장치도 같은 발상이다. 진입 요건이 과도해 보이면 이런 원칙을 근거로 제도 개선을 건의할 수 있다.","source":{"title":"OECD Product Market Regulation (PMR) indicators: How does Korea compare?","author":"OECD","publisher":"OECD","year":"2024","url":"https://oecd.org/content/dam/oecd/en/topics/policy-sub-issues/product-market-regulation/Korea_PMR%20country%20note.pdf","kind":"보고서"}},
-{"id":"23-04","type":"통계","title":"스타트업 절반이 등록·허가 진입장벽을 지목","body":"한국무역협회가 스타트업 256곳을 조사한 결과 개선이 시급한 규제로 '기술 실증 관련 과도한 허가제'(51.6%)와 '등록·허가 업종의 복잡한 진입 장벽'(50.4%)이 꼽혔다. 응답 기업의 25.4%는 국내 규제 때문에 해외 이전을 고려하고 있다고 답했다.","quote":"기업 4곳 중 1곳(25.4%)은 '국내 규제로 해외 이전을 고려하고 있다'고 해 스타트업계가 체감하는 규제 장벽이 여전히 높은 것으로 파악됐다.","quote_lang":"ko","source":{"title":"스타트업 4곳 중 1곳, 해외이전 고려","author":"박은희","publisher":"디지털타임스","year":"2022","url":"https://www.dt.co.kr/article/11478652","kind":"기사"}},
-{"id":"23-05","type":"통계","title":"글로벌 유니콘 100곳 중 12곳은 국내 사업 불가","body":"아산나눔재단 등의 '2022 스타트업코리아!' 보고서를 인용한 보도에 따르면 글로벌 100대 유니콘 중 승차공유·원격의료·공유숙박 등 12곳은 국내에서 사업을 할 수 없고 43곳은 제한적으로만 가능했다. 해외에서 검증된 모델이라도 국내에서는 시장 자체가 법으로 닫혀 있을 수 있다.","quote":"승차공유, 원격의료, 공유숙박 등 12개사는 사업을 할 수 없고, 나머지 43개사는 제한적으로 사업이 가능한 것으로 분석됐다.","quote_lang":"ko","source":{"title":"혁신 막는 규제… 韓선 글로벌 유니콘 절반은 사업 못한다","author":"우상규","publisher":"세계일보","year":"2022","url":"https://www.segye.com/newsView/20221206515094","kind":"기사"}},
-{"id":"23-06","type":"사례","title":"외국인만 받을 수 있는 도시 공유숙박","body":"도시 지역 공유숙박의 주된 근거인 외국인관광 도시민박업은 2011년 중국인 단체관광 급증에 대응해 만든 제도다. 이 구조에서는 외국인 대상 영업만 합법이고 내국인 대상 영업은 불법이다. 거주 요건과 면적·객실 요건도 붙는다. 내·외국인을 모두 받으려면 규제샌드박스 실증특례 같은 좁은 경로를 거쳐야 한다.","quote":"한국의 도시 숙박공유는 외국인만 합법이고 내국인 대상 영업은 불법이라는 기형적 구조 위에 서 있다.","quote_lang":"ko","source":{"title":"[부동산 인사이트] 관광객 2000만 명 시대, 도심 숙박 자산이 뜬다","author":"김학렬","publisher":"비즈한국","year":"2026","url":"http://bizhankook.com/articles/32409.html","kind":"기사"}},
-{"id":"23-07","type":"선행신호","title":"등록자본금이 조달 가능 금액을 넘을 때","body":"금융위원회는 2016년 자료에서 등록자본금 10억 원을 마련하지 못해 사업계획 변경을 검토하던 핀테크 스타트업 사례를 들었다. 요건 충족 자본금이 초기 자금 규모를 넘는다면 시장 진입 자체가 막힐 수 있다는 신호다. 금융위는 이에 대응해 소규모 전자금융업 등록 단위를 만들었다.","source":{"title":"소규모 핀테크 스타트업 등록자본금 3억원으로 인하","author":"금융위원회 전자금융과","publisher":"금융위원회","year":"2016","url":"https://www.fsc.go.kr/po010105/72100","kind":"공공자료"}},
-{"id":"23-08","type":"체크리스트","title":"축소된 진입 트랙과 졸업 조건 확인","body":"소규모 전자금융업은 분기 전자금융거래총액 30억 원 이하인 PG·결제대금예치·전자고지결제업자에게 등록자본금 3억 원을 적용한다. 다만 2개 분기 연속 기준을 넘으면 금융감독원에 보고하고 6개월 안에 정식 자본금 요건을 갖춰야 한다. 완화 트랙으로 들어갈 때는 성장 후 증자 시점과 금액을 재무 계획에 미리 넣어야 한다.","source":{"title":"소규모 핀테크 스타트업 등록자본금 3억원으로 인하","author":"금융위원회 전자금융과","publisher":"금융위원회","year":"2016","url":"https://www.fsc.go.kr/po010105/72100","kind":"공공자료"}},
-{"id":"23-09","type":"사례","title":"새 진입 경로는 면허와 기여금","body":"2020년 여객자동차운수사업법 개정으로 렌터카 방식 플랫폼운송사업도 가능해졌지만 기여금을 내고 플랫폼 운송면허를 받아야 한다. 법이 시장을 열어 주는 방식이 면허제일 때 진입 비용과 물량 제한이 함께 따라온다. 이 경로를 쓸지 판단하려면 기여금 수준과 면허 총량을 사업성 계산에 넣어야 한다.","source":{"title":"'타다 금지법' 찬반 토론 끝 국회 통과…\"범죄집단\" vs \"혁신성장\"(종합)","author":"이승주·한주홍·최서진","publisher":"뉴시스","year":"2020","url":"https://www.newsis.com/view/NISX20200306_0000946289","kind":"기사"}},
-{"id":"23-10","type":"교훈","title":"포지티브 규제 아래에서는 '허용 목록'이 시장이다","body":"네거티브 규제는 특별히 금지한 사항 외에는 모두 허용하고 필요하면 사후에 규제하는 방식이다. 정부는 2020년 131개 공공기관 규정에서 206개 과제를 네거티브 방식으로 바꾸는 계획을 확정했다. 반대로 허용 사항을 열거하는 구조에서는 목록에 없는 사업이 곧 진입 불가 사업이 될 수 있어 법령상 근거부터 확인해야 한다.","quote":"특별한 금지 사항 이외에는 모두 허용하고 필요시 사후에 규제하는 것이다.","quote_lang":"ko","source":{"title":"'금지사항 외엔 모두 허용'…공공기관 규제 문턱 낮춘다","author":"이주영","publisher":"경향신문","year":"2020","url":"https://www.khan.co.kr/article/202005071435001","kind":"기사"}},
-{"id":"23-11","type":"체크리스트","title":"허가 기준이 없거나 맞지 않으면 실증특례 검토","body":"실증특례는 허가 근거 법령에 기준이 없거나 기준이 맞지 않거나 다른 법령 때문에 허가가 불가능할 때 일정 조건에서 실증을 허용하는 제도다. 안전성 문제가 없는데 기준만 없는 경우에는 임시허가로 출시를 앞당길 수 있다. 면허·인가 요건 검토 결과 '허가 불가'로 나오면 이 두 경로가 맞는지 따져 본다.","quote":"일정 조건 하에서 시장에서 실증 테스트를 허용합니다.","quote_lang":"ko","source":{"title":"규제샌드박스 소개","author":"국무조정실","publisher":"규제샌드박스 포털","year":"","url":"https://www.sandbox.go.kr/sandbox/info/sandbox_intro","kind":"공공자료"}}
-]}
+{
+ "no": 23,
+ "items": [
+  {
+   "id": "23-01",
+   "type": "통계",
+   "title": "한국 인허가 부담은 OECD 평균보다 무겁다",
+   "body": "OECD 상품시장규제(PMR) 2023 지표에서 한국의 '인허가(Licences and Permits)' 항목 점수는 3.6으로 OECD 평균보다 높게 나타났다. 점수가 높을수록 부담이 크다는 뜻이다. OECD는 한국의 인허가 제도가 평균적인 회원국보다 부담스럽고 더 간소화할 여지가 있다고 평가했다.",
+   "quote": "Korea’s licensing regime is more burdensome than the average OECD economy and could be further streamlined.",
+   "quote_lang": "en",
+   "source": {
+    "title": "OECD Product Market Regulation (PMR) indicators: How does Korea compare?",
+    "author": "OECD",
+    "publisher": "OECD",
+    "year": "2025",
+    "url": "https://oecd.org/content/dam/oecd/en/topics/policy-sub-issues/product-market-regulation/Korea_PMR%20country%20note.pdf",
+    "kind": "보고서"
+   }
+  },
+  {
+   "id": "23-02",
+   "type": "선행신호",
+   "title": "에너지·교통·통신은 진입장벽이 높은 업종",
+   "body": "같은 OECD 국가 노트는 한국의 에너지·교통·전자통신 분야 진입 및 경쟁 장벽이 OECD 평균보다 높다고 짚었다. 전문직과 소매 분야의 경쟁 장벽 점수도 평균을 웃돌았다. 사업 영역이 이런 업종에 걸쳐 있다면 면허·인가 요건부터 조사해야 한다는 신호로 볼 수 있다.",
+   "quote": "In Korea regulatory barriers to entry and competition in the energy, transport, and e-communications sectors are higher than the OECD average.",
+   "quote_lang": "en",
+   "source": {
+    "title": "OECD Product Market Regulation (PMR) indicators: How does Korea compare?",
+    "author": "OECD",
+    "publisher": "OECD",
+    "year": "2025",
+    "url": "https://oecd.org/content/dam/oecd/en/topics/policy-sub-issues/product-market-regulation/Korea_PMR%20country%20note.pdf",
+    "kind": "보고서"
+   }
+  },
+  {
+   "id": "23-03",
+   "type": "교훈",
+   "title": "침묵은 동의, 위험에 비례한 인허가",
+   "body": "OECD는 인허가 부담을 줄이는 방법으로 인허가 목록 관리와 정기 정비, '침묵은 동의' 원칙, 활동 위험에 맞춘 절차 설계를 제시했다. 한국 규제샌드박스의 신속확인에서 30일 내 회신이 없으면 규제가 없는 것으로 보는 장치도 같은 발상이다. 진입 요건이 과도해 보이면 이런 원칙을 근거로 제도 개선을 건의할 수 있다.",
+   "source": {
+    "title": "OECD Product Market Regulation (PMR) indicators: How does Korea compare?",
+    "author": "OECD",
+    "publisher": "OECD",
+    "year": "2025",
+    "url": "https://oecd.org/content/dam/oecd/en/topics/policy-sub-issues/product-market-regulation/Korea_PMR%20country%20note.pdf",
+    "kind": "보고서"
+   }
+  },
+  {
+   "id": "23-04",
+   "type": "통계",
+   "title": "스타트업 절반이 등록·허가 진입장벽을 지목",
+   "body": "한국무역협회가 스타트업 256곳을 조사한 결과 개선이 시급한 규제로 '기술 실증 관련 과도한 허가제'(51.6%)와 '등록·허가 업종의 복잡한 진입 장벽'(50.4%)이 꼽혔다. 응답 기업의 25.4%는 국내 규제 때문에 해외 이전을 고려하고 있다고 답했다.",
+   "quote": "기업 4곳 중 1곳(25.4%)은 '국내 규제로 해외 이전을 고려하고 있다'고 해 스타트업계가 체감하는 규제 장벽이 여전히 높은 것으로 파악됐다.",
+   "quote_lang": "ko",
+   "source": {
+    "title": "스타트업 4곳 중 1곳, 해외이전 고려",
+    "author": "박은희",
+    "publisher": "디지털타임스",
+    "year": "2022",
+    "url": "https://www.dt.co.kr/article/11478652",
+    "kind": "기사"
+   }
+  },
+  {
+   "id": "23-05",
+   "type": "통계",
+   "title": "글로벌 유니콘 100곳 중 12곳은 국내 사업 불가",
+   "body": "아산나눔재단 등의 '2022 스타트업코리아!' 보고서를 인용한 보도에 따르면 글로벌 100대 유니콘 중 승차공유·원격의료·공유숙박 등 12곳은 국내에서 사업을 할 수 없고 43곳은 제한적으로만 가능했다. 해외에서 검증된 모델이라도 국내에서는 시장 자체가 법으로 닫혀 있을 수 있다.",
+   "quote": "승차공유, 원격의료, 공유숙박 등 12개사는 사업을 할 수 없고, 나머지 43개사는 제한적으로 사업이 가능한 것으로 분석됐다.",
+   "quote_lang": "ko",
+   "source": {
+    "title": "혁신 막는 규제… 韓선 글로벌 유니콘 절반은 사업 못한다",
+    "author": "우상규",
+    "publisher": "세계일보",
+    "year": "2022",
+    "url": "https://www.segye.com/newsView/20221206515094",
+    "kind": "기사"
+   }
+  },
+  {
+   "id": "23-06",
+   "type": "사례",
+   "title": "외국인만 받을 수 있는 도시 공유숙박",
+   "body": "도시 지역 공유숙박의 주된 근거인 외국인관광 도시민박업은 2011년 중국인 단체관광 급증에 대응해 만든 제도다. 이 구조에서는 외국인 대상 영업만 합법이고 내국인 대상 영업은 불법이다. 거주 요건과 면적·객실 요건도 붙는다. 내·외국인을 모두 받으려면 규제샌드박스 실증특례 같은 좁은 경로를 거쳐야 한다.",
+   "quote": "한국의 도시 숙박공유는 외국인만 합법이고 내국인 대상 영업은 불법이라는 기형적 구조 위에 서 있다.",
+   "quote_lang": "ko",
+   "source": {
+    "title": "[부동산 인사이트] 관광객 2000만 명 시대, 도심 숙박 자산이 뜬다",
+    "author": "김학렬",
+    "publisher": "비즈한국",
+    "year": "2026",
+    "url": "http://bizhankook.com/articles/32409.html",
+    "kind": "기사"
+   }
+  },
+  {
+   "id": "23-07",
+   "type": "선행신호",
+   "title": "등록자본금이 조달 가능 금액을 넘을 때",
+   "body": "금융위원회는 2016년 자료에서 등록자본금 10억 원을 마련하지 못해 사업계획 변경을 검토하던 핀테크 스타트업 사례를 들었다. 요건 충족 자본금이 초기 자금 규모를 넘는다면 시장 진입 자체가 막힐 수 있다는 신호다. 금융위는 이에 대응해 소규모 전자금융업 등록 단위를 만들었다.",
+   "source": {
+    "title": "소규모 핀테크 스타트업 등록자본금 3억원으로 인하",
+    "author": "금융위원회 전자금융과",
+    "publisher": "금융위원회",
+    "year": "2016",
+    "url": "https://www.fsc.go.kr/po010105/72100",
+    "kind": "공공자료"
+   }
+  },
+  {
+   "id": "23-08",
+   "type": "체크리스트",
+   "title": "축소된 진입 트랙과 졸업 조건 확인",
+   "body": "소규모 전자금융업은 분기 전자금융거래총액 30억 원 이하인 PG·결제대금예치·전자고지결제업자에게 등록자본금 3억 원을 적용한다. 다만 2개 분기 연속 기준을 넘으면 금융감독원에 보고하고 6개월 안에 정식 자본금 요건을 갖춰야 한다. 완화 트랙으로 들어갈 때는 성장 후 증자 시점과 금액을 재무 계획에 미리 넣어야 한다.",
+   "source": {
+    "title": "소규모 핀테크 스타트업 등록자본금 3억원으로 인하",
+    "author": "금융위원회 전자금융과",
+    "publisher": "금융위원회",
+    "year": "2016",
+    "url": "https://www.fsc.go.kr/po010105/72100",
+    "kind": "공공자료"
+   }
+  },
+  {
+   "id": "23-09",
+   "type": "선행신호",
+   "title": "진입 경로가 면허와 기여금으로 열릴 때",
+   "body": "2020년 여객자동차운수사업법 개정으로 렌터카 방식 플랫폼운송사업도 가능해졌지만 기여금을 내고 플랫폼 운송면허를 받아야 한다. 법이 시장을 여는 방식이 면허제라면 진입 비용과 물량 제한이 함께 따라온다는 신호다. 이 경로를 쓸지 판단하려면 기여금 수준과 면허 총량을 사업성 계산에 넣어야 한다.",
+   "source": {
+    "title": "'타다 금지법' 찬반 토론 끝 국회 통과…\"범죄집단\" vs \"혁신성장\"(종합)",
+    "author": "이승주·한주홍·최서진",
+    "publisher": "뉴시스",
+    "year": "2020",
+    "url": "https://www.newsis.com/view/NISX20200306_0000946289",
+    "kind": "기사"
+   }
+  },
+  {
+   "id": "23-10",
+   "type": "교훈",
+   "title": "포지티브 규제 아래에서는 '허용 목록'이 시장이다",
+   "body": "네거티브 규제는 특별히 금지한 사항 외에는 모두 허용하고 필요하면 사후에 규제하는 방식이다. 정부는 2020년 131개 공공기관 규정에서 206개 과제를 네거티브 방식으로 바꾸는 계획을 확정했다. 반대로 허용 사항을 열거하는 구조에서는 목록에 없는 사업이 곧 진입 불가 사업이 될 수 있어 법령상 근거부터 확인해야 한다.",
+   "quote": "특별한 금지 사항 이외에는 모두 허용하고 필요시 사후에 규제하는 것이다.",
+   "quote_lang": "ko",
+   "source": {
+    "title": "'금지사항 외엔 모두 허용'…공공기관 규제 문턱 낮춘다",
+    "author": "이주영",
+    "publisher": "경향신문",
+    "year": "2020",
+    "url": "https://www.khan.co.kr/article/202005071435001",
+    "kind": "기사"
+   }
+  },
+  {
+   "id": "23-11",
+   "type": "체크리스트",
+   "title": "허가 기준이 없거나 맞지 않으면 실증특례 검토",
+   "body": "실증특례는 허가 근거 법령에 기준이 없거나 기준이 맞지 않거나 다른 법령 때문에 허가가 불가능할 때 일정 조건에서 실증을 허용하는 제도다. 안전성 문제가 없는데 기준만 없는 경우에는 임시허가로 출시를 앞당길 수 있다. 면허·인가 요건 검토 결과 '허가 불가'로 나오면 이 두 경로가 맞는지 따져 본다.",
+   "quote": "일정 조건 하에서 시장에서 실증 테스트를 허용합니다.",
+   "quote_lang": "ko",
+   "source": {
+    "title": "규제샌드박스 소개",
+    "author": "국무조정실",
+    "publisher": "규제샌드박스 포털",
+    "year": "",
+    "url": "https://www.sandbox.go.kr/sandbox/info/sandbox_intro",
+    "kind": "공공자료"
+   }
+  }
+ ]
+}
