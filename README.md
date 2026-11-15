@@ -97,7 +97,7 @@ uv run legaldoctor checkup labor  --file data/checkup/demo_labor.md    # 21장 �
 - **검진표:** 막을 사인의 진단 사슬, 항목별 위험도, 자료 원문, 법령 대조, 변호사 권장조치(구태언 변호사가 같은 유형에 일반적으로 권하는 조치, 법률 자문 아님)
 - **투자계약:** 창업자 개인 책임 조항은 보호 법령(벤처투자법 등)이 있는지로 판정합니다. 민법 연대채무처럼 계약을 뒷받침하는 법만 있으면 "보호 규정 못 찾음(27장)"으로 위험을 높게 둡니다.
 - **노무:** 프리랜서 근로자성, 체불, 포괄임금, 연장근로, 4대보험·퇴직금, 스톡옵션 임금 대체, 직무발명·영업비밀
-- 실행 결과 샘플: `docs/samples/checkup_invest.html`, `docs/samples/checkup_labor.html`
+- 실행 결과 샘플(가상 예시, 6종): `docs/samples/checkup_{invest,labor,privacy,trade,governance,mgmt}.html`
 
 ## 평가
 
