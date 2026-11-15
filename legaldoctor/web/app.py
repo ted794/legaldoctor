@@ -177,6 +177,14 @@ def _nav() -> list[dict[str, str]]:
     return out[:5] or DEFAULT_NAV
 
 
+@app.get("/api/causes")
+def causes() -> list[dict[str, Any]]:
+    """첫 화면 바둑판용 28개 사인(번호, 이름, 분류, 맡는 검진)"""
+    from legaldoctor.checkup import load_causes
+
+    return [{"no": c["no"], "name": c["name"], "part": c["part"], "module": c["module"]} for c in load_causes()]
+
+
 @app.get("/api/info")
 def info() -> dict[str, Any]:
     """운영자 표시와 상단 메뉴. 값은 배포 서버의 .env(LD_OPERATOR, LD_CONTACT, LD_NAV)에서 읽어 저장소에 운영 정보를 남기지 않는다."""
