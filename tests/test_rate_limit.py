@@ -37,3 +37,18 @@ def test_nav_default_and_env(monkeypatch):
     assert nav == [{"label": "알림 서비스", "note": "", "url": "https://example.com/a"}, {"label": "협업", "note": "준비 중", "url": ""}]
     monkeypatch.setenv("LD_NAV", "not json")
     assert c.get("/api/info").json()["nav"] == DEFAULT_NAV
+
+
+def test_og_tags_and_public_url(monkeypatch):
+    from fastapi.testclient import TestClient
+    from legaldoctor.web.app import app
+
+    c = TestClient(app)
+    monkeypatch.delenv("LD_PUBLIC_URL", raising=False)
+    h = c.get("/").text
+    assert 'property="og:image" content="og.png"' in h and "og:url" not in h
+    monkeypatch.setenv("LD_PUBLIC_URL", "https://example.com/app")
+    h = c.get("/").text
+    assert 'content="https://example.com/app/og.png"' in h and 'og:url" content="https://example.com/app/"' in h
+    r = c.get("/og.png")
+    assert r.status_code == 200 and r.headers["content-type"] == "image/png"
