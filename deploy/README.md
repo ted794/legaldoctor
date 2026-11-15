@@ -33,7 +33,7 @@
    ```bash
    sudo -u legaldoctor cp /srv/legaldoctor/.env.example /srv/legaldoctor/.env
    sudo -u legaldoctor chmod 600 /srv/legaldoctor/.env
-   sudo -u legaldoctor nano /srv/legaldoctor/.env   # LINER_API_KEY 입력, LAW_OC는 선택, LD_OPERATOR·LD_CONTACT는 개인정보 안내에 보일 운영자·문의처
+   sudo -u legaldoctor nano /srv/legaldoctor/.env   # LINER_API_KEY 입력, LAW_OC는 선택, LD_OPERATOR·LD_CONTACT는 개인정보 안내에 보일 운영자·문의처, LD_NAV는 상단 확장 서비스 메뉴(JSON 목록. 예: [{"label":"서비스 이름","url":"https://...","note":"준비 중"}]. 없으면 개념 이름 3개가 '준비 중'으로 보임. url은 https만 받음)
    ```
    키는 서버 터미널에서 직접 입력함. 대화창이나 다른 세션으로 주고받지 않음
 4. 서비스 등록과 실행
