@@ -130,6 +130,41 @@ canvas{width:100%;height:320px;border:1px solid var(--line);border-radius:10px;b
 #logl .m{background:var(--chip);border-radius:10px;padding:7px 9px;margin:0 0 7px}
 #logl .m .tm{color:var(--sub);font-size:11px;margin-right:6px}
 #prog[hidden],#ov[hidden]{display:none}
+#tut{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(880px,calc(100% - 24px));max-height:calc(100vh - 32px);background:var(--card);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:60;display:flex;flex-direction:column;overflow:hidden}
+#tut[hidden],#tutOv[hidden]{display:none}
+#tutOv{position:fixed;inset:0;background:rgba(15,17,20,.45);z-index:55}
+#tut .th{display:flex;align-items:flex-start;gap:12px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+#tut .th .n{font-size:30px;font-weight:900;color:var(--accent);line-height:1}
+#tut .th h3{margin:0;font-size:20px}
+#tut .th .m{color:var(--sub);font-size:13px}
+#tut .th .x{margin-left:auto;border:0;background:transparent;font-size:22px;color:var(--sub);cursor:pointer;line-height:1}
+#tut .tb{overflow-y:auto;padding:14px 18px}
+#tut h4{margin:14px 0 6px;font-size:15px;color:var(--accent)}
+#tut h4:first-child{margin-top:0}
+#tut table.dc{width:100%;border-collapse:collapse;font-size:13.5px}
+#tut table.dc th{width:110px;text-align:left;background:var(--chip);font-weight:600;padding:6px 8px;border:1px solid var(--line);vertical-align:top}
+#tut table.dc td{padding:6px 8px;border:1px solid var(--line)}
+#tut .memo{font-size:13px;color:var(--sub);margin:6px 0 0}
+#tut .flt{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
+#tut .flt button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:3px 10px;font:inherit;font-size:12.5px;cursor:pointer}
+#tut .flt button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+#tut .bd{border-top:2px solid var(--ink)}
+#tut .lrow{border-bottom:1px solid var(--line)}
+#tut .lrow>button{display:grid;grid-template-columns:36px 72px 1fr;gap:8px;width:100%;text-align:left;border:0;background:transparent;color:var(--ink);font:inherit;padding:9px 4px;cursor:pointer;align-items:start}
+#tut .lrow>button:hover{background:var(--chip)}
+#tut .lrow .no{color:var(--sub);font-size:12.5px;text-align:center}
+#tut .lrow .ty{font-size:11.5px;border-radius:6px;padding:1px 6px;background:var(--chip);justify-self:start}
+#tut .lrow .ty.t-선행신호{background:var(--accent-soft);color:var(--accent)}
+#tut .lrow .tt{font-weight:600;font-size:14px}
+#tut .lrow .tt small{display:block;font-weight:400;color:var(--sub);font-size:12px;margin-top:1px}
+#tut .lrow .ct{display:none;padding:0 8px 12px 120px;font-size:13.5px}
+#tut .lrow.open .ct{display:block}
+#tut .lrow blockquote{margin:8px 0;padding:6px 10px;border-left:3px solid var(--accent);background:var(--chip);border-radius:4px;font-size:13px}
+#tut .lrow .src{font-size:12px;color:var(--sub)}
+#tut .tf{display:flex;gap:8px;align-items:center;padding:12px 18px;border-top:1px solid var(--line)}
+#tut .tf .note{font-size:11.5px;color:var(--sub);margin-right:auto}
+@media (max-width:640px){#tut .lrow>button{grid-template-columns:28px 1fr}#tut .lrow .ty{grid-column:2}#tut .lrow .tt{grid-column:2}#tut .lrow .ct{padding-left:36px}#tut .tf{flex-wrap:wrap}}
+
 .sel{border:1px solid var(--line);border-radius:10px;padding:7px 10px;margin-top:6px;display:flex;gap:8px;align-items:flex-start;cursor:pointer}
 .sel input{margin-top:4px}
 .sel.done{opacity:.75;cursor:default}
@@ -151,7 +186,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
   </a>
   <p class="tag">스타트업이 죽는 28가지 사인을 죽기 전에 검진합니다.</p>
   <h2 class="ask">무엇을 도와드릴까요?</h2>
-  <p class="askh">걱정되는 사인을 누르면 맞는 검진이 열려요.</p>
+  <p class="askh">걱정되는 사인을 누르면 선행 신호와 교훈을 보여 드리고 맞는 검진으로 안내해요.</p>
   <div class="grid28" id="grid28"></div>
   <div class="legend28"><span><i style="background:var(--accent-soft)"></i>규제팡: 규제가 사업을 막는 사인</span><span><i></i>법령 대조 검진: 계약·노무·데이터·거래·지배구조</span><span><i style="border-style:dashed"></i>경영 지표 검진: 숫자로 보는 사인</span></div>
   <nav class="menu" id="menu">
@@ -232,6 +267,12 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
     <div class="result" id="result"></div>
   </aside>
 </main>
+<div id="tutOv" hidden></div>
+<div id="tut" hidden role="dialog" aria-modal="true" aria-labelledby="tutT">
+  <div class="th"><span class="n" id="tutN"></span><div><h3 id="tutT"></h3><div class="m" id="tutM"></div></div><button class="x" id="tutX" aria-label="닫기">×</button></div>
+  <div class="tb" id="tutB"></div>
+  <div class="tf"><span class="note">교훈은 공개 자료에서 출처를 밝혀 인용 범위 안에서 요약함. 저작권은 각 저작자에게 있음</span><button class="btn ghost" id="tutC">닫기</button><button class="btn" id="tutGo">이 사인 검진하기</button></div>
+</div>
 <div id="ov" hidden></div>
 <div id="prog" hidden role="dialog" aria-modal="true" aria-live="polite"><div class="t"><span class="sp"></span><span id="progT"></span><span class="el" id="progEl"></span></div>
 <div class="bar"><i id="progBar"></i></div><div class="pc"><span id="progS"></span><b id="progP">0%</b></div><div class="ph" id="progH"></div>
@@ -349,7 +390,31 @@ $("#cur").innerHTML="규제팡<span>사업이 규제에 막히는지 BM 적법�
 fetch('api/causes').then(r=>r.json()).then(cs=>{CAUSES=cs;ckSel(ckModule);const g=$('#grid28');
   cs.forEach(c=>{const b=document.createElement('button');b.className='tile k-'+(c.module||'bm');b.dataset.mod=c.module||'bm';
     const [nm]=c.name.split(' — ');b.innerHTML=`<span class="no">${c.no}</span><span class="nm">${esc(nm)}</span><span class="md">${esc((MOD[c.module]||MOD.bm)[2])}</span>`;
-    b.title=c.name+' · '+c.part;b.onclick=()=>pickCause(c,b);g.appendChild(b)})}).catch(()=>{});
+    b.title=c.name+' · '+c.part;b.onclick=()=>openTut(c,b);g.appendChild(b)})}).catch(()=>{});
+
+// 사인 튜토리얼(레이어 팝업): 부검보고서 사망진단서 + 교훈 게시판
+const CHAIN_LABEL={'가':'(가) 직접사인','나':'(나)','다':'(다)','라':'(라) 원사인','Ⅱ':'Ⅱ란 기여 조건'};
+let tutCause=null,tutEl=null;
+function tutClose(){$('#tut').hidden=true;$('#tutOv').hidden=true}
+async function openTut(c,el){tutCause=c;tutEl=el;
+  $('#tutN').textContent=c.no;$('#tutT').textContent=c.name;$('#tutM').textContent=`${c.part} · 맡는 검진: ${(MOD[c.module]||MOD.bm)[2]}`;
+  $('#tutB').innerHTML='<p class="hint">불러오는 중...</p>';$('#tut').hidden=false;$('#tutOv').hidden=false;
+  let d;try{d=await api('api/causes/'+c.no)}catch(e){$('#tutB').innerHTML=`<p class="hint">${esc(e.message)}</p>`;return}
+  const rows=Object.entries(d.chain||{}).map(([k,v])=>`<tr><th>${esc(CHAIN_LABEL[k]||k)}</th><td>${esc(v)}</td></tr>`).join('');
+  const L=d.lessons||[];const types=[...new Set(L.map(i=>i.type).filter(Boolean))];
+  const src=s=>s?[s.author,s.title,s.publisher,s.year].filter(Boolean).map(esc).join(', ')+(s.url?` · <a href="${esc(s.url)}" target="_blank" rel="noopener">원문</a>`:''):'';
+  const item=(i,n)=>`<div class="lrow" data-ty="${esc(i.type||'')}"><button><span class="no">${n}</span><span class="ty t-${esc(i.type||'')}">${esc(i.type||'교훈')}</span><span class="tt">${esc(i.title)}<small>${esc((i.source&&(i.source.publisher||i.source.title))||'')}</small></span></button>
+    <div class="ct">${esc(i.body||'')}${i.quote?`<blockquote>“${esc(i.quote)}”</blockquote>`:''}<div class="src">출처: ${src(i.source)}</div></div></div>`;
+  $('#tutB').innerHTML=`<h4>사망진단서 · 스타트업 부검보고서</h4><table class="dc">${rows}</table>${d.memo?`<p class="memo">메모: ${esc(d.memo)}</p>`:''}
+    <h4>창업자가 새길 교훈 <span class="hint">${L.length}건</span></h4>
+    ${L.length?`<div class="flt"><button class="on" data-f="">전체</button>${types.map(x=>`<button data-f="${esc(x)}">${esc(x)}</button>`).join('')}</div><div class="bd">${L.map((i,k)=>item(i,k+1)).join('')}</div>`:'<p class="hint">교훈 콘텐츠를 준비하고 있어요.</p>'}`;
+  document.querySelectorAll('#tutB .lrow>button').forEach(b=>b.onclick=()=>b.parentElement.classList.toggle('open'));
+  document.querySelectorAll('#tutB .flt button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tutB .flt button').forEach(x=>x.classList.toggle('on',x===b));
+    document.querySelectorAll('#tutB .lrow').forEach(r=>r.hidden=!!b.dataset.f&&r.dataset.ty!==b.dataset.f)});
+}
+$('#tutX').onclick=tutClose;$('#tutC').onclick=tutClose;$('#tutOv').onclick=tutClose;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#tut').hidden)tutClose()});
+$('#tutGo').onclick=()=>{tutClose();if(tutCause)pickCause(tutCause,tutEl)};
 
 // 계약·노무 검진: ① 조항 뽑기 → 항목 고르기 → ② 고른 항목 검진(끝나는 대로 표시) → 남은 항목 이어서
 let ckModule='invest',ck=null;

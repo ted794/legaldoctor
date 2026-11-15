@@ -52,3 +52,13 @@ def test_og_tags_and_public_url(monkeypatch):
     assert 'content="https://example.com/app/og.png"' in h and 'og:url" content="https://example.com/app/"' in h
     r = c.get("/og.png")
     assert r.status_code == 200 and r.headers["content-type"] == "image/png"
+
+
+def test_cause_detail():
+    from fastapi.testclient import TestClient
+    from legaldoctor.web.app import app
+
+    c = TestClient(app)
+    d = c.get("/api/causes/7").json()
+    assert d["no"] == 7 and "가" in d["chain"] and isinstance(d["lessons"], list)
+    assert c.get("/api/causes/99").status_code == 404
