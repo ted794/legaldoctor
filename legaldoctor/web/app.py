@@ -138,8 +138,21 @@ def profile_view(s: Session, **extra: Any) -> dict[str, Any]:
 
 
 @app.get("/")
-def index() -> FileResponse:
-    return FileResponse(STATIC / "index.html")
+def index() -> HTMLResponse:
+    # OG 이미지·주소는 메신저·SNS가 절대 주소를 요구한다. 공개 주소는 배포 서버 .env의 LD_PUBLIC_URL로 받아 저장소에 남기지 않음
+    html = (STATIC / "index.html").read_text(encoding="utf-8")
+    base = os.getenv("LD_PUBLIC_URL", "").strip()
+    if base.startswith("https://"):
+        base = base.rstrip("/") + "/"
+        html = html.replace('content="og.png"', f'content="{base}og.png"').replace(
+            '<meta property="og:type"', f'<meta property="og:url" content="{base}">\n<link rel="canonical" href="{base}">\n<meta property="og:type"', 1
+        )
+    return HTMLResponse(html)
+
+
+@app.get("/og.png")
+def og_image() -> FileResponse:
+    return FileResponse(STATIC / "og.png", media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
 
 @app.get("/privacy")
