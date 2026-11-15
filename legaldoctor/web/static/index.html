@@ -135,12 +135,16 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
       <p class="hint">서비스 흐름을 네모와 화살표로 그려 보세요. 고객, 회사, 돈, 물건이 어디로 가는지 보이면 충분합니다.</p>
     </div>
     <div class="pane" id="p-check">
-      <p class="hint">회사를 운영하면서 생기는 계약·노무 위험을 검진합니다. 28가지 사인 가운데 지금은 투자계약과 노무를 볼 수 있어요.</p>
+      <p class="hint">회사를 운영하면서 생기는 계약·노무·데이터·경영 위험을 검진합니다. 28가지 사인을 여섯 가지 검진으로 나눠 볼 수 있어요. 경영 지표 검진은 법령 대조 없이 숫자 계산으로 바로 끝나요.</p>
       <div class="choices" id="ckMods">
         <button data-m="invest" class="pick">투자계약 검진 <span class="hint">· 13장 창업자 개인 상환책임, 14장 경영권, 27장 보호 공백</span></button>
         <button data-m="labor">노무 검진 <span class="hint">· 21장 노무 리스크, 10장 인재 이탈, 16장 IP 공백</span></button>
+        <button data-m="privacy">개인정보·데이터 검진 <span class="hint">· 20장 데이터, 19장 보안, 4장 인허가</span></button>
+        <button data-m="trade">거래·자금 검진 <span class="hint">· 7장 공급망, 17장 단일 거래처, 8장 세무, 15장 정부지원금</span></button>
+        <button data-m="governance">설립·지배구조 검진 <span class="hint">· 9장 공동창업자, 11장 지분 구조, 14장 경영권</span></button>
+        <button data-m="mgmt">경영 지표 검진 <span class="hint">· 1장 현금 소진, 3장 단위경제, 5장 과잉확장, 6장 후속 라운드, 12장 평판, 18장 타이밍</span></button>
       </div>
-      <textarea id="ckText" placeholder="투자계약서·텀시트 조항을 붙여 넣거나, 인력을 어떻게 쓰는지 적어 주세요."></textarea>
+      <textarea id="ckText" placeholder="계약서 조항을 붙여 넣거나, 인력·데이터·거래·지분 구조·현금 사정을 적어 주세요."></textarea>
       <div class="row">
         <label class="btn ghost">계약서 올리기<input type="file" id="ckFile" multiple hidden accept=".pdf,.docx,.hwpx,.txt,.md"></label>
         <button class="btn ghost" id="ckDemo">가상 예시 불러오기</button>
@@ -313,6 +317,8 @@ $('#ckRun').onclick=async()=>{
   try{const j0=await api('api/checkup',{method:'POST',body:fd});
     const j=await ckPoll(j0.id,x=>x.status!=='running'||stop);
     if(stop){notice('err','검진을 중단했어요.');return}
+    if(j.status==='done'){ckRender(j);notice('ok',`검진을 마쳤어요. 항목 ${j.items.length}개, 위험 높음 ${j.items.filter(i=>i.risk==='높음').length}개.`);
+      histAdd({kind:'checkup',id:j.id,title:j.title,sub:`항목 ${j.items.length}개 · 위험 높음 ${j.items.filter(i=>i.risk==='높음').length}`});return}
     ckRender(j);notice('ok',`검진할 항목 ${j.items.length}개를 찾았어요. 위험도 높은 항목을 먼저 골라 두었어요. 고른 뒤 "선택한 항목 검진"을 눌러 주세요.`);
   }catch(e){notice('err',`<b>검진을 시작하지 못했어요.</b> ${esc(e.message)}`)}finally{hideProg()}};
 async function ckGoRun(){

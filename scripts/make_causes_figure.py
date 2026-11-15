@@ -2,15 +2,15 @@
 import json,sys
 from xml.sax.saxutils import escape as e
 d=json.load(open(sys.argv[1]))['causes']
-MENU={2:"규제팡 (라)란",4:"개인정보·데이터",7:"거래·자금",8:"거래·자금",9:"설립·지배구조",10:"노무 검진",11:"설립·지배구조",
+MENU={1:"경영 지표 검진",3:"경영 지표 검진",5:"경영 지표 검진",6:"경영 지표 검진",12:"경영 지표 검진",18:"경영 지표 검진",
+2:"규제팡 (라)란",4:"개인정보·데이터",7:"거래·자금",8:"거래·자금",9:"설립·지배구조",10:"노무 검진",11:"설립·지배구조",
 13:"투자계약 검진",14:"투자계약 검진",15:"거래·자금",16:"노무 검진",17:"거래·자금",19:"개인정보·데이터",20:"개인정보·데이터",
 21:"노무 검진",22:"규제팡",23:"규제팡",24:"규제팡",25:"규제팡",26:"규제팡",27:"투자계약 검진",28:"규제팡"}
 ST={}
 for n in [22,23,24,25,26]: ST[n]="impl"
 for n in [2,28]: ST[n]="part"
-for n in [10,13,14,16,21,27]: ST[n]="demo"
-for n in [4,7,8,9,11,15,17,19,20]: ST[n]="road"
-for n in [1,3,5,6,12,18]: ST[n]="none"
+for n in [10,13,14,16,21,27,4,7,8,9,11,15,17,19,20]: ST[n]="demo"
+for n in [1,3,5,6,12,18]: ST[n]="metric"
 C="#A51C30"
 def wrap(s,n):
     out=[];cur=""
@@ -30,6 +30,7 @@ def card(x,y,w,h,c):
     if st=="impl": fill,stroke,sw,num,tx,mx=C,C,0,"#fff","#fff","#F6E1E5"
     elif st=="part": fill,stroke,sw,num,tx,mx="#FBF2F3",C,3,C,"#1b1f24",C
     elif st=="demo": fill,stroke,sw,num,tx,mx="#fff",C,3,C,"#1b1f24",C
+    elif st=="metric": fill,stroke,sw,num,tx,mx="#fff","#495057",2,"#343a40","#1b1f24","#495057"
     elif st=="road": fill,stroke,sw,num,tx,mx="#fff","#adb5bd",2,"#5b6573","#343a40","#5b6573"
     else: fill,stroke,sw,num,tx,mx="#f1f3f5","#f1f3f5",0,"#adb5bd","#868e96","#adb5bd"
     dash=' stroke-dasharray="8 5"' if st=="part" else ""
@@ -43,12 +44,12 @@ def card(x,y,w,h,c):
     if sub:
         for l in wrap(sub,int((w-30)/15.5))[:2]:
             s.append(f'<text x="{x+16}" y="{yy-2}" font-size="15" fill="{tx}" opacity="0.85">{e(l)}</text>'); yy+=20
-    lab={"impl":MENU.get(n,""),"part":MENU.get(n,"")+" · 일부","demo":MENU.get(n,""),"road":MENU.get(n,"")+" · 로드맵","none":"경영 사인 · 검진 대상 아님"}[st]
+    lab={"impl":MENU.get(n,""),"part":MENU.get(n,"")+" · 일부","demo":MENU.get(n,""),"road":MENU.get(n,"")+" · 로드맵","metric":MENU.get(n,""),"none":"검진 대상 아님"}[st]
     s.append(f'<text x="{x+16}" y="{y+h-16}" font-size="15" font-weight="600" fill="{mx}">{e(lab)}</text>')
     return "\n".join(s)
 o=['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" font-family="\'Noto Sans KR\',\'Pretendard\',\'Apple SD Gothic Neo\',\'Malgun Gothic\',sans-serif">','<rect width="1920" height="1080" fill="#fff"/>',
 f'<text x="60" y="88" font-size="44" font-weight="700" fill="#1b1f24">스타트업이 죽는 28가지 사인, <tspan fill="{C}">스타트업 리걸닥터</tspan>가 죽기 전에 검진함</text>',
-'<text x="62" y="132" font-size="23" fill="#5b6573">「스타트업 부검보고서」 사인 체계 · 법률 사인 22개 가운데 13개를 지금 검진하고 9개는 같은 엔진으로 넓힘</text>']
+'<text x="62" y="132" font-size="23" fill="#5b6573">「스타트업 부검보고서」 사인 체계 · 28개 모두 검진 · 법률 사인 22개는 법령 원문 대조, 경영 사인 6개는 숫자 계산과 점검 질문</text>']
 by={c['no']:c for c in d}
 # left panel 병사
 o.append('<rect x="60" y="160" width="690" height="800" rx="22" fill="#f8f9fa"/>')
@@ -63,14 +64,14 @@ for i,n in enumerate(range(13,29)):
     r,cc=divmod(i,4); o.append(card(790+cc*(W2+G),222+r*(H+G),W2,H,by[n]))
 # legend
 lx=60;ly=1012
-items=[("impl","구현 5"),("part","구현(일부) 2"),("demo","시연 구현 6"),("road","로드맵 9"),("none","법률 검진 대상 아님 6")]
-sty={"impl":(C,C,0,""),"part":("#FBF2F3",C,3,' stroke-dasharray="6 4"'),"demo":("#fff",C,3,""),"road":("#fff","#adb5bd",2,""),"none":("#f1f3f5","#f1f3f5",0,"")}
+items=[("impl","규제팡 5"),("part","규제팡(일부) 2"),("demo","계약·노무·데이터·거래·지배구조 검진 15"),("metric","경영 지표 검진 6")]
+sty={"impl":(C,C,0,""),"part":("#FBF2F3",C,3,' stroke-dasharray="6 4"'),"demo":("#fff",C,3,""),"road":("#fff","#adb5bd",2,""),"metric":("#fff","#495057",2,""),"none":("#f1f3f5","#f1f3f5",0,"")}
 x=lx
 for k,lab in items:
     f,s,sw,da=sty[k]
     o.append(f'<rect x="{x}" y="{ly-22}" width="34" height="26" rx="6" fill="{f}" stroke="{s}" stroke-width="{sw}"{da}/>')
     o.append(f'<text x="{x+44}" y="{ly-1}" font-size="20" fill="#343a40">{e(lab)}</text>')
-    x+=44+len(lab)*20+40
-o.append(f'<text x="1860" y="{ly-1}" font-size="20" text-anchor="end" fill="{C}" font-weight="700">위험이 높으면 변호사 심화자문으로 연결</text>')
+    x+=44+len(lab)*19+40
+o.append(f'<text x="1860" y="{ly-1}" font-size="20" text-anchor="end" fill="{C}" font-weight="700">항목마다 변호사 권장조치 제시</text>')
 o.append('</svg>')
 open(sys.argv[2],'w').write("\n".join(o))

@@ -13,7 +13,7 @@ TEXT = (Path(__file__).resolve().parent.parent / "data/checkup/demo_invest.md").
 def test_causes_28():
     cs = load_causes()
     assert len(cs) == 28 and cs[12]["no"] == 13 and cs[12]["module"] == "invest"
-    assert {c["module"] for c in cs} >= {"bm", "invest", "labor", None}
+    assert {c["module"] for c in cs} == {"bm", "invest", "labor", "privacy", "trade", "governance", "mgmt"}
 
 
 def test_parse_items_grounding():
