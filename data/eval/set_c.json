@@ -1,0 +1,459 @@
+{
+ "version": 1,
+ "note": "추가 검증 세트: 평가·검증 세트와 겹치지 않는 공개 승인 사례 20건(고정 시드). 규칙 조정에 쓰지 않음",
+ "items": [
+  {
+   "id": "sbx-ict-00187",
+   "title": "유휴 캠핑카 대여사업 중개 플랫폼",
+   "field": "ict",
+   "approved_date": "2023-09-08",
+   "input": "전라남도에 등록된 개인 소유의 캠핑카를 웹기반 플랫폼(어썸플랜)을 통해 중개해 주는 서비스 * 서비스 지역, 공급차량 대수 등은 사업 개시 후 국토부와 협의 거쳐 확대 가능",
+   "gold": {
+    "laws": [
+     "여객자동차 운수사업법"
+    ],
+    "articles": [
+     "여객자동차 운수사업법 28",
+     "여객자동차 운수사업법 29"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1039"
+  },
+  {
+   "id": "sbx-ict-00159",
+   "title": "재외국민 대상 비대면 진료서비스",
+   "field": "ict",
+   "approved_date": "2022-11-30",
+   "input": "온라인 플랫폼을 통해 국내 의료기관이 재외국민에게 App을 통한 비대면 의료 서비스(1·2차 진료)를 제공하고 진단서를 발급해주는 서비스",
+   "gold": {
+    "laws": [
+     "의료법"
+    ],
+    "articles": [
+     "의료법 33",
+     "의료법 34"
+    ],
+    "track": "임시허가",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=780"
+  },
+  {
+   "id": "sbx-ict-00225",
+   "title": "서울대학교병원 국가전략기술 특화연구소 데이터 플랫폼",
+   "field": "ict",
+   "approved_date": "2024-06-28",
+   "input": "서울대병원에서 연구목적으로 구축하는 의료데이터(가명처리) 플랫폼을 통해 국내·외 연구자가 국제공동연구시 활용",
+   "gold": {
+    "laws": [
+     "개인정보 보호법"
+    ],
+    "articles": [
+     "개인정보 보호법 28의2",
+     "개인정보 보호법 28의8"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1277"
+  },
+  {
+   "id": "sbx-ict-00152",
+   "title": "화물차를 활용한 디지털사이니지 광고 중개 플랫폼",
+   "field": "ict",
+   "approved_date": "2022-09-16",
+   "input": "화물트럭에 디스플레이를 부착 후 디지털 사이지니 광고 플랫폼(Dalgo)을 통해 차량 광고를 원하는 광고주와 법인소속 화물차 운전자 간 광고 거래를 중개하는 서비스",
+   "gold": {
+    "laws": [
+     "개인정보 보호법",
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률",
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률 시행령",
+     "자동차 및 자동차부품의 성능과 기준에 관한 규칙",
+     "자동차관리법",
+     "자동차관리법 시행규칙"
+    ],
+    "articles": [
+     "개인정보 보호법 15",
+     "개인정보 보호법 3",
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률 3",
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률 시행령 19",
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률 시행령 3",
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률 시행령 4",
+     "자동차 및 자동차부품의 성능과 기준에 관한 규칙 47",
+     "자동차관리법 29",
+     "자동차관리법 34",
+     "자동차관리법 시행규칙 55"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=740"
+  },
+  {
+   "id": "sbx-ind-00546",
+   "title": "소수력 발전 기반 그린수소 생산을 위한 전력 공급 및 거래 실증",
+   "field": "industry",
+   "approved_date": "2024-07-18",
+   "input": "소수력 발전 전력(700kW)을 발전사업자 소유의 수전해 스택에 공급하여 수소 생산에 활용하며 잉여전력은 한전배전망을 통해 판매",
+   "gold": {
+    "laws": [
+     "재생에너지전기공급사업자의 직접전력거래 등에 관한 고시",
+     "전기사업법"
+    ],
+    "articles": [
+     "재생에너지전기공급사업자의 직접전력거래 등에 관한 고시 4",
+     "재생에너지전기공급사업자의 직접전력거래 등에 관한 고시 5",
+     "전기사업법 2"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1326"
+  },
+  {
+   "id": "sbx-ind-00321",
+   "title": "개인맞춤형 건강기능식품 서비스",
+   "field": "industry",
+   "approved_date": "2022-12-20",
+   "input": "의학적 분석과 복용중인 약 및 건강기능식품을 고려한 알고리즘 설문에 기반한 개인맞춤형 건강기능식품 추천·소분·판매 서비스",
+   "gold": {
+    "laws": [
+     "건강기능식품에 관한 법률",
+     "건강기능식품에 관한 법률 시행규칙",
+     "식품 등의 표시ㆍ광고에 관한 법률",
+     "식품 등의 표시ㆍ광고에 관한 법률 시행규칙"
+    ],
+    "articles": [
+     "건강기능식품에 관한 법률 10",
+     "건강기능식품에 관한 법률 시행규칙 12",
+     "식품 등의 표시ㆍ광고에 관한 법률 4",
+     "식품 등의 표시ㆍ광고에 관한 법률 시행규칙 3",
+     "식품 등의 표시ㆍ광고에 관한 법률 시행규칙 5"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=860"
+  },
+  {
+   "id": "sbx-ind-00988",
+   "title": "액체수소 활용 선박 기자재 및 인수기지 기자재 실증설비 구축",
+   "field": "industry",
+   "approved_date": "2026-05-26",
+   "input": "액화수소 운반선·추진선에 적용되는 극저온 기자재와 인수기지에 탑재되는 기자재의 성능·안전성 검증을 위한 설비",
+   "gold": {
+    "laws": [
+     "고압가스 안전관리법",
+     "고압가스 안전관리법 시행규칙"
+    ],
+    "articles": [
+     "고압가스 안전관리법 22의2",
+     "고압가스 안전관리법 3",
+     "고압가스 안전관리법 4",
+     "고압가스 안전관리법 시행규칙 8",
+     "고압가스 안전관리법 시행규칙 9"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2883"
+  },
+  {
+   "id": "motir-884",
+   "title": "AI 탑재 이족보행 휴머노이드 로봇의 산업현장 실증",
+   "field": "industry",
+   "approved_date": "2026-09-18",
+   "input": "AI를 탑재한 이족보행 휴머노이드 로봇(IGRIS-C)을 실제 산업현장에 배치, 작업 수행능력 및 현장 적응성",
+   "gold": {
+    "laws": [
+     "산업안전보건기준에 관한 규칙",
+     "산업안전보건법",
+     "위험기계·기구 자율안전확인 고시"
+    ],
+    "articles": [
+     "산업안전보건기준에 관한 규칙 223",
+     "산업안전보건법 89",
+     "위험기계·기구 자율안전확인 고시 7"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부"
+   },
+   "source_url": "https://www.motir.go.kr/kor/article/ATCL2826a2625/71401/view"
+  },
+  {
+   "id": "sbx-fin-00741",
+   "title": "내부망에서 MS 협업 SaaS 이용",
+   "field": "finance",
+   "approved_date": "2025-07-09",
+   "input": "(업무 방법) 이용자가 내부 업무용 PC/단말 및 모바일을 통해 외부망 SaaS기반 서비스(M365, Teams, Loop, Viva, OneDrive, SharePoint, Outlook, Yammer)를 활용하여 업무협업 등 수행",
+   "gold": {
+    "laws": [
+     "전자금융감독규정"
+    ],
+    "articles": [
+     "전자금융감독규정 15"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2273"
+  },
+  {
+   "id": "sbx-fin-01076",
+   "title": "생성형 AI를 활용한 자연어 기반 SQL 변환 서비스 (자연어 to SQL)",
+   "field": "finance",
+   "approved_date": "2026-03-18",
+   "input": "이용자가 자연어로 데이터 조회 조건을 입력하면, LLM이 이를 해석하여 최적의 데이터 추출 로직 및 SQL 쿼리를 자동 생성하도록 설계되었으며, 생성된 SQL 쿼리가 자동 실행되어 데이터마트로부터 필요한 정보를 추출하여 이용자에게 제공됨",
+   "gold": {
+    "laws": [
+     "전자금융감독규정"
+    ],
+    "articles": [
+     "전자금융감독규정 15"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2776"
+  },
+  {
+   "id": "sbx-fin-00492",
+   "title": "클라우드(SaaS) 기반 마이크로소프트 365 보조 인공지능 M365 코파일럿 (Copilot)",
+   "field": "finance",
+   "approved_date": "2025-01-15",
+   "input": "내부 임직원을 대상으로 Microsoft사가 제공하는 SaaS(M365및 Copilot)를 활용한 업무협업 서비스",
+   "gold": {
+    "laws": [
+     "전자금융감독규정"
+    ],
+    "articles": [
+     "전자금융감독규정 15"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1940"
+  },
+  {
+   "id": "sbx-fin-00956",
+   "title": "생성형 AI를 활용한 보험 상담 서비스",
+   "field": "finance",
+   "approved_date": "2025-12-03",
+   "input": "대고객 대상으로, MS, AWS사가 제공하는 생성형 AI(MS Azure OpenAI, AWS Bedrock)을 보험 상담 서비스",
+   "gold": {
+    "laws": [
+     "전자금융감독규정"
+    ],
+    "articles": [
+     "전자금융감독규정 15"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2584"
+  },
+  {
+   "id": "sbx-mob-00076",
+   "title": "휠체어 변환이 가능한 환자운반기를 이용한 교통약자 맞춤 동행서비스",
+   "field": "mobility",
+   "approved_date": "2024-10-14",
+   "input": "국토교통부장관의 면허가 없는 사업자는 다른 사람의 수요에 응하여 자동차를 사용해 여객을 유상운송하는 것이 불가능",
+   "gold": {
+    "laws": [
+     "여객자동차 운수사업법",
+     "여객자동차 운수사업법 시행규칙"
+    ],
+    "articles": [
+     "여객자동차 운수사업법 2",
+     "여객자동차 운수사업법 4",
+     "여객자동차 운수사업법 81",
+     "여객자동차 운수사업법 시행규칙 103"
+    ],
+    "track": "실증특례",
+    "field": "mobility",
+    "ministry": "국토교통부(모빌리티)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1477"
+  },
+  {
+   "id": "sbx-mob-00146",
+   "title": "새로운 좌석형태의 운송서비스(혼합좌석제)",
+   "field": "mobility",
+   "approved_date": "2026-05-11",
+   "input": "다양한 좌석형태를 한 차량에 갖춘 혼합좌석제를 도입하여 이용객의 등급 선택권 확대와 편의성 제고 및 운송사 경영 안전성 확보",
+   "gold": {
+    "laws": [
+     "여객자동차 운송사업 운임·요율 등 조정요령",
+     "여객자동차 운수사업법",
+     "여객자동차 운수사업법 시행규칙"
+    ],
+    "articles": [
+     "여객자동차 운송사업 운임·요율 등 조정요령 7",
+     "여객자동차 운송사업 운임·요율 등 조정요령 9",
+     "여객자동차 운수사업법 8",
+     "여객자동차 운수사업법 시행규칙 7"
+    ],
+    "track": "실증특례",
+    "field": "mobility",
+    "ministry": "국토교통부(모빌리티)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2857"
+  },
+  {
+   "id": "sbx-circ-00061",
+   "title": "(기획형) 버섯 폐배지를 활용하여 바이오 기반 화장품 소재를 제조하는 기술",
+   "field": "circular",
+   "approved_date": "2026-04-30",
+   "input": "버섯 폐배지(버섯 재배 후 부산물)를 주원료로 사용하여 폐배지에 함유되어 있는 유용성분을 추출·가공하여 화장품 소재로 재활용",
+   "gold": {
+    "laws": [
+     "폐기물관리법",
+     "폐기물관리법 시행규칙"
+    ],
+    "articles": [
+     "폐기물관리법 25",
+     "폐기물관리법 시행규칙 4의2"
+    ],
+    "track": "실증특례",
+    "field": "circular",
+    "ministry": "기후에너지환경부(순환경제)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2848"
+  },
+  {
+   "id": "sbx-circ-00001",
+   "title": "태양광 폐패널 현장 재활용 처리 서비스",
+   "field": "circular",
+   "approved_date": "2024-06-27",
+   "input": "컨테이너 탑재형 장비를 활용하여 태양광 폐패널 배출 현장에서 사용가능 소재·부품을 회수하는 태양광 폐패널 현장 재활용 처리 서비스",
+   "gold": {
+    "laws": [
+     "전기ㆍ전자제품 및 자동차의 자원순환에 관한 법률",
+     "폐기물관리법",
+     "폐기물관리법 시행규칙",
+     "폐기물관리법 시행령"
+    ],
+    "articles": [
+     "전기ㆍ전자제품 및 자동차의 자원순환에 관한 법률 15",
+     "전기ㆍ전자제품 및 자동차의 자원순환에 관한 법률 16의4",
+     "폐기물관리법 13",
+     "폐기물관리법 13의2",
+     "폐기물관리법 25",
+     "폐기물관리법 29",
+     "폐기물관리법 시행규칙 10",
+     "폐기물관리법 시행규칙 14의3",
+     "폐기물관리법 시행규칙 28",
+     "폐기물관리법 시행규칙 35",
+     "폐기물관리법 시행령 7"
+    ],
+    "track": "실증특례",
+    "field": "circular",
+    "ministry": "기후에너지환경부(순환경제)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1296"
+  },
+  {
+   "id": "sbx-scity-00041",
+   "title": "디지털 사이니지 광고용 IoT 미디어 난간",
+   "field": "smartcity",
+   "approved_date": "2023-02-07",
+   "input": "인천시 관내 육교(2개소) 난간에 교통정보, 기상정보, 정부시책 등을 표출할 수 있는 디스플레이가 결합된 뉴미디어글라스 난간",
+   "gold": {
+    "laws": [
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률 시행령",
+     "인천광역시 계양구 옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 조례"
+    ],
+    "articles": [
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률 시행령 14",
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률 시행령 24",
+     "인천광역시 계양구 옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 조례 11"
+    ],
+    "track": "실증특례",
+    "field": "smartcity",
+    "ministry": "국토교통부(스마트도시)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=867"
+  },
+  {
+   "id": "sbx-scity-00044",
+   "title": "자율주행 모빌리티서비스 시범사업",
+   "field": "smartcity",
+   "approved_date": "2023-07-25",
+   "input": "자율주행 차량을 이용하여 여객 운송 서비스와 물류 배송 서비스를 동시에 제공하고, 차량이 접근할 수 없는 경로에서는 자율주행 로봇을 활용하여 이용자에게 배달하는 서비스를 대구광역시 달성군 내 지역을 대상으로",
+   "gold": {
+    "laws": [
+     "개인정보 보호법",
+     "도로교통법",
+     "보행안전 및 편의증진에 관한 법률"
+    ],
+    "articles": [
+     "개인정보 보호법 15",
+     "개인정보 보호법 25",
+     "도로교통법 13",
+     "보행안전 및 편의증진에 관한 법률 22"
+    ],
+    "track": "실증특례",
+    "field": "smartcity",
+    "ministry": "국토교통부(스마트도시)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=981"
+  },
+  {
+   "id": "sbx-rfz-00022",
+   "title": "(경북) 전기차 사용후 배터리 재사용 실증",
+   "field": "rfz",
+   "approved_date": "2019-07-23",
+   "input": "＊ 재제조 배터리 內 셀 단위 잔존 파워를 평균 수준으로 안정화, 재사용(재제조) 기준 마련 ＊ 산업용·가정용 태양광 발전 시스템 특성화 ESS개발 ＊ 재사용 ESS 에너지 효율등급 등 인증",
+   "gold": {
+    "laws": [
+     "전기용품 및 생활용품 안전관리법"
+    ],
+    "articles": [
+     "전기용품 및 생활용품 안전관리법 2"
+    ],
+    "track": "실증특례",
+    "field": "rfz",
+    "ministry": "중소벤처기업부(규제자유특구)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=181"
+  },
+  {
+   "id": "sbx-rnd-00251",
+   "title": "DTC 유전자 검사 기반 반려견 개체식별 및 동물등록 서비스",
+   "field": "rnd",
+   "approved_date": "2026-04-17",
+   "input": "□ 내용: DTC 유전자 검사 기반 반려견 개체식별 및 동물등록 시스템 성능 검증 및 운용 (DNA 개체식별 기술 검증) DTC 유전자 검사 키트로 반려견 구강상피세포를 채취하고, DNA 추출·분석하여 유전자 검사 정확도 및 개체식별 신뢰도 등 기술적 성능 검증 (동물등록시스템 연계) DNA 검사 결과를 수치화(숫자값)하여 동물등록시스템에 임시 등록할 수 있는 방안 제시 (동물등록 기준(안) 마련) DNA 기반 반려견 개체식별 기술의 성능 평가 및 동물등록시스템 연계 결과를 토대로, DNA 정보를 활용한 신규 동물등록 기준(안) 마련",
+   "gold": {
+    "laws": [
+     "동물보호법",
+     "동물보호법 시행규칙",
+     "동물보호법 시행령"
+    ],
+    "articles": [
+     "동물보호법 15",
+     "동물보호법 91",
+     "동물보호법 시행규칙 56",
+     "동물보호법 시행령 10"
+    ],
+    "track": "실증특례",
+    "field": "rnd",
+    "ministry": "과학기술정보통신부(연구개발특구)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2827"
+  }
+ ]
+}
