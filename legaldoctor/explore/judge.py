@@ -51,6 +51,24 @@ JSON 하나만 출력한다.
 {"판정":"예|불명확|아니오","근거구절":"...","요지":"..."}"""
 
 
+def grounded(quote: str, text: str) -> bool:
+    """근거 구절이 원문에 글자 그대로 있는지 본다.
+
+    모델은 항 본문과 호 하나처럼 떨어진 줄을 이어 붙여 인용하기도 한다(중간 호를 건너뜀).
+    그래서 줄(또는 말줄임표)로 나눈 조각마다 원문에 그대로 있는지 확인한다. 조각 하나라도 원문에 없으면 버린다.
+    """
+    if not quote:
+        return False
+    src = _norm(text)
+    if _norm(quote) in src:
+        return True
+    parts = [_norm(p) for p in re.split(r"\n|…|\.\.\.|⋯", quote)]
+    parts = [p for p in parts if p]
+    if len(parts) < 2 or max(len(p) for p in parts) < 15:
+        return False
+    return all(p in src for p in parts)
+
+
 def judge(model, activity: str, source_title: str, text: str, kind: str = "조문") -> Verdict | None:
     """판정을 돌려준다. 형식 오류나 근거 구절 불일치면 None."""
     if not text.strip():
@@ -71,6 +89,6 @@ def judge(model, activity: str, source_title: str, text: str, kind: str = "조�
     quote = str(data.get("근거구절") or "").strip()
     if result not in ("예", "불명확", "아니오"):
         return None
-    if result != "아니오" and (not quote or _norm(quote) not in _norm(text)):
+    if result != "아니오" and not grounded(quote, text):
         return None
     return Verdict(result=result, quote=quote, point=str(data.get("요지") or "").strip())

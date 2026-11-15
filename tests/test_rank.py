@@ -50,3 +50,14 @@ def test_labor_category_grade_text_and_article_anchor():
     item.findings = [Finding("I1", "명시 규제", "조문 대조", "근로기준법", "제11조", "5인 이상 적용")]
     grade_item(item, LABOR)
     assert item.verdict == "적용 의무 확인" and item.risk == "낮음"
+
+
+def test_judge_grounded_allows_skipped_items_but_not_inventions():
+    from legaldoctor.explore.judge import grounded
+
+    text = "① 처리자는 범위를 초과하여 제3자에게 제공하여서는 아니 된다.\n② 제1항에도 불구하고 다음 각 호의 경우에는 제공할 수 있다.\n1. 별도의 동의를 받은 경우\n2. 법률에 특별한 규정이 있는 경우"
+    assert grounded("① 처리자는 범위를 초과하여 제3자에게 제공하여서는 아니 된다.\n2. 법률에 특별한 규정이 있는 경우", text)
+    assert grounded("처리자는 범위를 초과하여 제3자에게 제공하여서는 아니 된다. … 별도의 동의를 받은 경우", text)
+    assert not grounded("① 처리자는 범위를 초과하여 제3자에게 제공하여서는 아니 된다.\n3. 수수료를 받으면 금지한다", text)
+    assert not grounded("제공 금지", text)
+    assert not grounded("", text)
