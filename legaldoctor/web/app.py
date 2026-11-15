@@ -271,7 +271,7 @@ def confirm(sid: str, body: ConfirmIn) -> dict[str, Any]:
     return profile_view(s)
 
 
-class _Cancelled(Exception):
+class _Cancelled(BaseException):  # 단계 안에서 던져도 run()의 오류 처리에 잡히지 않고 바로 멈추게
     pass
 
 
@@ -288,6 +288,19 @@ def _run_analysis(s: Session) -> None:
         stages = build_stages(model())
         labels = {st.name: st.label for st in stages}
         job["stages"] = [{"key": st.name, "label": st.label, "done": False} for st in stages]
+
+        def on_progress(text, frac):
+            # 규제 탐색은 가장 긴 단계라 안쪽 진행률과 기록을 따로 보인다. 중단 버튼은 여기서 바로 반영
+            job["sub"] = max(job.get("sub", 0.0), min(1.0, float(frac)))
+            if text:
+                job["substep"] = text
+                _log(job, text)
+            if job.get("cancel"):
+                raise _Cancelled()
+
+        for st in stages:
+            if st.name == "explore":
+                st.progress = on_progress
 
         def on_stage(stage, result):
             for x in job["stages"]:
@@ -337,8 +350,10 @@ def _job_view(s: Session) -> dict[str, Any]:
         return {"status": "idle"}
     end = job.get("ended") or time.time()
     done = sum(STAGE_WEIGHT.get(x["key"], 5) for x in job.get("stages", []) if x["done"])
+    if any(x["key"] == "explore" and not x["done"] for x in job.get("stages", [])) and any(x["key"] == "decompose" and x["done"] for x in job.get("stages", [])):
+        done += round(STAGE_WEIGHT["explore"] * job.get("sub", 0.0))
     pct = 100 if job.get("status") == "done" else max(2, min(98, done))
-    return {k: v for k, v in job.items() if k not in ("started", "cancel")} | {"elapsed": round(end - job["started"]), "percent": pct}
+    return {k: v for k, v in job.items() if k not in ("started", "cancel", "sub")} | {"elapsed": round(end - job["started"]), "percent": pct}
 
 
 @app.post("/api/sessions/{sid}/analyze/cancel")
@@ -346,7 +361,7 @@ def analyze_cancel(sid: str) -> dict[str, Any]:
     s = get(sid)
     if s.job.get("status") == "running":
         s.job["cancel"] = True
-        _log(s.job, "중단을 요청했어요. 지금 단계가 끝나면 멈춰요")
+        _log(s.job, "중단을 요청했어요. 곧 멈춰요")
     return _job_view(s)
 
 

@@ -61,3 +61,26 @@ def test_judge_grounded_allows_skipped_items_but_not_inventions():
     assert not grounded("① 처리자는 범위를 초과하여 제3자에게 제공하여서는 아니 된다.\n3. 수수료를 받으면 금지한다", text)
     assert not grounded("제공 금지", text)
     assert not grounded("", text)
+
+
+def test_shadow_timeout_keeps_finished_pairs():
+    import time as _t
+    from types import SimpleNamespace
+
+    from legaldoctor.explore.engine import Explore
+    from legaldoctor.explore.types import Finding
+
+    class Laws:
+        def search_interpretations(self, law, limit=3):
+            if law == "느린법":
+                _t.sleep(2)
+            return []
+
+    ex = Explore.__new__(Explore)
+    ex.laws, ex.workers, ex.shadow_timeout, ex.model = Laws(), 4, 0.5, None
+    fs = [Finding("A1", "명시 규제", "조문 대조", "빠른법", "제1조", "", ""), Finding("A1", "명시 규제", "조문 대조", "느린법", "제1조", "", "")]
+    notes: list[str] = []
+    t0 = _t.perf_counter()
+    assert ex._shadow(fs, {"A1": SimpleNamespace(action="x")}, notes) == []
+    assert _t.perf_counter() - t0 < 1.5
+    assert notes and "1쌍" in notes[0]

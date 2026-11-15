@@ -440,7 +440,7 @@ function showResult(r){
 async function pollJob(){
   for(;;){await sleep(2000);
     const j=await api(`api/sessions/${sid}/analyze`);
-    const cur=(j.stages||[]).find(s=>!s.done);setPct(j.percent||0,cur?`${cur.label} 중`:'마무리 중');logSet(j.log||[]);
+    const cur=(j.stages||[]).find(s=>!s.done);setPct(j.percent||0,cur?(cur.key==='explore'&&j.substep?`${cur.label}: ${j.substep}`:`${cur.label} 중`):'마무리 중');logSet(j.log||[]);
     if(j.status==='done')return j.result;
     if(j.status==='cancelled')throw Object.assign(new Error('분석을 중단했어요'),{cancel:true});
     if(j.status==='error')throw new Error(j.error||'분석 중 문제가 생겼어요');
