@@ -633,9 +633,50 @@ def checkup_cancel(cid: str) -> dict[str, Any]:
     return _view(cid)
 
 
+@app.delete("/api/checkup/{cid}")
+def checkup_delete(cid: str) -> dict[str, bool]:
+    """이용자가 지우기를 고르면 서버 메모리의 검진 기록을 바로 지운다(공용 PC 정보 유출 방지)"""
+    job = CHECKUP_JOBS.get(cid)
+    if job:
+        job["cancel"] = True
+    return {"deleted": CHECKUP_JOBS.pop(cid, None) is not None}
+
+
+@app.delete("/api/sessions/{sid}")
+def session_delete(sid: str) -> dict[str, bool]:
+    """이용자가 지우기를 고르면 서버 메모리의 입력 내용과 분석 결과를 바로 지운다"""
+    s = SESSIONS.get(sid)
+    if s and s.job:
+        s.job["cancel"] = True
+    return {"deleted": SESSIONS.pop(sid, None) is not None}
+
+
 @app.get("/api/checkup/{cid}/status")
 def checkup_status(cid: str) -> dict[str, Any]:
     return _view(cid)
+
+
+# 검진결과표 우상단 도구: 인쇄, PDF(인쇄 창에서 'PDF로 저장'), DOC(워드에서 열리는 파일)
+_ICON = {
+    "print": '<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7"/>',
+    "pdf": '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h1.5a1.5 1.5 0 0 1 0 3H9v-3zm0 3v2"/>',
+    "doc": '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8.5 13l1 5 1.5-3.5L12.5 18l1-5"/>',
+}
+_TOOLS_CSS = """.ldtools{position:fixed;top:12px;right:12px;display:flex;gap:6px;z-index:10}
+.ldtools a,.ldtools button{display:inline-flex;align-items:center;gap:5px;border:1px solid #d0d4d9;background:#fff;color:#1b1f24;border-radius:10px;padding:6px 10px;font:600 13px/1 inherit;font-family:inherit;cursor:pointer;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.ldtools a:hover,.ldtools button:hover{border-color:#A51C30;color:#A51C30}
+.ldtools svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+@media print{.ldtools{display:none}@page{size:A4;margin:14mm}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media (max-width:600px){.ldtools span{display:none}}"""
+
+
+def _checkup_filename(job: dict[str, Any]) -> str:
+    title = job["module"].title.replace(" ", "")
+    return f"리걸닥터_{title}_{time.strftime('%Y%m%d')}"
+
+
+def _svg(k: str) -> str:
+    return f'<svg viewBox="0 0 24 24" aria-hidden="true">{_ICON[k]}</svg>'
 
 
 @app.get("/api/checkup/{cid}")
@@ -643,4 +684,32 @@ def checkup_page(cid: str) -> HTMLResponse:
     job = CHECKUP_JOBS.get(cid)
     if not job or not any(i.verdict for i in job.get("items", [])):
         raise HTTPException(404, "검진표가 없음")
-    return HTMLResponse(_checkup_html_for(job))
+    name = _checkup_filename(job)
+    tools = (
+        f'<div class="ldtools" role="toolbar" aria-label="검진결과표 저장·인쇄">'
+        f'<button type="button" onclick="window.print()" title="인쇄">{_svg("print")}<span>인쇄</span></button>'
+        f'<button type="button" onclick="ldPdf()" title="인쇄 창에서 대상(프린터)을 \'PDF로 저장\'으로 고르세요">{_svg("pdf")}<span>PDF</span></button>'
+        f'<a href="{cid}/doc" download="{name}.doc" title="워드(DOC) 파일로 받기">{_svg("doc")}<span>DOC</span></a></div>'
+        f'<script>function ldPdf(){{var t=document.title;document.title={json.dumps(name)};window.print();setTimeout(function(){{document.title=t}},1000)}}</script>'
+    )
+    html = _checkup_html_for(job).replace("</style>", _TOOLS_CSS + "</style>", 1).replace("<body>", "<body>" + tools, 1)
+    return HTMLResponse(html)
+
+
+@app.get("/api/checkup/{cid}/doc")
+def checkup_doc(cid: str) -> Response:
+    """워드에서 바로 열리는 DOC(HTML 기반) 파일로 내려 준다"""
+    from urllib.parse import quote
+
+    job = CHECKUP_JOBS.get(cid)
+    if not job or not any(i.verdict for i in job.get("items", [])):
+        raise HTTPException(404, "검진표가 없음")
+    html = _checkup_html_for(job).replace(
+        "<html lang=\"ko\">", '<html lang="ko" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">', 1
+    )
+    fname = _checkup_filename(job) + ".doc"
+    return Response(
+        "\ufeff" + html,
+        media_type="application/msword; charset=utf-8",
+        headers={"Content-Disposition": f"attachment; filename=\"checkup.doc\"; filename*=UTF-8''{quote(fname)}"},
+    )
