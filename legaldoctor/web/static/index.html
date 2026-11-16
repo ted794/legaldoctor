@@ -139,6 +139,16 @@ canvas{width:100%;height:320px;border:1px solid var(--line);border-radius:10px;b
 #logl .m{background:var(--chip);border-radius:10px;padding:7px 9px;margin:0 0 7px}
 #logl .m .tm{color:var(--sub);font-size:11px;margin-right:6px}
 #prog[hidden],#ov[hidden]{display:none}
+#doneBar{position:fixed;left:0;right:0;bottom:20px;margin:0 auto;width:min(560px,calc(100% - 24px));background:var(--card);border:2px solid var(--accent);border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.25);z-index:45;padding:14px 16px;display:flex;align-items:center;gap:12px}
+#doneBar[hidden]{display:none}
+#doneBar .tx{flex:1;min-width:0}
+#doneBar .tx b{display:block;font-size:16px}
+#doneBar .tx span{font-size:13px;color:var(--sub)}
+#doneBar .go{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:14px 22px;font:inherit;font-size:17px;font-weight:800;cursor:pointer;text-decoration:none;white-space:nowrap}
+#doneBar .x{border:0;background:transparent;color:var(--sub);font-size:20px;cursor:pointer;align-self:flex-start}
+@media (max-width:520px){#doneBar{flex-wrap:wrap}#doneBar .tx{flex:1 1 calc(100% - 40px)}#doneBar .go{flex:1 1 100%;text-align:center;order:3}}
+body.hasbar main{padding-bottom:130px}
+
 body.home main,body.home #cur{display:none}
 body.tool .ask,body.tool .askh,body.tool #grid28,body.tool .legend28,body.tool header p.tag{display:none}
 body.tool header{padding-top:16px}
@@ -316,6 +326,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
   <div class="tb" id="tutB"></div>
   <div class="tf"><span class="note">교훈은 공개 자료에서 출처를 밝혀 인용 범위 안에서 요약함. 저작권은 각 저작자에게 있음</span><button class="btn ghost" id="tutC">닫기</button><button class="btn" id="tutGo">이 사인 검진하기</button></div>
 </div>
+<div id="doneBar" hidden role="status" aria-live="polite"><div class="tx"><b id="doneT">검진을 마쳤어요</b><span id="doneS"></span></div><a class="go" id="doneGo" target="_blank" rel="noopener">검진표 열기</a><button class="x" id="doneX" aria-label="닫기">×</button></div>
 <div id="ov" hidden></div>
 <div id="prog" hidden role="dialog" aria-modal="true" aria-live="polite"><div class="t"><span class="sp"></span><span id="progT"></span><span class="el" id="progEl"></span></div>
 <div class="bar"><i id="progBar"></i></div><div class="pc"><span id="progS"></span><b id="progP">0%</b></div><div class="ph" id="progH"></div>
@@ -426,7 +437,7 @@ const MOD={bm:['reg','','규제팡'],invest:['ops','invest','투자계약 검진
 // 다른 사인으로 새로 들어올 때 이전 검진·분석 내용을 지운다(이전 결과는 검진 기록에서 다시 볼 수 있음)
 const QBOX0=$('#qbox').innerHTML;
 async function resetTool(){
-  ck=null;$('#ckResult').innerHTML='';$('#ckText').value='';$('#ckText').dataset.demo='';$('#ckFile').value='';$('#ckFiles').textContent='';
+  $('#doneBar').hidden=true;document.body.classList.remove('hasbar');ck=null;$('#ckResult').innerHTML='';$('#ckText').value='';$('#ckText').dataset.demo='';$('#ckFile').value='';$('#ckFiles').textContent='';
   $('#notice').style.display='none';$('#msg').textContent='';$('#logl').innerHTML='';
   $('#result').innerHTML='';$('#qbox').innerHTML=QBOX0;$('#startTalk').onclick=()=>{touched=true;answer(null)};$('#qlog').innerHTML='';$('#qlog').hidden=true;
   $('#bizText').value='';$('#fileIn').value='';$('#fileList').textContent='';editing=false;
@@ -462,7 +473,7 @@ async function pickCause(c,el){const [m,ck0,label]=MOD[c.module]||MOD.bm;const c
   if(ck){const b=document.querySelector(`#ckMods button[data-m="${ck}"]`);if(b)b.click()}
   document.querySelectorAll('.tile').forEach(t=>{t.classList.toggle('on',t===el);t.classList.toggle('same',t!==el&&t.dataset.mod===c.module)});
   enterTool('',`${esc(label)}<span>${c.no}. ${esc(c.name.split(' — ')[0])}에서 시작해요</span>`)}
-function goHome(){document.body.className='home';document.querySelectorAll('.tile').forEach(x=>x.classList.remove('on','same'));window.scrollTo(0,0)}
+function goHome(){document.body.className='home';$('#doneBar').hidden=true;document.querySelectorAll('.tile').forEach(x=>x.classList.remove('on','same'));window.scrollTo(0,0)}
 window.addEventListener('popstate',()=>{if(!(history.state&&history.state.v==='tool'))goHome()});
 // 사인을 누르면 고르기 상자: 1) 튜토리얼(팝업) 2) 검진(제자리에서 다음 화면)
 let pickC=null,pickEl=null;
@@ -540,7 +551,7 @@ async function ckPoll(id,until){
     if(j.status==='error')throw new Error(j.error||'검진 중 문제가 생겼어요');
     await sleep(2000)}
 }
-$('#ckRun').onclick=async()=>{touched=true;
+$('#ckRun').onclick=async()=>{touched=true;$('#doneBar').hidden=true;document.body.classList.remove('hasbar');
   const fd=new FormData();fd.append('module',ckModule);fd.append('text',$('#ckText').value);[...$('#ckFile').files].forEach(f=>fd.append('files',f));
   $('#notice').style.display='none';$('#ckResult').innerHTML='';ck=null;  // 다시 검진하면 이전 결과를 지움(이전 결과는 아래 검진 기록에서 다시 볼 수 있음)
   let stop=false;showProg('검진할 조항을 찾고 있어요',{fake:12,step:'계약서·설명 읽는 중',hint:'보통 10~20초 걸려요',onStop:()=>{stop=true}});
@@ -548,10 +559,15 @@ $('#ckRun').onclick=async()=>{touched=true;
   try{const j0=await api('api/checkup',{method:'POST',body:fd});
     const j=await ckPoll(j0.id,x=>x.status!=='running'||stop);
     if(stop){notice('err','검진을 중단했어요.');return}
-    if(j.status==='done'){ckRender(j);notice('ok',`검진을 마쳤어요. 항목 ${j.items.length}개, 위험 높음 ${j.items.filter(i=>i.risk==='높음').length}개.`);
+    if(j.status==='done'){ckRender(j);showDone(j);notice('ok',`검진을 마쳤어요. 항목 ${j.items.length}개, 위험 높음 ${j.items.filter(i=>i.risk==='높음').length}개.`);
       histAdd({kind:'checkup',id:j.id,title:j.title,sub:`항목 ${j.items.length}개 · 위험 높음 ${j.items.filter(i=>i.risk==='높음').length}`});return}
     ckRender(j);notice('ok',`검진할 항목 ${j.items.length}개를 찾았어요. 위험도 높은 항목을 먼저 골라 두었어요. 고른 뒤 "선택한 항목 검진"을 눌러 주세요.`);
   }catch(e){notice('err',`<b>검진을 시작하지 못했어요.</b> ${esc(e.message)}`)}finally{hideProg()}};
+// 검진이 끝나면 화면 아래에 검진표 열기를 크게 띄움
+function showDone(j){const n=j.items.filter(i=>i.checked).length,hi=j.items.filter(i=>i.checked&&i.risk==='높음').length,left=j.items.length-n;
+  $('#doneT').textContent=`${j.title} 완료`;$('#doneS').textContent=`검진한 항목 ${n}개 · 위험 높음 ${hi}개`+(left?` · 남은 항목 ${left}개`:'');
+  $('#doneGo').href=`api/checkup/${j.id}`;$('#doneBar').hidden=false;document.body.classList.add('hasbar')}
+$('#doneX').onclick=()=>{$('#doneBar').hidden=true;document.body.classList.remove('hasbar')};
 async function ckGoRun(){
   const ids=[...document.querySelectorAll('#ckResult .sel input:checked')].map(x=>x.value);
   if(!ids.length){notice('err','검진할 항목을 하나 이상 골라 주세요.');return}
@@ -559,7 +575,7 @@ async function ckGoRun(){
   showProg('고른 항목을 검진하고 있어요',{step:`0/${ids.length} 항목 완료`,hint:'끝난 항목은 바로 화면에 보여요. 중단 버튼을 누르기 전까지 계속 진행해요',onStop:()=>api(`api/checkup/${id}/cancel`,{method:'POST'}).catch(()=>{})});
   logShow();
   try{await api(`api/checkup/${id}/run`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ids})});
-    const j=await ckPoll(id,x=>x.status!=='running');ckRender(j);
+    const j=await ckPoll(id,x=>x.status!=='running');ckRender(j);if(j.items.some(i=>i.checked))showDone(j);
     const left=j.items.filter(i=>!i.checked).length;
     notice('ok',(j.status==='cancelled'?'중단했어요. 끝난 항목까지 검진표에 들어가 있어요.':'검진을 마쳤어요.')+(left?` 남은 항목 ${left}개도 골라서 이어서 검진할 수 있어요.`:''));
     histAdd({kind:'checkup',id,title:j.title,sub:`항목 ${j.items.filter(i=>i.checked).length}개 · 위험 높음 ${j.items.filter(i=>i.checked&&i.risk==='높음').length}`});
