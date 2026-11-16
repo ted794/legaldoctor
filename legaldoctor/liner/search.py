@@ -129,6 +129,56 @@ class LinerSearch:
         cache.put("search", ck, _result_to_dict(res))
         return res
 
+    def references(self, query: str, *, min_refs: int = 8, mode: str = "general") -> SearchResult:
+        """출처 목록만 받는다. 출처는 1~3초 안에 오고 답변 문장 생성은 20~40초 걸리므로,
+        답변이 시작되거나 출처가 충분히 모이면 스트림을 끊는다(답변 answer는 비어 있음). 7일 캐시."""
+        from legaldoctor import cache
+
+        ck = cache.key("search-refs", query, mode)
+        hit = cache.get("search", ck)
+        if hit is not None:
+            cache.HITS["search"] += 1
+            return _result_from_dict(hit)
+        for attempt in range(self.retries + 1):
+            try:
+                with _SLOTS:
+                    res = self._refs_once(query, mode, min_refs)
+                break
+            except LinerSearchError as e:
+                retryable = str(e).startswith(("HTTP 429", "HTTP 500", "HTTP 502", "HTTP 503", "HTTP 504"))
+                if not retryable or attempt == self.retries:
+                    raise
+                time.sleep(2 * (attempt + 1) + random.random())
+        cache.put("search", ck, _result_to_dict(res))
+        return res
+
+    def _refs_once(self, query: str, mode: str, min_refs: int) -> SearchResult:
+        SEARCH_CALLS[0] += 1
+        body = {"messages": [{"role": "user", "content": query}], "mode": mode}
+        headers = {"x-api-key": self._settings.liner_api_key, "Content-Type": "application/json", "Accept": "text/event-stream", "User-Agent": BROWSER_USER_AGENT}
+        result = SearchResult()
+        seen: set[str] = set()
+        with httpx.stream("POST", f"{self._settings.liner_base_url}/agents/search", json=body, headers=headers, timeout=self._timeout) as resp:
+            if resp.status_code != 200:
+                resp.read()
+                raise LinerSearchError(f"HTTP {resp.status_code}: {resp.text[:500]}")
+            for ev in iter_sse_events(resp.iter_lines()):
+                kind = ev.get("type")
+                if kind == "data-search-references":
+                    for raw in (ev.get("data") or {}).get("references") or []:
+                        ref = Reference.from_raw(raw)
+                        if ref.url and ref.url not in seen:
+                            seen.add(ref.url)
+                            result.references.append(ref)
+                    if len(result.references) >= min_refs:
+                        break
+                elif kind in ("text-start", "text-delta", "finish"):
+                    break
+                elif kind == "error":
+                    raise LinerSearchError(str(ev)[:500])
+        result.finished = True
+        return result
+
     def _search_retry(self, query: str, mode: str) -> SearchResult:
         for attempt in range(self.retries + 1):
             try:
