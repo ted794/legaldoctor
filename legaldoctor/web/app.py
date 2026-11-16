@@ -198,6 +198,25 @@ def causes() -> list[dict[str, Any]]:
     return [{"no": c["no"], "name": c["name"], "part": c["part"], "module": c["module"]} for c in load_causes()]
 
 
+@app.get("/api/causes/{no}")
+def cause_detail(no: int) -> dict[str, Any]:
+    """사인 튜토리얼: 부검보고서 사망진단서(인과 사슬)와 창업자가 새길 교훈(출처 표시)"""
+    from legaldoctor.checkup import load_causes
+    from legaldoctor.config import DATA_DIR
+
+    c = next((x for x in load_causes() if x["no"] == no), None)
+    if not c:
+        raise HTTPException(404, "그런 사인이 없음")
+    p = DATA_DIR / "checkup" / "lessons" / f"{no:02d}.json"
+    items = []
+    if p.exists():
+        try:
+            items = [i for i in json.loads(p.read_text(encoding="utf-8")).get("items", []) if isinstance(i, dict) and i.get("title")]
+        except ValueError:
+            items = []
+    return {**c, "lessons": items}
+
+
 @app.get("/api/info")
 def info() -> dict[str, Any]:
     """운영자 표시와 상단 메뉴. 값은 배포 서버의 .env(LD_OPERATOR, LD_CONTACT, LD_NAV)에서 읽어 저장소에 운영 정보를 남기지 않는다."""
