@@ -633,6 +633,24 @@ def checkup_cancel(cid: str) -> dict[str, Any]:
     return _view(cid)
 
 
+@app.delete("/api/checkup/{cid}")
+def checkup_delete(cid: str) -> dict[str, bool]:
+    """이용자가 지우기를 고르면 서버 메모리의 검진 기록을 바로 지운다(공용 PC 정보 유출 방지)"""
+    job = CHECKUP_JOBS.get(cid)
+    if job:
+        job["cancel"] = True
+    return {"deleted": CHECKUP_JOBS.pop(cid, None) is not None}
+
+
+@app.delete("/api/sessions/{sid}")
+def session_delete(sid: str) -> dict[str, bool]:
+    """이용자가 지우기를 고르면 서버 메모리의 입력 내용과 분석 결과를 바로 지운다"""
+    s = SESSIONS.get(sid)
+    if s and s.job:
+        s.job["cancel"] = True
+    return {"deleted": SESSIONS.pop(sid, None) is not None}
+
+
 @app.get("/api/checkup/{cid}/status")
 def checkup_status(cid: str) -> dict[str, Any]:
     return _view(cid)

@@ -62,3 +62,15 @@ def test_cause_detail():
     d = c.get("/api/causes/7").json()
     assert d["no"] == 7 and "가" in d["chain"] and isinstance(d["lessons"], list)
     assert c.get("/api/causes/99").status_code == 404
+
+
+def test_delete_endpoints():
+    from fastapi.testclient import TestClient
+    from legaldoctor.web.app import CHECKUP_JOBS, SESSIONS, app
+
+    c = TestClient(app)
+    sid = c.post("/api/sessions").json()["id"]
+    assert sid in SESSIONS and c.delete(f"/api/sessions/{sid}").json()["deleted"] and sid not in SESSIONS
+    CHECKUP_JOBS["x1"] = {"status": "done", "started": 0}
+    assert c.delete("/api/checkup/x1").json()["deleted"] and "x1" not in CHECKUP_JOBS
+    assert c.delete("/api/checkup/none").json()["deleted"] is False

@@ -138,17 +138,19 @@ body.tool .logo svg{width:52px;height:52px}body.tool .logo h1{font-size:30px}bod
 #cur .back{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer;font-weight:600}
 #cur .back:hover{border-color:var(--accent);color:var(--accent)}
 #pick{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100% - 32px));background:var(--card);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:60;padding:18px}
-#pick[hidden]{display:none}
-#pick .ph{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+#pick[hidden],#wipe[hidden]{display:none}
+#wipe{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(460px,calc(100% - 32px));background:var(--card);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:65;padding:18px}
+#wipe .m{color:var(--sub);font-size:13px;margin-top:4px}#wipe h3{margin:0;font-size:18px}
+#pick .ph,#wipe .ph{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
 #pick .ph .n{font-size:28px;font-weight:900;color:var(--accent);line-height:1}
 #pick .ph h3{margin:0;font-size:18px}
 #pick .ph .m{color:var(--sub);font-size:13px}
 #pick .ph .x{margin-left:auto;border:0;background:transparent;font-size:22px;color:var(--sub);cursor:pointer;line-height:1}
-#pick .opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;margin-top:8px;cursor:pointer;font:inherit}
-#pick .opt:hover{border-color:var(--accent);background:var(--accent-soft)}
-#pick .opt .k{font-size:22px;font-weight:900;color:var(--accent);width:28px;text-align:center}
-#pick .opt b{display:block;font-size:15px}
-#pick .opt span.d{display:block;font-size:12.5px;color:var(--sub);margin-top:2px}
+#pick .opt,#wipe .opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;margin-top:8px;cursor:pointer;font:inherit}
+#pick .opt:hover,#wipe .opt:hover{border-color:var(--accent);background:var(--accent-soft)}
+#pick .opt .k,#wipe .opt .k{font-size:22px;font-weight:900;color:var(--accent);width:28px;text-align:center}
+#pick .opt b,#wipe .opt b{display:block;font-size:15px}
+#pick .opt span.d,#wipe .opt span.d{display:block;font-size:12.5px;color:var(--sub);margin-top:2px}
 
 #tut{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(880px,calc(100% - 24px));max-height:calc(100vh - 32px);background:var(--card);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:60;display:flex;flex-direction:column;overflow:hidden}
 #tut[hidden],#tutOv[hidden]{display:none}
@@ -287,6 +289,12 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
     <div class="result" id="result"></div>
   </aside>
 </main>
+
+<div id="wipe" hidden role="dialog" aria-modal="true" aria-labelledby="wipeT">
+  <div class="ph"><div><h3 id="wipeT">이전 검진 내용을 지울까요?</h3><div class="m">입력한 내용과 검진 결과가 이 브라우저와 서버 메모리에 남아 있어요. 공용 PC라면 지우고 넘어가세요.</div></div></div>
+  <button class="opt" id="wipeYes"><span class="k">1</span><span><b>지우고 넘어가기</b><span class="d">화면, 이 브라우저의 검진 기록, 서버 메모리의 결과를 모두 지워요</span></span></button>
+  <button class="opt" id="wipeNo"><span class="k">2</span><span><b>남겨 두고 넘어가기</b><span class="d">화면만 비우고 검진 기록은 남겨요(6시간 뒤 서버에서 자동 삭제)</span></span></button>
+</div>
 <div id="pick" hidden role="dialog" aria-modal="true" aria-labelledby="pickT">
   <div class="ph"><span class="n" id="pickN"></span><div><h3 id="pickT"></h3><div class="m" id="pickM"></div></div><button class="x" id="pickX" aria-label="닫기">×</button></div>
   <button class="opt" id="pickTut"><span class="k">1</span><span><b>튜토리얼 보기</b><span class="d">사망진단서와 선행 신호, 창업자가 새길 교훈</span></span></button>
@@ -354,7 +362,7 @@ function render(v){
 }
 
 async function sendForm(fd,label){
-  await session();$('#notice').style.display='none';
+  touched=true;await session();$('#notice').style.display='none';
   const ac=new AbortController();
   showProg(label,{fake:18,step:fd.has('files')?'쪽마다 글과 화면을 읽고 사업 모델 12개 항목을 정리해요':'사업 모델 12개 항목을 정리해요',hint:'보통 10~40초 걸려요',onStop:()=>ac.abort()});
   logShow();$('#logl').innerHTML='';logAdd(fd.has('files')?'자료를 받았어요. 쪽마다 글과 화면을 읽고 있어요':'설명을 받았어요');
@@ -405,7 +413,31 @@ document.querySelectorAll('#menu button').forEach(b=>b.onclick=()=>{
 
 // 첫 화면 28개 사인 바둑판: 누르면 맡는 검진을 연다
 const MOD={bm:['reg','','규제팡'],invest:['ops','invest','투자계약 검진'],labor:['ops','labor','노무 검진'],privacy:['ops','privacy','개인정보·데이터 검진'],trade:['ops','trade','거래·자금 검진'],governance:['ops','governance','설립·지배구조 검진'],mgmt:['ops','mgmt','경영 지표 검진']};
-function pickCause(c,el){const [m,ck,label]=MOD[c.module]||MOD.bm;
+// 다른 사인으로 새로 들어올 때 이전 검진·분석 내용을 지운다(이전 결과는 검진 기록에서 다시 볼 수 있음)
+const QBOX0=$('#qbox').innerHTML;
+async function resetTool(){
+  ck=null;$('#ckResult').innerHTML='';$('#ckText').value='';$('#ckText').dataset.demo='';$('#ckFile').value='';$('#ckFiles').textContent='';
+  $('#notice').style.display='none';$('#msg').textContent='';$('#logl').innerHTML='';
+  $('#result').innerHTML='';$('#qbox').innerHTML=QBOX0;$('#startTalk').onclick=()=>{touched=true;answer(null)};$('#qlog').innerHTML='';$('#qlog').hidden=true;
+  $('#bizText').value='';$('#fileIn').value='';$('#fileList').textContent='';editing=false;
+  try{if(typeof dirty!=='undefined'){dirty=false;fitCanvas()}}catch(e){}
+  try{sid=(await api('api/sessions',{method:'POST'})).id;render(await api('api/sessions/'+sid))}catch(e){sid=null}
+  histDraw();
+}
+let touched=false;  // 이번에 무언가 입력·검진했는지
+async function wipeAll(){
+  const ids=histGet();try{localStorage.removeItem('ld_hist')}catch(e){}
+  const del=u=>fetch(u,{method:'DELETE'}).catch(()=>{});
+  ids.forEach(x=>del(x.kind==='checkup'?`api/checkup/${x.id}`:`api/sessions/${x.id}`));
+  if(ck&&ck.id)del(`api/checkup/${ck.id}`);if(sid)del(`api/sessions/${sid}`);
+}
+function askWipe(){return new Promise(res=>{$('#wipe').hidden=false;$('#tutOv').hidden=false;$('#wipeYes').focus();
+  const done=v=>{$('#wipe').hidden=true;$('#tutOv').hidden=true;res(v)};
+  $('#wipeYes').onclick=()=>done(true);$('#wipeNo').onclick=()=>done(false)})}
+async function pickCause(c,el){const [m,ck0,label]=MOD[c.module]||MOD.bm;const ck=ck0;
+  if(document.body.classList.contains('home')){
+    if(touched||histGet().length){if(await askWipe())await wipeAll()}
+    touched=false;await resetTool();}
   document.querySelector(`#menu button[data-m="${m}"]`).click();
   if(ck){const b=document.querySelector(`#ckMods button[data-m="${ck}"]`);if(b)b.click()}
   document.querySelectorAll('.tile').forEach(t=>{t.classList.toggle('on',t===el);t.classList.toggle('same',t!==el&&t.dataset.mod===c.module)});
@@ -413,7 +445,7 @@ function pickCause(c,el){const [m,ck,label]=MOD[c.module]||MOD.bm;
   $('#backHome').onclick=()=>history.state&&history.state.v==='tool'?history.back():goHome();
   document.body.className='tool';window.scrollTo(0,0);
   if(!(history.state&&history.state.v==='tool'))history.pushState({v:'tool'},'')}
-function goHome(){document.body.className='home';window.scrollTo(0,0)}
+function goHome(){document.body.className='home';document.querySelectorAll('.tile').forEach(x=>x.classList.remove('on','same'));window.scrollTo(0,0)}
 window.addEventListener('popstate',()=>{if(!(history.state&&history.state.v==='tool'))goHome()});
 // 사인을 누르면 고르기 상자: 1) 튜토리얼(팝업) 2) 검진(제자리에서 다음 화면)
 let pickC=null,pickEl=null;
@@ -491,7 +523,7 @@ async function ckPoll(id,until){
     if(j.status==='error')throw new Error(j.error||'검진 중 문제가 생겼어요');
     await sleep(2000)}
 }
-$('#ckRun').onclick=async()=>{
+$('#ckRun').onclick=async()=>{touched=true;
   const fd=new FormData();fd.append('module',ckModule);fd.append('text',$('#ckText').value);[...$('#ckFile').files].forEach(f=>fd.append('files',f));
   $('#notice').style.display='none';$('#ckResult').innerHTML='';ck=null;  // 다시 검진하면 이전 결과를 지움(이전 결과는 아래 검진 기록에서 다시 볼 수 있음)
   let stop=false;showProg('검진할 조항을 찾고 있어요',{fake:12,step:'계약서·설명 읽는 중',hint:'보통 10~20초 걸려요',onStop:()=>{stop=true}});
@@ -540,7 +572,7 @@ function showQ(v){
   document.querySelectorAll('.choices button').forEach(b=>b.onclick=()=>answer(b.textContent));
   $('#freeBtn').onclick=()=>{const a=$('#freeAns').value.trim();if(a)answer(a)};
 }
-async function answer(a){await session();busy(true,'다음 질문을 고르고 있어요...');
+async function answer(a){touched=true;await session();busy(true,'다음 질문을 고르고 있어요...');
   try{const v=await api(`api/sessions/${sid}/interview`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answer:a})});render(v);showQ(v)}
   catch(e){$('#msg').textContent=e.message}finally{busy(false)}}
 $('#startTalk').onclick=()=>answer(null);
