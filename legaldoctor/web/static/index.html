@@ -45,7 +45,10 @@ header{padding:28px 16px 8px;max-width:1120px;margin:0 auto;text-align:center}
 .logo .en{display:block;font-size:13px;font-weight:600;color:var(--accent);letter-spacing:5px;margin-top:6px}
 header p.tag{margin:10px 0 0;color:var(--sub);word-break:keep-all}
 .askh{word-break:keep-all}
-.ask{font-size:26px;font-weight:800;margin:26px 0 4px;letter-spacing:-.5px}
+.ask{display:inline-flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 10px;font:inherit;font-size:24px;font-weight:800;margin:24px 0 10px;letter-spacing:-.5px;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 30px;cursor:pointer;box-shadow:0 6px 18px rgba(165,28,48,.25)}
+.ask:hover{filter:brightness(1.08)}
+.ask .ar{font-weight:700}
+.ask small{flex-basis:100%;font-size:13px;font-weight:500;opacity:.9;letter-spacing:0}
 .askh{color:var(--sub);font-size:14px;margin:0 0 14px}
 .grid28{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:left}
 @media (max-width:980px){.grid28{grid-template-columns:repeat(4,1fr)}}
@@ -62,6 +65,7 @@ header p.tag{margin:10px 0 0;color:var(--sub);word-break:keep-all}
 .legend28{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:12px;color:var(--sub);margin:10px 0 0}
 .legend28 i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--line);vertical-align:-1px;margin-right:5px}
 #menu{display:none}
+body.tool.general #menu{display:flex;justify-content:center}
 #cur{margin:14px auto 0;max-width:1120px;padding:0 16px;font-weight:700}
 #cur span{color:var(--sub);font-weight:400;font-size:13px;margin-left:6px}
 main{max-width:1120px;margin:0 auto;padding:8px 16px 40px;display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
@@ -118,7 +122,7 @@ canvas{width:100%;height:320px;border:1px solid var(--line);border-radius:10px;b
 .result pre{white-space:pre-wrap;font:inherit;margin:0}
 .warn{color:var(--accent);font-size:13px}
 #ov{position:fixed;inset:0;background:rgba(15,17,20,.35);z-index:40}
-#prog{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100% - 32px));max-height:calc(100vh - 32px);display:flex;flex-direction:column;background:var(--card);border:2px solid var(--accent);border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,.25);padding:18px 18px 14px;z-index:50}
+#prog{position:fixed;inset:0;margin:auto;height:max-content;width:min(560px,calc(100% - 32px));max-height:calc(100vh - 32px);display:flex;flex-direction:column;background:var(--card);border:2px solid var(--accent);border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,.25);padding:18px 18px 14px;z-index:50}
 #prog .t{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
 #prog .sp{width:18px;height:18px;border:3px solid var(--accent-soft);border-top-color:var(--accent);border-radius:50%;animation:sp 0.9s linear infinite;flex:none}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -142,9 +146,9 @@ body.tool .logo svg{width:52px;height:52px}body.tool .logo h1{font-size:30px}bod
 #cur{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 #cur .back{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer;font-weight:600}
 #cur .back:hover{border-color:var(--accent);color:var(--accent)}
-#pick{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100% - 32px));background:var(--card);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:60;padding:18px}
+#pick{position:fixed;inset:0;margin:auto;height:max-content;width:min(440px,calc(100% - 32px));background:var(--card);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:60;padding:18px}
 #pick[hidden],#wipe[hidden]{display:none}
-#wipe{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(460px,calc(100% - 32px));background:var(--card);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:65;padding:18px}
+#wipe{position:fixed;inset:0;margin:auto;height:max-content;width:min(460px,calc(100% - 32px));background:var(--card);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:65;padding:18px}
 #wipe .m{color:var(--sub);font-size:13px;margin-top:4px}#wipe h3{margin:0;font-size:18px}
 #pick .ph,#wipe .ph{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
 #pick .ph .n{font-size:28px;font-weight:900;color:var(--accent);line-height:1}
@@ -157,7 +161,7 @@ body.tool .logo svg{width:52px;height:52px}body.tool .logo h1{font-size:30px}bod
 #pick .opt b,#wipe .opt b{display:block;font-size:15px}
 #pick .opt span.d,#wipe .opt span.d{display:block;font-size:12.5px;color:var(--sub);margin-top:2px}
 
-#tut{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(880px,calc(100% - 24px));max-height:calc(100vh - 32px);background:var(--card);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:60;display:flex;flex-direction:column;overflow:hidden}
+#tut{position:fixed;inset:0;margin:auto;height:max-content;width:min(880px,calc(100% - 24px));max-height:calc(100vh - 32px);background:var(--card);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);z-index:60;display:flex;flex-direction:column;overflow:hidden}
 #tut[hidden],#tutOv[hidden]{display:none}
 #tutOv{position:fixed;inset:0;background:rgba(15,17,20,.45);z-index:55}
 #tut .th{display:flex;align-items:flex-start;gap:12px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
@@ -213,8 +217,8 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
   </a>
   <p class="tag">스타트업이 죽는 28가지 사인을 죽기 전에 검진합니다.</p>
   <p class="pmh">노네임 모드 · 가입 없이 써요 · 공용 PC에서는 넘어갈 때 지우기를 골라 주세요</p>
-  <h2 class="ask">무엇을 도와드릴까요?</h2>
-  <p class="askh">걱정되는 사인을 누르면 튜토리얼을 보거나 바로 검진을 시작할 수 있어요.</p>
+  <button class="ask" id="askBtn" type="button">무엇을 도와드릴까요? <span class="ar">→</span><small>사업 설명부터 시작하는 범용 검진</small></button>
+  <p class="askh">아래 표준 28개 사인을 누르면 각 사인별 튜토리얼을 보거나 바로 그 사인의 검진을 시작할 수 있어요.</p>
   <div class="grid28" id="grid28"></div>
   <div class="legend28"><span><i style="background:var(--accent-soft)"></i>규제팡: 규제가 사업을 막는 사인</span><span><i></i>법령 대조 검진: 계약·노무·데이터·거래·지배구조</span><span><i style="border-style:dashed"></i>경영 지표 검진: 숫자로 보는 사인</span></div>
   <nav class="menu" id="menu">
@@ -440,17 +444,24 @@ async function wipeAll(){
 function askWipe(){return new Promise(res=>{$('#wipe').hidden=false;$('#tutOv').hidden=false;$('#wipeYes').focus();
   const done=v=>{$('#wipe').hidden=true;$('#tutOv').hidden=true;res(v)};
   $('#wipeYes').onclick=()=>done(true);$('#wipeNo').onclick=()=>done(false)})}
+async function leaveHome(){if(!document.body.classList.contains('home'))return;
+  if(touched||histGet().length){if(await askWipe())await wipeAll()}
+  touched=false;await resetTool()}
+function enterTool(extra,html){
+  $('#cur').innerHTML=`<button class="back" id="backHome">← 28개 사인</button>${html}`;
+  $('#backHome').onclick=()=>history.state&&history.state.v==='tool'?history.back():goHome();
+  document.body.className='tool'+(extra?' '+extra:'');window.scrollTo(0,0);
+  if(!(history.state&&history.state.v==='tool'))history.pushState({v:'tool'},'')}
+// 범용 검진: 사업 설명부터(규제팡) 시작하고 위 탭에서 계약·노무 검진으로 바꿀 수 있음
+$('#askBtn').onclick=async()=>{await leaveHome();document.querySelector('#menu button[data-m="reg"]').click();
+  document.querySelectorAll('.tile').forEach(t=>t.classList.remove('on','same'));
+  enterTool('general','범용 검진<span>사업을 설명하면 걸리는 규제를 찾아요. 계약·노무 검진은 위 탭에서 고를 수 있어요</span>')};
 async function pickCause(c,el){const [m,ck0,label]=MOD[c.module]||MOD.bm;const ck=ck0;
-  if(document.body.classList.contains('home')){
-    if(touched||histGet().length){if(await askWipe())await wipeAll()}
-    touched=false;await resetTool();}
+  await leaveHome();
   document.querySelector(`#menu button[data-m="${m}"]`).click();
   if(ck){const b=document.querySelector(`#ckMods button[data-m="${ck}"]`);if(b)b.click()}
   document.querySelectorAll('.tile').forEach(t=>{t.classList.toggle('on',t===el);t.classList.toggle('same',t!==el&&t.dataset.mod===c.module)});
-  $('#cur').innerHTML=`<button class="back" id="backHome">← 28개 사인</button>${esc(label)}<span>${c.no}. ${esc(c.name.split(' — ')[0])}에서 시작해요</span>`;
-  $('#backHome').onclick=()=>history.state&&history.state.v==='tool'?history.back():goHome();
-  document.body.className='tool';window.scrollTo(0,0);
-  if(!(history.state&&history.state.v==='tool'))history.pushState({v:'tool'},'')}
+  enterTool('',`${esc(label)}<span>${c.no}. ${esc(c.name.split(' — ')[0])}에서 시작해요</span>`)}
 function goHome(){document.body.className='home';document.querySelectorAll('.tile').forEach(x=>x.classList.remove('on','same'));window.scrollTo(0,0)}
 window.addEventListener('popstate',()=>{if(!(history.state&&history.state.v==='tool'))goHome()});
 // 사인을 누르면 고르기 상자: 1) 튜토리얼(팝업) 2) 검진(제자리에서 다음 화면)
