@@ -107,3 +107,20 @@ def test_clean_refs_drops_law_firm_ads():
             Reference("기사", "https://news.example.com/a", "news.example.com", "", "2026-10-01")]
     out = _clean_refs(refs, 5)
     assert [r["host"] for r in out] == ["law.go.kr", "news.example.com"]
+
+
+def test_news_serves_saved_and_refreshes_stale(monkeypatch, tmp_path):
+    import json, time
+    from fastapi.testclient import TestClient
+    import legaldoctor.web.app as A
+
+    monkeypatch.setattr(A, "NEWS_DIR", tmp_path)
+    calls = []
+    monkeypatch.setattr(A, "_refresh_news_bg", lambda no: calls.append(no))
+    (tmp_path / "20.json").write_text(json.dumps({"saved": time.time() - 8 * 86400, "data": {"no": 20, "answer": "a", "refs": [], "checked": "2026-11-01"}}))
+    c = TestClient(A.app)
+    d = c.get("/api/causes/20/news").json()
+    assert d["stale"] is True and d["checked"] == "2026-11-01" and calls == [20]
+    (tmp_path / "20.json").write_text(json.dumps({"saved": time.time(), "data": {"no": 20, "answer": "b", "refs": [], "checked": "2026-11-16"}}))
+    d = c.get("/api/causes/20/news").json()
+    assert d["stale"] is False and calls == [20]

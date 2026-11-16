@@ -63,6 +63,16 @@
 3. 의존성이 바뀌었으면: `sudo -u legaldoctor env HOME=/srv/legaldoctor /srv/legaldoctor/.venv/bin/pip install -e /srv/legaldoctor`
 4. `sudo systemctl restart legaldoctor` (메모리에 있던 진행 중 세션은 사라짐)
 
+### 최신 동향 미리 받기와 매주 새로 고침
+
+사인 튜토리얼의 최신 동향(Liner Search)은 저장된 결과를 바로 보여 주고 7일이 지나면 뒤에서 새로 고칩니다. 배포 직후 한 번, 이후 매주 한 번 28개 사인을 미리 받아 둡니다(약 6분).
+
+```bash
+sudo -u legaldoctor env HOME=/srv/legaldoctor /srv/legaldoctor/.venv/bin/python -m legaldoctor.web.warm_news   # 지금 한 번
+# 매주 월요일 04:00(서버 시간) 자동 실행: legaldoctor 사용자 crontab에 한 줄 추가
+( sudo -u legaldoctor crontab -l 2>/dev/null | grep -v warm_news; echo '0 4 * * 1 cd /srv/legaldoctor && HOME=/srv/legaldoctor .venv/bin/python -m legaldoctor.web.warm_news >> /srv/legaldoctor/data/law_cache/_news/warm.log 2>&1' ) | sudo -u legaldoctor crontab -
+```
+
 ### 되돌리기
 
 ```bash

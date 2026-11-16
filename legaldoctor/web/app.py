@@ -15,7 +15,7 @@ from starlette.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from pydantic import BaseModel
 
-from legaldoctor.config import load_settings
+from legaldoctor.config import LAW_CACHE_DIR, load_settings
 from legaldoctor.disclaimer import DISCLAIMER
 from legaldoctor.intake import (
     BMProfile,
@@ -260,23 +260,76 @@ def search_client():
     return _SEARCH
 
 
-@app.get("/api/causes/{no}/news", dependencies=[rate_limit("light")])
-def cause_news(no: int) -> dict[str, Any]:
-    """사인 튜토리얼 '최신 동향': Liner Search로 이 사인의 최근 판례·처분·정책 소식을 찾아 출처와 함께 돌려준다(검색 결과 7일 캐시)"""
+# 최신 동향 저장소: 사인 이름으로만 검색하므로 이용자 정보가 없다. 기간이 지나도 지우지 않고
+# 지난 결과를 바로 보여 준 뒤 뒤에서 새로 고친다(이용자는 기다리지 않음). 매주 warm_news로도 새로 고침
+NEWS_DIR = LAW_CACHE_DIR / "_news"
+NEWS_FRESH = 7 * 86400
+_news_lock = threading.Lock()
+_news_busy: set[int] = set()
+
+
+def _news_query(c: dict[str, Any]) -> str:
+    name = c["name"].split(" — ")[0]
+    sub = c["name"].split(" — ")[1] if " — " in c["name"] else ""
+    tail = f"({sub})" if sub else ""
+    return f"한국 스타트업 '{name}'{tail} 관련 최근 판례, 행정처분, 법령 개정, 정책 변화와 주요 사례 (최근 1~2년)"
+
+
+def refresh_news(no: int) -> dict[str, Any]:
+    """Liner Search를 새로 불러 저장한다(검색 캐시를 거치지 않음)"""
     from legaldoctor.checkup import load_causes
 
     c = next((x for x in load_causes() if x["no"] == no), None)
     if not c:
         raise HTTPException(404, "그런 사인이 없음")
-    name = c["name"].split(" — ")[0]
-    sub = c["name"].split(" — ")[1] if " — " in c["name"] else ""
-    query = f"한국 스타트업 '{name}'{f'({sub})' if sub else ''} 관련 최근 판례, 행정처분, 법령 개정, 정책 변화와 주요 사례 (최근 1~2년)"
+    query = _news_query(c)
+    res = search_client()._search_retry(query, "general")
+    data = {"no": no, "query": query, "answer": (res.answer or "")[:1800], "refs": _clean_refs(res.references, 10), "checked": time.strftime("%Y-%m-%d")}
+    NEWS_DIR.mkdir(parents=True, exist_ok=True)
+    tmp = NEWS_DIR / f"{no:02d}.json.tmp"
+    tmp.write_text(json.dumps({"saved": time.time(), "data": data}, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(NEWS_DIR / f"{no:02d}.json")
+    return data
+
+
+def _refresh_news_bg(no: int) -> None:
+    with _news_lock:
+        if no in _news_busy:
+            return
+        _news_busy.add(no)
+
+    def run():
+        try:
+            refresh_news(no)
+        except Exception:  # noqa: BLE001
+            pass  # 실패하면 지난 결과를 계속 보여 줌
+        finally:
+            with _news_lock:
+                _news_busy.discard(no)
+
+    threading.Thread(target=run, daemon=True).start()
+
+
+@app.get("/api/causes/{no}/news", dependencies=[rate_limit("light")])
+def cause_news(no: int) -> dict[str, Any]:
+    """사인 튜토리얼 '최신 동향': Liner Search로 찾은 이 사인의 최근 판례·처분·정책 소식과 출처.
+    저장된 결과가 있으면 바로 돌려주고, 7일이 지났으면 뒤에서 새로 고친다"""
+    f = NEWS_DIR / f"{no:02d}.json"
+    if f.exists():
+        try:
+            saved = json.loads(f.read_text(encoding="utf-8"))
+            stale = time.time() - saved["saved"] > NEWS_FRESH
+            if stale:
+                _refresh_news_bg(no)
+            return {**saved["data"], "stale": stale}
+        except (ValueError, KeyError):
+            pass
     try:
-        res = search_client().search(query)
+        return {**refresh_news(no), "stale": False}
+    except HTTPException:
+        raise
     except Exception as e:  # noqa: BLE001
         raise HTTPException(502, f"Liner Search에서 답을 받지 못했어요. 잠시 뒤 다시 시도해 주세요({str(e)[:80]})")
-    refs = _clean_refs(res.references, 10)
-    return {"no": no, "query": query, "answer": (res.answer or "")[:1800], "refs": refs, "checked": time.strftime("%Y-%m-%d")}
 
 
 @app.get("/api/info")
