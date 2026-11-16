@@ -542,7 +542,7 @@ def _enrich_cases(cid: str) -> None:
     def one(i):
         q = f"한국 법원 판결이나 정부 처분으로 확인된 '{i.label}' 관련 실제 사례(대법원·하급심 판례, 공정위·개인정보위·노동위 결정, 언론 보도): {(i.summary or i.quote)[:120]}"
         try:
-            res = search_client().search(q)
+            res = search_client().references(q, min_refs=1)  # 출처만 받고 답변 생성은 기다리지 않음(약 2배 빠름)
         except Exception:  # noqa: BLE001
             return i.id, []
         return i.id, _clean_refs(res.references, 3)
