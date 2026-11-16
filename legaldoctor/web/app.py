@@ -161,6 +161,11 @@ def privacy() -> FileResponse:
     return FileResponse(STATIC / "privacy.html")
 
 
+@app.get("/everyone")
+def everyone() -> FileResponse:
+    return FileResponse(STATIC / "everyone.html")
+
+
 @app.get("/network")
 def network() -> FileResponse:
     return FileResponse(STATIC / "network.html")
@@ -176,8 +181,9 @@ DEFAULT_NAV = [
     {"label": "규제 변화 알림", "note": "준비 중"},
     {"label": "전문가 지식 커뮤니티", "note": "준비 중"},
     {"label": "전문가 협업 네트워크", "note": "준비 중", "url": "network"},
+    {"label": "전 국민 리걸닥터", "note": "준비 중", "url": "everyone"},
 ]
-INTERNAL_PAGES = {"network"}  # 리걸닥터 안의 소개 페이지(같은 창에서 열림)
+INTERNAL_PAGES = {"network", "everyone"}  # 리걸닥터 안의 소개 페이지(같은 창에서 열림)
 
 
 def _nav() -> list[dict[str, str]]:
