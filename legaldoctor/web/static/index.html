@@ -547,7 +547,7 @@ async function loadNews(no){const box=$('#tabB');if(NEWS[no]){box.innerHTML=NEWS
     const clean=(d.answer||'').replace(/\*\*/g,'').replace(/\s*\(\(\d+(?:\)\)\s*\(\(\d+)*\)\)/g,'').replace(/\s*\[\d+(?:,\s*\d+)*\]/g,'');
     const ans=clean.split(/\n+/).filter(Boolean).map(l=>/^#{1,4}\s/.test(l)?`<b class="nh">${esc(l.replace(/^#+\s*/,''))}</b>`:`<p>${esc(l)}</p>`).join('');
     const refs=(d.refs||[]).map(r=>`<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title||r.url)}</a><div class="hint">${esc([r.date,r.host].filter(Boolean).join(' · '))}${r.desc?' — '+esc(r.desc):''}</div></li>`).join('');
-    const h=`<p class="newsnote">Liner Search가 찾은 최근 소식이에요. 요약은 AI가 쓴 것이니 원문 링크로 확인해 주세요. 검색일 ${esc(d.checked)}</p>${ans?`<div class="newsans">${ans}</div>`:''}<h4>출처 ${(d.refs||[]).length}건</h4><ol class="newsrefs">${refs||'<li class="hint">출처를 찾지 못했어요.</li>'}</ol>`;
+    const h=`<p class="newsnote">Liner Search가 찾은 최근 소식이에요. 요약은 AI가 쓴 것이니 원문 링크로 확인해 주세요. 검색일 ${esc(d.checked)}${d.stale?' · 새 소식을 뒤에서 찾고 있어요(다음에 열면 바뀌어요)':''}</p>${ans?`<div class="newsans">${ans}</div>`:''}<h4>출처 ${(d.refs||[]).length}건</h4><ol class="newsrefs">${refs||'<li class="hint">출처를 찾지 못했어요.</li>'}</ol>`;
     if(tutCause&&tutCause.no===no)box.innerHTML=h;NEWS[no]=h}
   catch(e){box.innerHTML=`<p class="hint">${esc(e.message)}</p>`}}
 $('#tutX').onclick=tutClose;$('#tutC').onclick=tutClose;$('#tutOv').onclick=()=>{tutClose();pickClose()};
