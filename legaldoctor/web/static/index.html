@@ -191,6 +191,17 @@ body.tool .logo svg{width:52px;height:52px}body.tool .logo h1{font-size:30px}bod
 #tut table.dc th{width:110px;text-align:left;background:var(--chip);font-weight:600;padding:6px 8px;border:1px solid var(--line);vertical-align:top}
 #tut table.dc td{padding:6px 8px;border:1px solid var(--line)}
 #tut .memo{font-size:13px;color:var(--sub);margin:6px 0 0}
+#tut .ttabs{display:flex;gap:6px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+#tut .ttabs button{border:0;background:transparent;color:var(--sub);font:inherit;font-weight:700;padding:8px 10px;border-bottom:2px solid transparent;cursor:pointer}
+#tut .ttabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+#tut .ttabs small{font-weight:600;font-size:11px;border:1px solid currentColor;border-radius:6px;padding:0 5px;margin-left:4px}
+#tut .newsnote{font-size:12.5px;color:var(--sub);background:var(--chip);border-radius:8px;padding:6px 10px}
+#tut .newsans{font-size:14px;margin:10px 0;line-height:1.7}
+#tut .newsans p{margin:4px 0}
+#tut .newsans .nh{display:block;margin:12px 0 2px;color:var(--ink)}
+#tut .newsrefs{padding-left:20px;font-size:13.5px}
+#tut .newsrefs li{margin:6px 0}
+#tut .newsrefs a{color:var(--accent);font-weight:600}
 #tut .flt{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
 #tut .flt button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:3px 10px;font:inherit;font-size:12.5px;cursor:pointer}
 #tut .flt button.on{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -520,13 +531,25 @@ async function openTut(c,el){tutCause=c;tutEl=el;
   const src=s=>s?[s.author,s.title,s.publisher,s.year].filter(Boolean).map(esc).join(', ')+(s.url?` · <a href="${esc(s.url)}" target="_blank" rel="noopener">원문</a>`:''):'';
   const item=(i,n)=>`<div class="lrow" data-ty="${esc(i.type||'')}"><button><span class="no">${n}</span><span class="ty t-${esc(i.type||'')}">${esc(i.type||'교훈')}</span><span class="tt">${esc(i.title)}<small>${esc((i.source&&(i.source.publisher||i.source.title))||'')}</small></span></button>
     <div class="ct">${esc(i.body||'')}${i.quote?`<blockquote>“${esc(i.quote)}”</blockquote>`:''}<div class="src">출처: ${src(i.source)}</div></div></div>`;
-  $('#tutB').innerHTML=`<h4>사망진단서 · 스타트업 부검보고서</h4><table class="dc">${rows}</table>${d.memo?`<p class="memo">메모: ${esc(d.memo)}</p>`:''}
+  $('#tutB').innerHTML=`<div class="ttabs"><button class="on" data-t="A">사망진단서 · 교훈</button><button data-t="B">최신 동향 <small>Liner Search</small></button></div><div id="tabA"><h4>사망진단서 · 스타트업 부검보고서</h4><table class="dc">${rows}</table>${d.memo?`<p class="memo">메모: ${esc(d.memo)}</p>`:''}
     <h4>창업자가 새길 교훈 <span class="hint">${L.length}건</span></h4>
-    ${L.length?`<div class="flt"><button class="on" data-f="">전체</button>${types.map(x=>`<button data-f="${esc(x)}">${esc(x)}</button>`).join('')}</div><div class="bd">${L.map((i,k)=>item(i,k+1)).join('')}</div>`:'<p class="hint">교훈 콘텐츠를 준비하고 있어요.</p>'}`;
+    ${L.length?`<div class="flt"><button class="on" data-f="">전체</button>${types.map(x=>`<button data-f="${esc(x)}">${esc(x)}</button>`).join('')}</div><div class="bd">${L.map((i,k)=>item(i,k+1)).join('')}</div>`:'<p class="hint">교훈 콘텐츠를 준비하고 있어요.</p>'}</div><div id="tabB" hidden></div>`;
+  document.querySelectorAll('#tutB .ttabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tutB .ttabs button').forEach(x=>x.classList.toggle('on',x===b));$('#tabA').hidden=b.dataset.t!=='A';$('#tabB').hidden=b.dataset.t!=='B';if(b.dataset.t==='B')loadNews(c.no)});
   document.querySelectorAll('#tutB .lrow>button').forEach(b=>b.onclick=()=>b.parentElement.classList.toggle('open'));
   document.querySelectorAll('#tutB .flt button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tutB .flt button').forEach(x=>x.classList.toggle('on',x===b));
     document.querySelectorAll('#tutB .lrow').forEach(r=>r.hidden=!!b.dataset.f&&r.dataset.ty!==b.dataset.f)});
 }
+// 최신 동향: Liner Search로 이 사인의 최근 판례·처분·정책 소식(서버에서 7일 캐시)
+const NEWS={};
+async function loadNews(no){const box=$('#tabB');if(NEWS[no]){box.innerHTML=NEWS[no];return}
+  box.innerHTML='<p class="hint">Liner Search로 최근 판례·처분·정책 소식을 찾고 있어요. 10~30초 걸릴 수 있어요.</p>';
+  try{const d=await api(`api/causes/${no}/news`);
+    const clean=(d.answer||'').replace(/\*\*/g,'').replace(/\s*\(\(\d+(?:\)\)\s*\(\(\d+)*\)\)/g,'').replace(/\s*\[\d+(?:,\s*\d+)*\]/g,'');
+    const ans=clean.split(/\n+/).filter(Boolean).map(l=>/^#{1,4}\s/.test(l)?`<b class="nh">${esc(l.replace(/^#+\s*/,''))}</b>`:`<p>${esc(l)}</p>`).join('');
+    const refs=(d.refs||[]).map(r=>`<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title||r.url)}</a><div class="hint">${esc([r.date,r.host].filter(Boolean).join(' · '))}${r.desc?' — '+esc(r.desc):''}</div></li>`).join('');
+    const h=`<p class="newsnote">Liner Search가 찾은 최근 소식이에요. 요약은 AI가 쓴 것이니 원문 링크로 확인해 주세요. 검색일 ${esc(d.checked)}</p>${ans?`<div class="newsans">${ans}</div>`:''}<h4>출처 ${(d.refs||[]).length}건</h4><ol class="newsrefs">${refs||'<li class="hint">출처를 찾지 못했어요.</li>'}</ol>`;
+    if(tutCause&&tutCause.no===no)box.innerHTML=h;NEWS[no]=h}
+  catch(e){box.innerHTML=`<p class="hint">${esc(e.message)}</p>`}}
 $('#tutX').onclick=tutClose;$('#tutC').onclick=tutClose;$('#tutOv').onclick=()=>{tutClose();pickClose()};
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#tut').hidden)tutClose();else if(!$('#pick').hidden)pickClose()});
 $('#tutGo').onclick=()=>{tutClose();if(tutCause)pickCause(tutCause,tutEl)};

@@ -223,6 +223,43 @@ def cause_detail(no: int) -> dict[str, Any]:
     return {**c, "lessons": items}
 
 
+_SEARCH = None
+
+
+def search_client():
+    global _SEARCH
+    if _SEARCH is None:
+        from legaldoctor.liner import LinerSearch
+
+        _SEARCH = LinerSearch(load_settings())
+    return _SEARCH
+
+
+@app.get("/api/causes/{no}/news", dependencies=[rate_limit("light")])
+def cause_news(no: int) -> dict[str, Any]:
+    """사인 튜토리얼 '최신 동향': Liner Search로 이 사인의 최근 판례·처분·정책 소식을 찾아 출처와 함께 돌려준다(검색 결과 7일 캐시)"""
+    from legaldoctor.checkup import load_causes
+
+    c = next((x for x in load_causes() if x["no"] == no), None)
+    if not c:
+        raise HTTPException(404, "그런 사인이 없음")
+    name = c["name"].split(" — ")[0]
+    sub = c["name"].split(" — ")[1] if " — " in c["name"] else ""
+    query = f"한국 스타트업 '{name}'{f'({sub})' if sub else ''} 관련 최근 판례, 행정처분, 법령 개정, 정책 변화와 주요 사례 (최근 1~2년)"
+    try:
+        res = search_client().search(query)
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(502, f"Liner Search에서 답을 받지 못했어요. 잠시 뒤 다시 시도해 주세요({str(e)[:80]})")
+    refs, seen = [], set()
+    for r in res.references:
+        if not r.url.startswith(("http://", "https://")) or r.url in seen:
+            continue
+        seen.add(r.url)
+        refs.append({"title": r.title[:160], "url": r.url, "host": r.hostname, "date": (r.date or "")[:10], "desc": r.description[:240]})
+    refs.sort(key=lambda x: x["date"], reverse=True)
+    return {"no": no, "query": query, "answer": (res.answer or "")[:1800], "refs": refs[:10], "checked": time.strftime("%Y-%m-%d")}
+
+
 @app.get("/api/info")
 def info() -> dict[str, Any]:
     """운영자 표시와 상단 메뉴. 값은 배포 서버의 .env(LD_OPERATOR, LD_CONTACT, LD_NAV)에서 읽어 저장소에 운영 정보를 남기지 않는다."""
