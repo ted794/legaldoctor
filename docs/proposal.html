@@ -7,7 +7,7 @@
 @page{size:A4;margin:11mm 13mm 10mm}
 :root{--c:#A51C30;--ink:#1b1f24;--sub:#5b6573;--line:#dee2e6;--soft:#FBF2F3}
 *{box-sizing:border-box}
-body{font-family:NK,sans-serif;color:var(--ink);font-size:8.5pt;line-height:1.42;margin:0;word-break:keep-all}
+body{font-family:NK,sans-serif;color:var(--ink);font-size:8.5pt;line-height:1.38;margin:0;word-break:keep-all}
 h1{font-size:17pt;margin:0;color:var(--c);letter-spacing:-.3px}
 h1 small{font-size:10pt;color:var(--sub);font-weight:400;margin-left:6px}
 .meta{color:var(--sub);font-size:8.3pt;margin:2px 0 6px}
@@ -79,7 +79,13 @@ a{color:var(--c);text-decoration:none}
 </div>
 
 <h2>4. Liner API 활용</h2>
-<p><b>Liner Model(liner-mark-1.0)</b>은 글·문서·그림에서 사업 모델 추출, 스무고개 질문, 사업 분해, 후보 법령·의제 가설, 원문 조문 적용 판정(근거 구절 필수), 계약 위험 조항 추출을 맡음. <b>Liner Search</b>는 행위별 규제 단서와 정부 해석·보도해명을 찾음. 둘 다 후보만 내고 확정은 국가법령정보 원문이 함. 진단 1건 Liner Model 비용은 약 $0.24~0.34(2026.11.14 실측), 같은 질문은 판정 캐시로 다시 부르지 않음.</p>
+<table>
+<tr><th style="width:17%">기능</th><th>Liner Model(liner-mark-1.0)</th><th>Liner Search</th></tr>
+<tr><td class="k">규제팡</td><td>사업소개서·그림 읽기, 스무고개, 사업 분해, 후보 법령, 조문 적용 판정(근거 구절 필수)</td><td>행위별 규제 단서, 정부 해석·보도해명</td></tr>
+<tr><td class="k">검진 6종</td><td>위험 조항·사실 추출(원문 구절째), 조문 판정</td><td>결과표를 먼저 보이고 위험 높은 항목의 실제 판례·처분 사례를 뒤에서 보강</td></tr>
+<tr><td class="k">사인 튜토리얼</td><td>-</td><td>사인별 최신 판례·처분·법령 개정 소식(출처 표시, 7일 캐시)</td></tr>
+</table>
+<p>둘 다 후보만 내고 확정은 법령 원문 대조가 함. 검진 중 바로 검색하면 16초가 99초로 늘어 2차 보강으로 설계함. 진단 1건 Liner Model 비용 약 $0.24~0.34.</p>
 
 <h2>5. 무료 법률 AI와 무엇이 다른가</h2>
 <table>
