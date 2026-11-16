@@ -160,6 +160,11 @@ def privacy() -> FileResponse:
     return FileResponse(STATIC / "privacy.html")
 
 
+@app.get("/network")
+def network() -> FileResponse:
+    return FileResponse(STATIC / "network.html")
+
+
 @app.get("/terms")
 def terms() -> FileResponse:
     return FileResponse(STATIC / "terms.html")
@@ -169,8 +174,9 @@ def terms() -> FileResponse:
 DEFAULT_NAV = [
     {"label": "규제 변화 알림", "note": "준비 중"},
     {"label": "전문가 지식 커뮤니티", "note": "준비 중"},
-    {"label": "전문가 협업 네트워크", "note": "준비 중"},
+    {"label": "전문가 협업 네트워크", "note": "준비 중", "url": "network"},
 ]
+INTERNAL_PAGES = {"network"}  # 리걸닥터 안의 소개 페이지(같은 창에서 열림)
 
 
 def _nav() -> list[dict[str, str]]:
@@ -186,7 +192,7 @@ def _nav() -> list[dict[str, str]]:
         if not isinstance(x, dict) or not str(x.get("label") or "").strip():
             continue
         url = str(x.get("url") or "")
-        out.append({"label": str(x["label"])[:40], "note": str(x.get("note") or "")[:20], "url": url if url.startswith("https://") else ""})
+        out.append({"label": str(x["label"])[:40], "note": str(x.get("note") or "")[:20], "url": url if url.startswith("https://") or url in INTERNAL_PAGES else ""})
     return out[:5] or DEFAULT_NAV
 
 

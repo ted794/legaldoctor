@@ -35,6 +35,9 @@ def test_nav_default_and_env(monkeypatch):
     monkeypatch.setenv("LD_NAV", '[{"label":"알림 서비스","url":"https://example.com/a"},{"label":"협업","note":"준비 중","url":"javascript:alert(1)"},{"x":1}]')
     nav = c.get("/api/info").json()["nav"]
     assert nav == [{"label": "알림 서비스", "note": "", "url": "https://example.com/a"}, {"label": "협업", "note": "준비 중", "url": ""}]
+    monkeypatch.setenv("LD_NAV", '[{"label":"협업","url":"network"},{"label":"x","url":"evil"}]')
+    assert [n["url"] for n in c.get("/api/info").json()["nav"]] == ["network", ""]
+    assert c.get("/network").status_code == 200
     monkeypatch.setenv("LD_NAV", "not json")
     assert c.get("/api/info").json()["nav"] == DEFAULT_NAV
 

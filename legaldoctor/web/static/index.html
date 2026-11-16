@@ -346,7 +346,7 @@ async function session(){if(!sid){sid=(await api('api/sessions',{method:'POST'})
 // 진행 안내창(가운데, 진행률 막대, 중단 버튼)과 오른쪽 진행 대화창
 let progT0=0,progIv=null,progFake=null,onStop=null;
 function fmt(s){return s<60?`${s}초`:`${Math.floor(s/60)}분 ${s%60}초`}
-function renderSuite(nav){$('#suiteX').outerHTML=(nav||[]).map(n=>n.url?`<a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</a>`:`<span class="it">${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</span>`).join('')}
+function renderSuite(nav){$('#suiteX').outerHTML=(nav||[]).map(n=>n.url?`<a href="${esc(n.url)}"${/^https:/.test(n.url)?' target="_blank" rel="noopener"':''}>${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</a>`:`<span class="it">${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</span>`).join('')}
 fetch('api/info').then(r=>r.json()).then(i=>renderSuite(i.nav)).catch(()=>{});
 function setPct(p,step){p=Math.max(0,Math.min(100,Math.round(p)));$('#progBar').style.width=p+'%';$('#progP').textContent=p+'%';if(step!==undefined)$('#progS').textContent=step}
 function showProg(title,opt={}){
