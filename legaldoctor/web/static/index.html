@@ -50,15 +50,24 @@ header p.tag{margin:10px 0 0;color:var(--sub);word-break:keep-all}
 .ask .ar{font-weight:700}
 .ask small{flex-basis:100%;font-size:13px;font-weight:500;opacity:.9;letter-spacing:0}
 .askh{color:var(--sub);font-size:14px;margin:0 0 14px}
-.grid28{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:left}
-@media (max-width:980px){.grid28{grid-template-columns:repeat(4,1fr)}}
-@media (max-width:520px){.grid28{grid-template-columns:repeat(3,1fr);gap:6px}.tile{min-height:66px;padding:7px 8px}.tile .md{display:none}.tile .nm{font-size:12.5px}.logo h1{font-size:36px}.logo svg{width:66px;height:66px}.ask{font-size:22px}}
+.grid28{display:grid;grid-template-columns:3fr 4fr;gap:14px;text-align:left}
+.grp{border-radius:16px;padding:12px;background:var(--chip)}
+.grp.ext{background:color-mix(in srgb,var(--accent) 5%,var(--bg))}
+.grp h3{margin:0 0 8px;font-size:16px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.grp.ext h3{color:var(--accent)}
+.grp h3 small{font-size:12.5px;font-weight:400;color:var(--sub)}
+.gt{display:grid;gap:8px}
+.grp.dis .gt{grid-template-columns:repeat(3,1fr)}
+.grp.ext .gt{grid-template-columns:repeat(4,1fr)}
+.tile .sub{float:right;font-size:11px;font-weight:600;color:var(--sub)}
+@media (max-width:980px){.grid28{grid-template-columns:1fr}.grp.dis .gt,.grp.ext .gt{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:520px){.grp{padding:8px}.grp.dis .gt,.grp.ext .gt{grid-template-columns:repeat(3,1fr);gap:6px}.tile{min-height:66px;padding:7px 8px}.tile .md{display:none}.tile .nm{font-size:12.5px}.logo h1{font-size:36px}.logo svg{width:66px;height:66px}.ask{font-size:22px}}
 .tile{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:9px 10px 8px;cursor:pointer;font:inherit;color:var(--ink);text-align:left;display:flex;flex-direction:column;min-height:92px;transition:border-color .15s,box-shadow .15s}
 .tile:hover{border-color:var(--accent)}
 .tile .no{font-weight:800;font-size:15px;color:var(--accent)}
 .tile .nm{font-weight:700;font-size:13.5px;line-height:1.35;margin-top:2px;word-break:keep-all}
 .tile .md{margin-top:auto;padding-top:6px;font-size:11px;color:var(--sub)}
-.tile.k-bm{background:var(--accent-soft)}
+.tile.k-bm{background:color-mix(in srgb,var(--accent) 14%,var(--card))}
 .tile.k-mgmt{border-style:dashed}
 .tile.same{border-color:var(--accent)}
 .tile.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
@@ -337,7 +346,7 @@ async function session(){if(!sid){sid=(await api('api/sessions',{method:'POST'})
 // 진행 안내창(가운데, 진행률 막대, 중단 버튼)과 오른쪽 진행 대화창
 let progT0=0,progIv=null,progFake=null,onStop=null;
 function fmt(s){return s<60?`${s}초`:`${Math.floor(s/60)}분 ${s%60}초`}
-function renderSuite(nav){$('#suiteX').outerHTML=(nav||[]).map(n=>n.url?`<a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</a>`:`<span class="it">${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</span>`).join('')}
+function renderSuite(nav){$('#suiteX').outerHTML=(nav||[]).map(n=>n.url?`<a href="${esc(n.url)}"${/^https:/.test(n.url)?' target="_blank" rel="noopener"':''}>${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</a>`:`<span class="it">${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</span>`).join('')}
 fetch('api/info').then(r=>r.json()).then(i=>renderSuite(i.nav)).catch(()=>{});
 function setPct(p,step){p=Math.max(0,Math.min(100,Math.round(p)));$('#progBar').style.width=p+'%';$('#progP').textContent=p+'%';if(step!==undefined)$('#progS').textContent=step}
 function showProg(title,opt={}){
@@ -490,9 +499,12 @@ function pickClose(){$('#pick').hidden=true;if($('#tut').hidden)$('#tutOv').hidd
 $('#pickX').onclick=pickClose;
 $('#pickTut').onclick=()=>{$('#pick').hidden=true;openTut(pickC,pickEl)};
 $('#pickGo').onclick=()=>{pickClose();pickCause(pickC,pickEl)};
-fetch('api/causes').then(r=>r.json()).then(cs=>{CAUSES=cs;ckSel(ckModule);const g=$('#grid28');
-  cs.forEach(c=>{const b=document.createElement('button');b.className='tile k-'+(c.module||'bm');b.dataset.mod=c.module||'bm';
-    const [nm]=c.name.split(' — ');b.innerHTML=`<span class="no">${c.no}</span><span class="nm">${esc(nm)}</span><span class="md">${esc((MOD[c.module]||MOD.bm)[2])}</span>`;
+fetch('api/causes').then(r=>r.json()).then(cs=>{CAUSES=cs;ckSel(ckModule);
+  const ext=cs.filter(c=>!c.part.startsWith('병사'));
+  $('#grid28').innerHTML=`<section class="grp dis"><h3>병사 <small>회사 안에서 생긴 원인 · ${cs.length-ext.length}</small></h3><div class="gt" id="gDis"></div></section>
+    <section class="grp ext"><h3>외인사 <small>계약 상대방·사고·규제가 원인 · ${ext.length} (타살 13–17 · 사고사 18–19 · 복합 20–21 · 의원성 22–28)</small></h3><div class="gt" id="gExt"></div></section>`;
+  cs.forEach(c=>{const g=c.part.startsWith('병사')?$('#gDis'):$('#gExt');const b=document.createElement('button');b.className='tile k-'+(c.module||'bm');b.dataset.mod=c.module||'bm';
+    const [nm]=c.name.split(' — ');const sub=(c.part.split('·')[1]||'');b.innerHTML=`<span class="no">${c.no}${sub?`<span class="sub">${esc(sub)}</span>`:''}</span><span class="nm">${esc(nm)}</span><span class="md">${esc((MOD[c.module]||MOD.bm)[2])}</span>`;
     b.title=c.name+' · '+c.part;b.onclick=()=>openPick(c,b);g.appendChild(b)})}).catch(()=>{});
 
 // 사인 튜토리얼(레이어 팝업): 부검보고서 사망진단서 + 교훈 게시판
