@@ -74,3 +74,21 @@ def test_delete_endpoints():
     CHECKUP_JOBS["x1"] = {"status": "done", "started": 0}
     assert c.delete("/api/checkup/x1").json()["deleted"] and "x1" not in CHECKUP_JOBS
     assert c.delete("/api/checkup/none").json()["deleted"] is False
+
+
+def test_checkup_page_tools_and_doc():
+    from legaldoctor.checkup import MODULES
+    from legaldoctor.checkup.engine import CheckItem
+    from fastapi.testclient import TestClient
+    from legaldoctor.web.app import CHECKUP_JOBS, app
+
+    i = CheckItem("M1", "runway", "현금 소진(1장)", "현금 4억", "", "회사")
+    i.risk, i.verdict, i.action = "높음", "런웨이 5.7개월", "자금 조달 계획"
+    CHECKUP_JOBS["t1"] = {"status": "done", "started": 0, "module": MODULES["mgmt"], "items": [i], "questions": []}
+    c = TestClient(app)
+    h = c.get("/api/checkup/t1").text
+    assert 'class="ldtools"' in h and 't1/doc' in h and "window.print()" in h
+    r = c.get("/api/checkup/t1/doc")
+    assert r.status_code == 200 and "application/msword" in r.headers["content-type"]
+    assert "filename*=UTF-8''" in r.headers["content-disposition"] and "런웨이 5.7개월" in r.text and "ldtools" not in r.text
+    CHECKUP_JOBS.pop("t1", None)

@@ -282,7 +282,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
       <div class="row">
         <label class="btn ghost">계약서 올리기<input type="file" id="ckFile" multiple hidden accept=".pdf,.docx,.hwpx,.txt,.md"></label>
         <button class="btn ghost" id="ckDemo">가상 예시 불러오기</button>
-        <button class="btn" id="ckRun">검진하기</button>
+        <button class="btn" id="ckRun">검진항목 도출하기</button>
       </div>
       <div class="hint" id="ckFiles"></div>
       <div id="ckResult"></div>
@@ -326,7 +326,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
 <div id="prog" hidden role="dialog" aria-modal="true" aria-live="polite"><div class="t"><span class="sp"></span><span id="progT"></span><span class="el" id="progEl"></span></div>
 <div class="bar"><i id="progBar"></i></div><div class="pc"><span id="progS"></span><b id="progP">0%</b></div><div class="ph" id="progH"></div>
 <div id="logl" aria-live="polite"></div>
-<div class="pdone" id="progDone" hidden><a class="go" id="progGo" target="_blank" rel="noopener">검진표 열기</a><button class="see" id="progSee">결과 화면 보기</button></div>
+<div class="pdone" id="progDone" hidden><a class="go" id="progGo" target="_blank" rel="noopener">검진결과표 보기</a><button class="see" id="progSee">검진항목 보기</button></div>
 <button class="stop" id="progStop" hidden>중단</button></div>
 <footer><div id="disc"></div><div class="hint" style="margin-top:6px">올린 자료는 분석에만 쓰고 저장하지 않습니다. 분석을 위해 내용이 AI 모델 서비스(라이너)로 전송됩니다. <a href="terms" target="_blank">이용약관</a> · <a href="privacy" target="_blank">개인정보 처리방침</a></div></footer>
 <script>
@@ -350,7 +350,7 @@ function showProg(title,opt={}){
     if(progFake)setPct(90*(1-Math.exp(-el/progFake)))};  // 서버 진행률이 없을 때 예상 시간으로 채움(90%에서 멈춤)
   tick();progIv=setInterval(tick,1000)}
 function hideProg(){if(keepProg){keepProg=false;return}clearInterval(progIv);$('#prog').hidden=true;$('#ov').hidden=true;$('#prog').classList.remove('done');$('#progDone').hidden=true;onStop=null}
-// 검진이 끝나면 진행 창이 그 자리에서 완료 창으로 바뀌고 검진표 열기를 크게 보임
+// 검진이 끝나면 진행 창이 그 자리에서 완료 창으로 바뀌고 검진결과표 보기를 크게 보임
 let keepProg=false;
 function progDone(j){const n=j.items.filter(i=>i.checked).length,hi=j.items.filter(i=>i.checked&&i.risk==='높음').length,left=j.items.length-n;
   clearInterval(progIv);keepProg=true;onStop=null;$('#prog').classList.add('done');
@@ -523,7 +523,7 @@ $('#tutGo').onclick=()=>{tutClose();if(tutCause)pickCause(tutCause,tutEl)};
 let ckModule='invest',ck=null;
 let CAUSES=[];
 const CKPH={invest:'투자계약서·텀시트 조항을 붙여 넣어 주세요.',labor:'직원·프리랜서를 어떻게 쓰는지, 근로계약서 조항을 적어 주세요.',privacy:'어떤 개인정보를 모으고 누구에게 넘기고 어디에 저장하는지 적어 주세요.',trade:'주요 거래처 계약, 대금 조건, 정부지원금 사용 내역을 적어 주세요.',governance:'공동창업자 지분, 주주간 계약, 이사회 구성을 적어 주세요.',mgmt:'현금, 월 소진액, 월 매출, 고객 획득 비용, 인원 변화, 직전 투자 시점을 적어 주세요.'};
-function ckSel(m){ckModule=m;document.querySelectorAll('#ckMods button').forEach(x=>x.classList.toggle('pick',x.dataset.m===m));
+function ckSel(m){ckModule=m;$('#ckRun').textContent=m==='mgmt'?'바로 검진하기':'검진항목 도출하기';document.querySelectorAll('#ckMods button').forEach(x=>x.classList.toggle('pick',x.dataset.m===m));
   $('#ckText').placeholder=CKPH[m]||'';
   const cs=CAUSES.filter(c=>c.module===m);$('#ckCauses').textContent=cs.length?'살펴보는 사인: '+cs.map(c=>c.no+'. '+c.name.split(' — ')[0]).join(', '):''}
 document.querySelectorAll('#ckMods button').forEach(b=>b.onclick=()=>ckSel(b.dataset.m));
@@ -537,7 +537,7 @@ function ckRender(j){
   ck=j;const done=j.items.filter(i=>i.checked),left=j.items.filter(i=>!i.checked);
   const hi=done.filter(i=>i.risk==='높음').length;
   let h=`<h3>${esc(j.title)} · ${esc(j.causes.join(', '))}</h3>`;
-  if(done.length)h+=`<p class="hint">검진한 항목 ${done.length} · 위험 높음 ${hi}</p><div class="row"><a class="btn" href="api/checkup/${j.id}" target="_blank">검진표 열기</a></div>`+
+  if(done.length)h+=`<p class="hint">검진한 항목 ${done.length} · 위험 높음 ${hi}</p><div class="row"><a class="btn" href="api/checkup/${j.id}" target="_blank">검진결과표 보기</a></div>`+
     done.map(i=>`<div class="ck-item">${riskTag(i.risk)}<b>${esc(i.label)}</b> · ${esc(i.verdict)}<div class="hint">“${esc(i.quote)}”</div>${i.laws.length?`<div class="hint">${esc(i.laws.join(' · '))}</div>`:''}</div>`).join('');
   const running=j.status==='running'&&j.phase==='check';
   if(left.length){
