@@ -376,7 +376,7 @@ function progDone(j){const n=j.items.filter(i=>i.checked).length,hi=j.items.filt
   clearInterval(progIv);keepProg=true;onStop=null;$('#prog').classList.add('done');
   $('#progT').textContent=j.status==='cancelled'?'중단했어요. 끝난 항목까지 검진표에 넣었어요':`${j.title} 완료`;
   setPct(j.status==='cancelled'?j.percent||0:100,`검진한 항목 ${n}개 · 위험 높음 ${hi}개`);
-  $('#progH').textContent=left?`남은 항목 ${left}개는 결과 화면에서 골라 이어서 검진할 수 있어요.`:'';
+  $('#progH').textContent=[hi&&!/경영 지표/.test(j.title)?'위험 높은 항목의 실제 판례·처분 사례는 Liner Search로 찾아 검진결과표에 곧 더해져요.':'',left?`남은 항목 ${left}개는 결과 화면에서 골라 이어서 검진할 수 있어요.`:''].filter(Boolean).join(' ');
   $('#progStop').hidden=true;$('#progGo').href=`api/checkup/${j.id}`;$('#progDone').hidden=false;$('#progGo').focus()}
 function progClose(){keepProg=false;hideProg()}
 $('#progSee').onclick=progClose;$('#progGo').addEventListener('click',()=>setTimeout(progClose,100));

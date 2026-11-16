@@ -28,7 +28,7 @@ def _risk(r: str) -> str:
     return f'<span class="risk" style="background:{RISK_COLOR.get(r, "#495057")}">{e(r)}</span>'
 
 
-def checkup_html(res: CheckupResult) -> str:
+def checkup_html(res: CheckupResult, cases: dict | None = None) -> str:
     m = res.module
     hi = sum(1 for i in res.items if i.risk == "높음")
     cause_text = ", ".join(f"{c['no']}. {c['name']}" for c in res.causes)  # 중첩 f-string은 Python 3.11 호환 형태로
@@ -71,6 +71,14 @@ def checkup_html(res: CheckupResult) -> str:
             f"<td><div class='q'>“{e(i.quote)}”</div></td><td>{law_cell}</td><td>{e(i.action)}</td></tr>"
         )
     parts.append("</table>")
+    found = [(i, (cases or {}).get(i.id) or []) for i in res.items]
+    found = [(i, refs) for i, refs in found if refs]
+    if found:
+        parts.append("<h2>실제 판례·처분 사례 <span class='meta'>· Liner Search가 찾은 공개 자료. 원문 링크로 확인하세요</span></h2><table><tr><th>항목</th><th>사례·출처</th></tr>")
+        for i, refs in found:
+            li = "".join(f"<div><a href='{e(r['url'])}'>{e(r['title'] or r['url'])}</a> <span class='meta'>{e(' · '.join(x for x in (r.get('date'), r.get('host')) if x))}</span></div>" for r in refs)
+            parts.append(f"<tr><td><b>{e(i.label)}</b></td><td>{li}</td></tr>")
+        parts.append("</table>")
     if res.questions:
         parts.append("<h2>확인이 필요한 사실</h2><ul>" + "".join(f"<li>{e(q)}</li>" for q in res.questions) + "</ul>")
     parts.append("<p class='meta'>변호사 권장조치는 구태언 변호사가 같은 유형의 조항·사실에 일반적으로 권하는 조치를 정리한 것이며 개별 사안에 대한 법률 자문이 아닙니다. <a href='../../terms'>이용약관</a></p>")

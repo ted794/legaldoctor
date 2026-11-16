@@ -95,3 +95,15 @@ def test_checkup_page_tools_and_doc():
     assert r.status_code == 200 and "application/msword" in r.headers["content-type"]
     assert "filename*=UTF-8''" in r.headers["content-disposition"] and "런웨이 5.7개월" in r.text and "ldtools" not in r.text
     CHECKUP_JOBS.pop("t1", None)
+
+
+def test_clean_refs_drops_law_firm_ads():
+    from legaldoctor.liner import Reference
+    from legaldoctor.web.app import _clean_refs
+
+    refs = [Reference("RCPS 상환청구 - 법무법인 오", "https://a.com/1", "ohhyunlaw-comp.com", "", "2026-01-01"),
+            Reference("강남기업법률자문변호사", "https://b.com", "gangnam.daeryunlaw.com"),
+            Reference("채무자 회생법", "https://law.go.kr/x", "law.go.kr"),
+            Reference("기사", "https://news.example.com/a", "news.example.com", "", "2026-10-01")]
+    out = _clean_refs(refs, 5)
+    assert [r["host"] for r in out] == ["law.go.kr", "news.example.com"]

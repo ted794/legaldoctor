@@ -40,6 +40,7 @@ app = FastAPI(title="스타트업 리걸닥터")
 # 분석·검진은 Liner 유료 API를 수십 번 부른다. IP별 시간당 한도와 서버 전체 하루 한도를 둔다.
 # 앞단 nginx가 X-Real-IP를 넣어 준다(앱은 127.0.0.1에만 열어 둠). 값은 환경변수로 바꿀 수 있음
 import json
+import re
 import os
 import threading
 import time
@@ -224,6 +225,24 @@ def cause_detail(no: int) -> dict[str, Any]:
 
 
 _SEARCH = None
+# Liner Search 출처 거르기: 로펌·변호사 광고성 페이지는 빼고(이해충돌·변호사 광고 규정) 공공기관 출처를 앞에 둠
+_AD_TITLE = re.compile(r"법무법인|법률사무소|변호사|로펌|무료\s*상담|상담\s*신청")
+_AD_HOST = re.compile(r"law(?!\.go\.kr)|lawyer|attorney|lawfirm")
+_OFFICIAL = re.compile(r"\.go\.kr$|scourt\.go\.kr|\.or\.kr$|korea\.kr$")
+
+
+def _clean_refs(refs, limit: int) -> list[dict[str, str]]:
+    out, seen = [], set()
+    for r in refs:
+        host = (r.hostname or "").lower()
+        if not r.url.startswith(("http://", "https://")) or r.url in seen:
+            continue
+        if _AD_TITLE.search(r.title or "") or (_AD_HOST.search(host) and not _OFFICIAL.search(host)):
+            continue
+        seen.add(r.url)
+        out.append({"title": (r.title or "")[:160], "url": r.url, "host": r.hostname, "date": (r.date or "")[:10], "desc": (r.description or "")[:240]})
+    out.sort(key=lambda x: (not _OFFICIAL.search((x["host"] or "").lower()), -int((x["date"] or "0").replace("-", "") or 0)))
+    return out[:limit]
 
 
 def search_client():
@@ -250,14 +269,8 @@ def cause_news(no: int) -> dict[str, Any]:
         res = search_client().search(query)
     except Exception as e:  # noqa: BLE001
         raise HTTPException(502, f"Liner Search에서 답을 받지 못했어요. 잠시 뒤 다시 시도해 주세요({str(e)[:80]})")
-    refs, seen = [], set()
-    for r in res.references:
-        if not r.url.startswith(("http://", "https://")) or r.url in seen:
-            continue
-        seen.add(r.url)
-        refs.append({"title": r.title[:160], "url": r.url, "host": r.hostname, "date": (r.date or "")[:10], "desc": r.description[:240]})
-    refs.sort(key=lambda x: x["date"], reverse=True)
-    return {"no": no, "query": query, "answer": (res.answer or "")[:1800], "refs": refs[:10], "checked": time.strftime("%Y-%m-%d")}
+    refs = _clean_refs(res.references, 10)
+    return {"no": no, "query": query, "answer": (res.answer or "")[:1800], "refs": refs, "checked": time.strftime("%Y-%m-%d")}
 
 
 @app.get("/api/info")
@@ -514,6 +527,40 @@ def _item_view(i, module) -> dict[str, Any]:
             "risk": i.risk, "verdict": i.verdict, "lawyer": i.lawyer, "laws": laws, "checked": bool(i.verdict)}
 
 
+def _enrich_cases(cid: str) -> None:
+    """2차 보강: 위험 높음 항목마다 Liner Search로 실제 판례·처분·분쟁 사례를 찾아 검진결과표에 더한다(검진결과표는 먼저 보여 줌)"""
+    job = CHECKUP_JOBS.get(cid)
+    if not job:
+        return
+    cases = job.setdefault("cases", {})
+    todo = [i for i in job["items"] if i.verdict and i.risk == "높음" and i.id not in cases][:6]
+    if not todo:
+        return
+    job["enrich"] = "running"
+    _log(job, f"위험 높은 항목 {len(todo)}개의 실제 판례·처분 사례를 Liner Search로 찾고 있어요. 끝나면 검진결과표에 더해져요")
+
+    def one(i):
+        q = f"한국 법원 판결이나 정부 처분으로 확인된 '{i.label}' 관련 실제 사례(대법원·하급심 판례, 공정위·개인정보위·노동위 결정, 언론 보도): {(i.summary or i.quote)[:120]}"
+        try:
+            res = search_client().search(q)
+        except Exception:  # noqa: BLE001
+            return i.id, []
+        return i.id, _clean_refs(res.references, 3)
+
+    try:
+        from concurrent.futures import ThreadPoolExecutor
+
+        with ThreadPoolExecutor(3) as ex:
+            for iid, refs in ex.map(one, todo):
+                if cid not in CHECKUP_JOBS:
+                    return  # 이용자가 지웠으면 멈춤
+                cases[iid] = refs
+        n = sum(len(v) for v in cases.values())
+        _log(job, f"실제 사례 {n}건을 검진결과표에 더했어요")
+    finally:
+        job["enrich"] = "done"
+
+
 def _checkup_html_for(job: dict[str, Any]) -> str:
     from legaldoctor.checkup import CheckupResult, checkup_html, load_causes
 
@@ -522,7 +569,7 @@ def _checkup_html_for(job: dict[str, Any]) -> str:
     causes = [c for c in load_causes() if c["no"] in m.causes]
     left = len(job["items"]) - len(done)
     notes = [f"아직 검진하지 않은 항목 {left}개"] if left else []
-    return checkup_html(CheckupResult(m, done, job.get("questions") or [], causes, notes, job.get("halted"), []))
+    return checkup_html(CheckupResult(m, done, job.get("questions") or [], causes, notes, job.get("halted"), []), cases=job.get("cases"))
 
 
 def _view(cid: str) -> dict[str, Any]:
@@ -540,6 +587,7 @@ def _view(cid: str) -> dict[str, Any]:
         "log": job.get("log", []), "error": job.get("error"), "skipped": job.get("skipped", []),
         "title": m.title if m else "", "causes": [f"{c['no']}. {c['name']}" for c in job.get("causes", [])],
         "items": [_item_view(i, m) for i in job.get("items", [])], "disclaimer": DISCLAIMER,
+        "enrich": job.get("enrich", ""), "cases_n": sum(len(v) for v in (job.get("cases") or {}).values()),
     }
 
 
@@ -611,6 +659,7 @@ def _check_job(cid: str, ids: list[str]) -> None:
             left = sum(1 for i in job["items"] if not i.verdict)
             _log(job, "검진을 마쳤어요" + (f". 남은 항목 {left}개도 이어서 고를 수 있어요" if left else ""))
             job["status"] = "done"
+            threading.Thread(target=_enrich_cases, args=(cid,), daemon=True).start()
     except Exception as e:  # noqa: BLE001
         job.update(status="error", error=f"검진 중 문제가 생겼어요. 잠시 뒤 다시 시도해 주세요({str(e)[:120]})")
     finally:
@@ -735,7 +784,12 @@ def checkup_page(cid: str) -> HTMLResponse:
         f'<a href="{cid}/doc" download="{name}.doc" title="워드(DOC) 파일로 받기">{_svg("doc")}<span>DOC</span></a></div>'
         f'<script>function ldPdf(){{var t=document.title;document.title={json.dumps(name)};window.print();setTimeout(function(){{document.title=t}},1000)}}</script>'
     )
-    html = _checkup_html_for(job).replace("</style>", _TOOLS_CSS + "</style>", 1).replace("<body>", "<body>" + tools, 1)
+    if job.get("enrich") == "running":
+        tools += (
+            '<div class="ldenrich">Liner Search로 위험 높은 항목의 실제 판례·처분 사례를 찾고 있어요. 끝나면 아래에 자동으로 더해져요</div>'
+            f'<script>(function p(){{fetch("{cid}/status").then(function(r){{return r.json()}}).then(function(j){{if(j.enrich==="running")setTimeout(p,4000);else location.reload()}}).catch(function(){{}})}})()</script>'
+        )
+    html = _checkup_html_for(job).replace("</style>", _TOOLS_CSS + ".ldenrich{margin:0 auto 10px;max-width:1080px;background:#eef6ff;color:#1864ab;border-radius:10px;padding:8px 12px;font-size:13px}@media print{.ldenrich{display:none}}</style>", 1).replace("<body>", "<body>" + tools, 1)
     return HTMLResponse(html)
 
 
