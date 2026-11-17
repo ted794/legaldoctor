@@ -34,7 +34,7 @@ def test_nav_default_and_env(monkeypatch):
     assert c.get("/api/info").json()["nav"] == DEFAULT_NAV
     monkeypatch.setenv("LD_NAV", '[{"label":"알림 서비스","url":"https://example.com/a"},{"label":"협업","note":"준비 중","url":"javascript:alert(1)"},{"x":1}]')
     nav = c.get("/api/info").json()["nav"]
-    assert nav == [{"label": "알림 서비스", "note": "", "url": "https://example.com/a"}, {"label": "협업", "note": "준비 중", "url": ""}]
+    assert nav == [{"label": "알림 서비스", "note": "", "url": "https://example.com/a", "frame": False}, {"label": "협업", "note": "준비 중", "url": "", "frame": False}]
     monkeypatch.setenv("LD_NAV", '[{"label":"협업","url":"network"},{"label":"x","url":"evil"}]')
     assert [n["url"] for n in c.get("/api/info").json()["nav"]] == ["network", ""]
     assert c.get("/network").status_code == 200 and c.get("/everyone").status_code == 200
@@ -150,3 +150,9 @@ def test_limits_off_by_default(monkeypatch):
     h = {"x-real-ip": "192.0.2.50"}
     codes = [c.post("/api/checkup/없음/run", json={"ids": []}, headers=h).status_code for _ in range(20)]
     assert set(codes) == {404}  # 한도를 끄면 몇 번을 눌러도 막지 않음
+
+
+def test_nav_frame_only_for_https(monkeypatch):
+    monkeypatch.setenv("LD_NAV", '[{"label":"a","url":"https://example.com/","frame":true},{"label":"b","url":"network","frame":true}]')
+    nav = TestClient(web.app).get("/api/info").json()["nav"]
+    assert [n["frame"] for n in nav] == [True, False]  # 안쪽 페이지는 iframe으로 열지 않음

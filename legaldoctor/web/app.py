@@ -206,7 +206,9 @@ def _nav() -> list[dict[str, str]]:
         if not isinstance(x, dict) or not str(x.get("label") or "").strip():
             continue
         url = str(x.get("url") or "")
-        out.append({"label": str(x["label"])[:40], "note": str(x.get("note") or "")[:20], "url": url if url.startswith("https://") or url in INTERNAL_PAGES else ""})
+        ok = url if url.startswith("https://") or url in INTERNAL_PAGES else ""
+        # frame: 상단 메뉴 아래 iframe으로 연다(상대 사이트가 frame-ancestors로 리걸닥터 주소를 허용해야 보임)
+        out.append({"label": str(x["label"])[:40], "note": str(x.get("note") or "")[:20], "url": ok, "frame": bool(x.get("frame")) and ok.startswith("https://")})
     return out[:5] or DEFAULT_NAV
 
 
