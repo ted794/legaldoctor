@@ -188,7 +188,7 @@ DEFAULT_NAV = [
     {"label": "규제 변화 알림", "note": "준비 중"},
     {"label": "전문가 지식 커뮤니티", "note": "준비 중"},
     {"label": "전문가 협업 네트워크", "note": "준비 중", "url": "network", "frame": True},
-    {"label": "전 국민 리걸닥터", "note": "준비 중", "url": "everyone", "frame": True},
+    {"label": "모두의 리걸닥터", "note": "준비 중", "url": "everyone", "frame": True},
 ]
 INTERNAL_PAGES = {"network", "everyone"}  # 리걸닥터 안의 소개 페이지(늘 상단 메뉴 아래에 열림)
 
