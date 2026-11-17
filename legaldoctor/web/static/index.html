@@ -31,7 +31,9 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Pretendard","
 #suite span.it.cur{color:var(--accent);font-weight:700;border-bottom-color:var(--accent)}
 #suite a:hover{color:var(--ink)}
 #suite .pm{margin-left:auto;flex:none;align-self:center;font-size:12px;color:var(--ok);border:1px solid var(--ok);border-radius:999px;padding:2px 10px;white-space:nowrap}
-@media (max-width:640px){#suite .pm{display:none}}
+#suite .myb{flex:none;align-self:center;margin-left:8px;font:inherit;font-size:12.5px;font-weight:700;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:999px;padding:3px 12px;cursor:pointer;white-space:nowrap}
+#suite .myb:hover{background:var(--accent);color:#fff}
+@media (max-width:640px){#suite .pm{display:none}#suite .myb{margin-left:auto}}
 .pmh{display:none;margin:8px auto 0;font-size:12px;color:var(--ok);border:1px solid var(--ok);border-radius:999px;padding:2px 10px;width:max-content;max-width:100%;word-break:keep-all}
 @media (max-width:640px){.pmh{display:block}}
 body.tool .pmh{display:none}
@@ -173,6 +175,30 @@ body.care header{padding-top:16px}
 body.care .logo svg{width:52px;height:52px}body.care .logo h1{font-size:30px}body.care .logo .pre{font-size:12px}body.care .logo .en{font-size:11px;letter-spacing:4px}
 #careView{display:none;max-width:1120px;margin:0 auto;padding:8px 16px 40px}
 body.care #careView{display:block}
+body.my main,body.my #cur,body.my .ask,body.my .askh,body.my #grid28,body.my .legend28,body.my header p.tag,body.my .pmh,body.my .carelink{display:none}
+body.my header{padding-top:16px}
+body.my .logo svg{width:52px;height:52px}body.my .logo h1{font-size:30px}body.my .logo .pre{font-size:12px}body.my .logo .en{font-size:11px;letter-spacing:4px}
+#myView{display:none;max-width:1120px;margin:0 auto;padding:8px 16px 40px}
+body.my #myView{display:block}
+#myView h3{font-size:16px;margin:22px 0 8px;display:flex;align-items:center;gap:6px}
+#myView h3 .hint{font-weight:400}
+.my-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (max-width:820px){.my-list{grid-template-columns:1fr}}
+.my-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13.5px}
+.my-card.gone{opacity:.6}
+.my-card h4{margin:0 0 2px;font-size:15px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.my-card h4 small{font-size:11.5px;font-weight:700;border-radius:6px;padding:1px 7px;background:var(--chip);color:var(--sub);white-space:nowrap}
+.my-card h4 small.hi{background:#c92a2a;color:#fff}
+.my-card h4 small.cv{background:var(--accent);color:#fff}
+.my-card .meta{font-size:12px;color:var(--sub);margin-bottom:6px}
+.my-card ul{margin:4px 0 6px;padding-left:16px}
+.my-card li{margin:3px 0}
+.my-card li .rx{display:block;color:var(--sub);font-size:12.5px}
+.my-card .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.my-card .acts a,.my-card .acts button{font:inherit;font-size:12.5px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:4px 10px;cursor:pointer;text-decoration:none}
+.my-card .acts .pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.my-card .late{color:#c92a2a;font-weight:700}
+.my-empty{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:14px;font-size:13.5px;color:var(--sub)}
 .carelink{margin:0 0 10px;font-size:13px}
 .carelink button{border:0;background:transparent;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline}
 .cv-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -320,7 +346,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
 </style>
 </head>
 <body class="home">
-<nav id="suite" aria-label="확장 서비스"><div class="in"><span class="it cur">스타트업 리걸닥터</span><span id="suiteX"></span><span class="pm" title="회원 가입 없이 누구나 써요. 공용 PC에서는 다른 사인으로 넘어갈 때 '지우고 넘어가기'를 골라 주세요">노네임 모드 · 가입 없이 써요</span></div></nav>
+<nav id="suite" aria-label="확장 서비스"><div class="in"><span class="it cur">스타트업 리걸닥터</span><span id="suiteX"></span><span class="pm" title="회원 가입 없이 누구나 써요. 공용 PC에서는 다른 사인으로 넘어갈 때 '지우고 넘어가기'를 골라 주세요">노네임 모드</span><button type="button" class="myb" id="myOpen">마이페이지</button></div></nav>
 <header>
   <a class="logo" href="./" aria-label="스타트업 리걸닥터 처음 화면" title="스타트업 리걸닥터">
     <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M24.3 82.6A40 40 0 1 1 75.7 82.6" stroke-width="5"/><path d="M30.1 68.7A26 26 0 1 1 69.9 68.7" stroke-width="5"/><path d="M50 43v16M42 51h16" stroke-width="5.5"/><path d="M45.5 61L32.5 78M48.5 63L36 79.5M54.5 61L67.5 78M51.5 63L64 79.5" stroke-width="2.6"/></svg>
@@ -420,6 +446,18 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
   <div class="cv-prog" id="cvPanel"></div>
   <div class="cv-grid"><div class="cv-items"><h3>검진 항목 · 처음 → 지금<button type="button" class="ib" data-h="care_items" aria-label="도움말">i</button></h3><div id="cvItems"></div></div>
     <div><h3 style="margin:0 0 8px;font-size:15px">실행 보드<button type="button" class="ib" data-h="care_board" aria-label="도움말">i</button></h3><div class="cv-board" id="cvBoard"></div></div></div>
+</section>
+
+<section id="myView" aria-label="마이페이지">
+  <div class="cv-head"><button class="back" id="myBack">← 28개 사인</button><h2><span>마이페이지</span> · <span style="color:var(--ink)">내 검진·처방·케어</span><button type="button" class="ib" data-h="my" aria-label="도움말">i</button></h2>
+    <div class="cv-tools"><button id="myCareIn">케어 파일·링크로 이어 보기</button><button class="danger" id="myWipe">이 브라우저 기록 지우기</button></div></div>
+  <div class="cv-stats" id="myStats"></div>
+  <p class="cv-warn">노네임 모드라 가입 없이 이 브라우저에 남은 기록만 모아 보여 줘요. 검진·규제 분석 결과는 서버에 6시간 남고 서버를 다시 시작하면 사라져요. 리걸닥터 케어는 비밀 링크로 90일 보관해요. 다른 기기에서는 케어를 파일로 내보내 이어 보세요.</p>
+  <div id="myNotice" role="status"></div>
+  <h3>할 일 <span class="hint">· 케어 과제 가운데 기한이 가까운 것</span></h3><div id="myTodo"></div>
+  <h3>검진과 처방 <span class="hint">· 위험 높음 항목과 변호사 권장조치</span></h3><div class="my-list" id="myChecks"></div>
+  <h3>규제 분석(규제팡) <span class="hint">· 규제 지도, 신속확인 신청서 초안, 상담 준비서</span></h3><div class="my-list" id="myRegs"></div>
+  <h3>리걸닥터 케어 <span class="hint">· 실행 계획과 진행 상황</span></h3><div class="my-list" id="myCares"></div>
 </section>
 
 <div id="wipe" hidden role="dialog" aria-modal="true" aria-labelledby="wipeT">
@@ -576,7 +614,7 @@ async function resetTool(){
 }
 let touched=false;  // 이번에 무언가 입력·검진했는지
 async function wipeAll(){
-  const ids=histGet();try{localStorage.removeItem('ld_hist')}catch(e){}
+  const ids=histGet();try{localStorage.removeItem('ld_hist');localStorage.removeItem('ld_care')}catch(e){}
   const del=u=>fetch(u,{method:'DELETE'}).catch(()=>{});
   ids.forEach(x=>del(x.kind==='checkup'?`api/checkup/${x.id}`:`api/sessions/${x.id}`));
   if(ck&&ck.id)del(`api/checkup/${ck.id}`);if(sid)del(`api/sessions/${sid}`);
@@ -678,6 +716,7 @@ const HELP={
  care_board:['실행 보드','<ul><li>과제를 할 일 → 진행 중 → 완료로 옮겨 가며 관리해요. 막힌 과제는 보류로 둬요.</li><li><b>변호사 확인</b> 표시는 서명, 분쟁 대응, 신고처럼 법적 판단이 필요한 단계예요.</li><li>기한이 지난 과제는 빨간 글씨로 표시해요.</li><li>메모에 상대방 답변이나 진행 상황을 적어 두면 경과 보고서에 함께 들어가요.</li></ul>'],
  care_ask:['실행 상담','<ul><li>과제를 하면서 생기는 질문에 검진 근거(법령 원문 구절)와 사인 교훈 안에서만 답해요.</li><li>근거를 찾지 못하거나 법적 판단이 필요하면 <b>변호사 확인 필요</b>로 표시해요.</li><li>Liner Search로 참고할 실무 자료를 함께 찾아 링크로 보여 줘요.</li><li>질문과 답변은 케어 기록에 남고 경과 보고서에 들어가요.</li></ul>'],
  care_link:['비밀 링크와 보관','<ul><li>케어는 가입 없이 비밀 링크(무작위 주소)로 90일 보관해요. 이 주소를 아는 사람은 누구나 볼 수 있어요.</li><li><b>파일로 내보내기</b>: 기록을 내 컴퓨터에 저장해요. 첫 화면 "리걸닥터 케어 이어 보기"에서 다시 올리면 이어 봐요.</li><li><b>지우기</b>: 서버에서 바로 지워요. 공용 PC에서는 내보낸 뒤 지우세요.</li></ul>'],
+ my:['마이페이지','<p>노네임 모드라 가입 없이 <b>이 브라우저</b>에 남은 기록을 모아 보여 줘요.</p><ul><li><b>검진과 처방</b>: 검진마다 위험 높음 항목과 변호사 권장조치(처방). 검진결과표를 다시 열거나 케어를 시작해요. 서버에는 6시간 남아요.</li><li><b>규제 분석</b>: 규제 지도, 신속확인 신청서 초안, 변호사 상담 준비서</li><li><b>리걸닥터 케어</b>: 프로그램, 과제 진행률, 위험 변화, 기한이 가까운 과제. 비밀 링크로 90일 보관해요.</li></ul><p>다른 기기에서는 케어를 파일로 내보내 "케어 파일·링크로 이어 보기"로 올리면 돼요. 공용 PC라면 "이 브라우저 기록 지우기"를 누르세요(서버의 케어 기록은 남고 이 브라우저 목록만 지워요).</p>'],
  care_report:['경과 보고서','<p>처음 진단 대비 줄어든 위험, 완료한 과제, 재검진 기록, 변호사 확인이 필요한 질문을 한 장으로 정리해요. 이사회·투자자 보고나 변호사 상담 준비에 쓰고 인쇄·PDF·DOC로 받을 수 있어요.</p>'],
 };
 function showHelp(k){const h=HELP[k];if(!h)return;$('#helpT').textContent=h[0];$('#helpB').innerHTML=h[1];$('#help').hidden=false;$('#helpOv').hidden=false;$('#helpX').focus()}
@@ -709,7 +748,7 @@ async function startCare(cid,program){
   showProg('리걸닥터 케어: 실행 계획을 만들고 있어요',{fake:15,step:'변호사 권장조치를 실행 과제로 나누는 중',hint:'보통 10~30초 걸려요'});
   try{const plan=await api('api/care',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cid,program:program||'consult'})});hideProg();openCare(plan,true)}
   catch(e){hideProg();notice('err',`<b>실행 계획을 만들지 못했어요.</b> ${esc(e.message)}`)}}
-function openCare(plan,push){CP=plan;document.body.className='care';window.scrollTo(0,0);
+function openCare(plan,push){CP=plan;careRemember(plan);document.body.className='care';window.scrollTo(0,0);
   const u=location.pathname+'?care='+plan.token;if(push)history.pushState({v:'care'},'',u);else history.replaceState({v:'care'},'',u);renderCare()}
 function renderCare(){const p=CP,s=p.stats;
   $('#cvTitle').innerHTML=`${esc(p.title)}<span class="pgb">${esc((PROG[p.program]||PROG.consult)[0])}</span> <button class="back" id="cvProg" style="font-size:12px;vertical-align:3px">프로그램 바꾸기</button>`;$('#cvProg').onclick=changeProgram;
@@ -773,7 +812,7 @@ function openRecheck(iid){const p=CP,it=p.items.find(i=>i.id===iid);if(!it)retur
     catch(e){hideProg();notice('err',`<b>재검진하지 못했어요.</b> ${esc(e.message)}`)}}}
 $('#careBack').onclick=()=>{CP=null;history.pushState({},'',location.pathname);goHome()};
 $('#cvCopy').onclick=async()=>{const u=location.origin+location.pathname+'?care='+CP.token;try{await navigator.clipboard.writeText(u);$('#cvCopy').textContent='복사했어요'}catch(e){prompt('이 주소를 저장해 두세요',u)}};
-$('#cvDel').onclick=async()=>{if(!confirm('이 케어 기록(실행 계획, 과제, 재검진, 상담)을 서버에서 지울까요? 되돌릴 수 없어요.'))return;try{await fetch(`api/care/${CP.token}`,{method:'DELETE'})}catch(e){}CP=null;history.pushState({},'',location.pathname);goHome()};
+$('#cvDel').onclick=async()=>{if(!confirm('이 케어 기록(실행 계획, 과제, 재검진, 상담)을 서버에서 지울까요? 되돌릴 수 없어요.'))return;try{await fetch(`api/care/${CP.token}`,{method:'DELETE'})}catch(e){}careForget(CP.token);CP=null;history.pushState({},'',location.pathname);goHome()};
 $('#careOpen').onclick=()=>{taskShow('리걸닥터 케어 이어 보기','비밀 링크나 내보낸 파일로 이어 봐요',`<h4>비밀 링크</h4><input id="oLink" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:10px;font:inherit" placeholder="비밀 링크를 붙여 넣으세요"><div class="row"><button class="btn" id="oGo">열기</button></div>
   <h4>내보낸 파일</h4><div class="row"><label class="btn ghost">파일 올리기<input type="file" id="oFile" hidden accept=".json"></label></div>`);
   $('#oGo').onclick=async()=>{const m=($('#oLink').value.match(/care=([A-Za-z0-9_-]{16,64})/)||[])[1]||$('#oLink').value.trim();try{const pl=await api('api/care/'+m);taskClose();openCare(pl,true)}catch(e){notice('err',esc(e.message))}};
@@ -858,6 +897,56 @@ async function histOpen(x){
     else{window.open(`api/sessions/${x.id}/out/regmap.html`,'_blank')}}
   catch(e){notice('err','이 기록은 만료됐어요(서버가 다시 시작되면 지난 결과는 사라져요). 다시 검진해 주세요.')}}
 histDraw();
+
+// ===== 마이페이지: 이 브라우저에 남은 검진·처방·규제 분석·케어를 모아 보기(노네임 모드) =====
+function careList(){try{return JSON.parse(localStorage.getItem('ld_care')||'[]')}catch(e){return[]}}
+function careRemember(p){try{const l=careList().filter(x=>x.token!==p.token);l.unshift({token:p.token,title:p.title,source:p.source,at:new Date().toLocaleString('ko-KR')});localStorage.setItem('ld_care',JSON.stringify(l.slice(0,20)))}catch(e){}}
+function careForget(tk){try{localStorage.setItem('ld_care',JSON.stringify(careList().filter(x=>x.token!==tk)))}catch(e){}}
+function histForget(kind,id){try{localStorage.setItem('ld_hist',JSON.stringify(histGet().filter(x=>!(x.kind===kind&&x.id===id))))}catch(e){}}
+async function openMy(push){document.body.className='my';window.scrollTo(0,0);if(push)history.pushState({v:'my'},'',location.pathname+'?my');await renderMy()}
+async function renderMy(){
+  const h=histGet(),cl=careList();const get=u=>fetch(u).then(r=>r.ok?r.json():null).catch(()=>null);
+  ['#myChecks','#myRegs','#myCares','#myTodo'].forEach(s=>$(s).innerHTML='<div class="my-empty">불러오는 중...</div>');
+  const checks=h.filter(x=>x.kind==='checkup'),regs=h.filter(x=>x.kind==='analyze');
+  const [cj,rj,pj]=await Promise.all([Promise.all(checks.map(x=>get(`api/checkup/${x.id}/status`))),Promise.all(regs.map(x=>get(`api/sessions/${x.id}`))),Promise.all(cl.map(x=>get(`api/care/${x.token}`)))]);
+  const careBy={};pj.forEach(p=>{if(p)careBy[p.source]=p});
+  let hiN=0,rxN=0;
+  $('#myChecks').innerHTML=checks.map((x,k)=>{const j=cj[k];
+    if(!j)return `<div class="my-card gone"><h4>${esc(x.title)}<small>만료</small></h4><div class="meta">${esc(x.at)} · ${esc(x.sub||'')}</div><p class="hint">서버 보관 시간(6시간)이 지났거나 서버가 다시 시작돼 결과가 사라졌어요.</p><div class="acts"><button data-f="checkup:${esc(x.id)}">목록에서 빼기</button></div></div>`;
+    const done=j.items.filter(i=>i.checked),hi=done.filter(i=>i.risk==='높음'),rx=done.filter(i=>i.action);hiN+=hi.length;rxN+=rx.length;const cv=careBy[x.id];
+    const top=(hi.length?hi:done).slice(0,3);
+    return `<div class="my-card"><h4>${esc(j.title||x.title)}<small class="${hi.length?'hi':''}">위험 높음 ${hi.length}</small></h4><div class="meta">${esc(x.at)} · 검진 ${done.length}/${j.items.length}개${j.enrich==='running'?' · 실제 사례 찾는 중':j.cases_n?` · 실제 사례 ${j.cases_n}건`:''}</div>
+      <ul>${top.map(i=>`<li><b>${esc(i.label)}</b> <span style="color:${RC[i.risk]||'#495057'};font-weight:700">${esc(i.risk||'')}</span>${i.action?`<span class="rx">처방: ${esc(String(i.action).slice(0,160))}${i.lawyer?' · 변호사 확인 권장':''}</span>`:''}</li>`).join('')||'<li class="hint">아직 검진한 항목이 없어요</li>'}</ul>
+      <div class="acts"><a class="pri" href="api/checkup/${esc(x.id)}" target="_blank" rel="noopener">검진결과표 보기</a>${cv?`<button data-c="${esc(cv.token)}">케어 이어 보기 · ${esc((PROG[cv.program]||PROG.consult)[0])}</button>`:done.length?`<button data-k="${esc(x.id)}">리걸닥터 케어 시작</button>`:''}<button data-f="checkup:${esc(x.id)}">목록에서 빼기</button></div></div>`}).join('')||'<div class="my-empty">아직 검진 기록이 없어요. 28개 사인에서 검진을 시작해 보세요.</div>';
+  $('#myRegs').innerHTML=regs.map((x,k)=>{const s=rj[k];
+    if(!s)return `<div class="my-card gone"><h4>${esc(x.title)}<small>만료</small></h4><div class="meta">${esc(x.at)} · ${esc(x.sub||'')}</div><div class="acts"><button data-f="analyze:${esc(x.id)}">목록에서 빼기</button></div></div>`;
+    const o=n=>`api/sessions/${esc(x.id)}/out/${n}`;
+    return `<div class="my-card"><h4>${esc(x.title)}<small class="cv">분석 완료</small></h4><div class="meta">${esc(x.at)}${x.sub?' · '+esc(x.sub):''}</div>${s.summary?`<p style="margin:2px 0 6px">${esc(String(s.summary).slice(0,140))}</p>`:''}
+      <div class="acts"><a class="pri" href="${o('regmap.html')}" target="_blank" rel="noopener">규제 지도</a><a href="${o('application.html')}" target="_blank" rel="noopener">신속확인 신청서 초안</a><a href="${o('consult.html')}" target="_blank" rel="noopener">상담 준비서</a><button data-f="analyze:${esc(x.id)}">목록에서 빼기</button></div></div>`}).join('')||'<div class="my-empty">아직 규제 분석 기록이 없어요. "무엇을 도와드릴까요?"로 사업을 설명하면 시작해요.</div>';
+  const today=new Date().toISOString().slice(0,10);let tN=0,dN=0;const todo=[];
+  $('#myCares').innerHTML=cl.map((x,k)=>{const p=pj[k];
+    if(!p)return `<div class="my-card gone"><h4>${esc(x.title||'리걸닥터 케어')}<small>없음</small></h4><div class="meta">${esc(x.at)}</div><p class="hint">지웠거나 보관 기간(90일)이 지났어요.</p><div class="acts"><button data-g="${esc(x.token)}">목록에서 빼기</button></div></div>`;
+    const s=p.stats;tN+=s.tasks;dN+=s.done;const late=p.tasks.filter(t=>t.status!=='done'&&t.due<today).length;const lw=p.tasks.filter(t=>t.owner==='변호사 확인'&&t.status!=='done').length;
+    p.tasks.filter(t=>t.status!=='done').forEach(t=>todo.push({t,p}));
+    const pct=s.tasks?Math.round(100*s.done/s.tasks):0;
+    return `<div class="my-card"><h4>${esc(p.title)}<small class="cv">${esc((PROG[p.program]||PROG.consult)[0])}</small></h4><div class="meta">${esc(x.at)} · ${esc(p.keep_until)}까지 보관</div>
+      <div style="height:6px;background:var(--chip);border-radius:4px;overflow:hidden;margin:4px 0 6px"><div style="height:100%;width:${pct}%;background:var(--accent)"></div></div>
+      <div>과제 완료 <b>${s.done}/${s.tasks}</b> · 위험 높음 <b>${s.high0} → ${s.high}</b> · 재검진 ${p.rechecks.length} · 상담 ${p.chat.length}${late?` · <span class="late">기한 지남 ${late}</span>`:''}${lw?` · 변호사 확인 ${lw}`:''}</div>
+      <div class="acts"><button class="pri" data-c="${esc(p.token)}">케어 열기</button><a href="api/care/${esc(p.token)}/report" target="_blank" rel="noopener">경과 보고서</a><a href="api/care/${esc(p.token)}/export" download>파일로 내보내기</a></div></div>`}).join('')||'<div class="my-empty">아직 케어 기록이 없어요. 검진을 마친 뒤 리걸닥터 케어를 시작하면 여기에 모여요.</div>';
+  todo.sort((a,b)=>a.t.due<b.t.due?-1:1);
+  $('#myTodo').innerHTML=todo.length?`<div class="my-card"><ul style="list-style:none;padding:0;margin:0">${todo.slice(0,6).map(({t,p})=>`<li style="display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding:6px 0"><span><b>${esc(t.title)}</b> <span class="hint">· ${esc(p.title)} · ${ST[t.status]}${t.owner==='변호사 확인'?' · 변호사 확인':''}</span></span><span class="${t.due<today?'late':'hint'}" style="white-space:nowrap">${esc(t.due)}${t.due<today?' 지남':''}</span></li>`).join('')}</ul></div>`:'<div class="my-empty">남은 케어 과제가 없어요.</div>';
+  $('#myStats').innerHTML=`<div>검진 <b>${checks.length}</b></div><div>위험 높음 <b>${hiN}</b></div><div>처방 <b>${rxN}</b></div><div>규제 분석 <b>${regs.length}</b></div><div>케어 <b>${cl.length}</b></div><div>과제 완료 <b>${dN}/${tN}</b></div>`;
+  document.querySelectorAll('#myView [data-f]').forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.f.split(':');histForget(k,id);histDraw();renderMy()});
+  document.querySelectorAll('#myView [data-g]').forEach(b=>b.onclick=()=>{careForget(b.dataset.g);renderMy()});
+  document.querySelectorAll('#myView [data-c]').forEach(b=>b.onclick=async()=>{try{openCare(await api('api/care/'+b.dataset.c),true)}catch(e){$('#myNotice').className='err';$('#myNotice').style.display='block';$('#myNotice').textContent=e.message}});
+  document.querySelectorAll('#myView [data-k]').forEach(b=>b.onclick=()=>chooseCare(b.dataset.k));
+}
+$('#myOpen').onclick=()=>openMy(true);
+$('#myBack').onclick=()=>{history.pushState({},'',location.pathname);goHome()};
+$('#myCareIn').onclick=()=>$('#careOpen').click();
+$('#myWipe').onclick=async()=>{if(!confirm('이 브라우저의 검진·규제 분석·케어 목록과 서버 메모리의 검진 결과를 지울까요? 서버에 보관된 케어 기록은 비밀 링크나 내보낸 파일로 다시 열 수 있어요.'))return;await wipeAll();histDraw();renderMy()};
+window.addEventListener('popstate',()=>{if(new URLSearchParams(location.search).has('my'))openMy(false);else if(document.body.classList.contains('my'))goHome()});
+if(new URLSearchParams(location.search).has('my'))openMy(false);
 
 // 스무고개
 function showQ(v){
