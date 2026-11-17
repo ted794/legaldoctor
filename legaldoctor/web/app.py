@@ -590,7 +590,7 @@ def _item_view(i, module) -> dict[str, Any]:
 
     laws = [f"「{f.law}」 {f.locator}" for f in i.findings if f.grade in ("명시 규제", "의제 리스크", "해석 리스크")][:2]
     return {"id": i.id, "label": i.label, "quote": i.quote[:140], "summary": i.summary, "expected_risk": category_risk(module, i),
-            "risk": i.risk, "verdict": i.verdict, "lawyer": i.lawyer, "laws": laws, "checked": bool(i.verdict)}
+            "risk": i.risk, "verdict": i.verdict, "lawyer": i.lawyer, "action": getattr(i, "action", "") or "", "laws": laws, "checked": bool(i.verdict)}
 
 
 def _enrich_cases(cid: str) -> None:
