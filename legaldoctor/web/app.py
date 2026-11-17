@@ -187,10 +187,10 @@ def terms() -> FileResponse:
 DEFAULT_NAV = [
     {"label": "규제 변화 알림", "note": "준비 중"},
     {"label": "전문가 지식 커뮤니티", "note": "준비 중"},
-    {"label": "전문가 협업 네트워크", "note": "준비 중", "url": "network"},
-    {"label": "전 국민 리걸닥터", "note": "준비 중", "url": "everyone"},
+    {"label": "전문가 협업 네트워크", "note": "준비 중", "url": "network", "frame": True},
+    {"label": "전 국민 리걸닥터", "note": "준비 중", "url": "everyone", "frame": True},
 ]
-INTERNAL_PAGES = {"network", "everyone"}  # 리걸닥터 안의 소개 페이지(같은 창에서 열림)
+INTERNAL_PAGES = {"network", "everyone"}  # 리걸닥터 안의 소개 페이지(늘 상단 메뉴 아래에 열림)
 
 
 def _nav() -> list[dict[str, str]]:
@@ -207,8 +207,8 @@ def _nav() -> list[dict[str, str]]:
             continue
         url = str(x.get("url") or "")
         ok = url if url.startswith("https://") or url in INTERNAL_PAGES else ""
-        # frame: 상단 메뉴 아래 iframe으로 연다(상대 사이트가 frame-ancestors로 리걸닥터 주소를 허용해야 보임)
-        out.append({"label": str(x["label"])[:40], "note": str(x.get("note") or "")[:20], "url": ok, "frame": bool(x.get("frame")) and ok.startswith("https://")})
+        # frame: 상단 메뉴 아래 iframe으로 연다. 안쪽 페이지는 늘, 바깥 주소는 frame:true일 때(상대 사이트가 frame-ancestors로 리걸닥터 주소를 허용해야 보임)
+        out.append({"label": str(x["label"])[:40], "note": str(x.get("note") or "")[:20], "url": ok, "frame": ok in INTERNAL_PAGES or (bool(x.get("frame")) and ok.startswith("https://"))})
     return out[:5] or DEFAULT_NAV
 
 
