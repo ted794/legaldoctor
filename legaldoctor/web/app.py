@@ -49,7 +49,9 @@ from collections import deque
 LIMITS = {
     "heavy": int(os.getenv("LD_HEAVY_PER_HOUR", "6")),  # 규제 분석·계약 검진
     "light": int(os.getenv("LD_LIGHT_PER_HOUR", "60")),  # 자료 읽기·스무고개
+    "care": int(os.getenv("LD_CARE_PER_HOUR", "12")),  # 케어 실행 계획·재검진(검진과 따로 셈)
 }
+_KIND_NAME = {"heavy": "규제 분석·검진", "light": "자료 읽기·질문", "care": "케어 계획·재검진"}
 DAILY_HEAVY = int(os.getenv("LD_HEAVY_PER_DAY", "150"))  # 서버 전체 하루 분석·검진 상한(비용 상한)
 _hits: dict[tuple[str, str], deque] = {}
 _daily: deque = deque()
@@ -69,8 +71,12 @@ def rate_limit(kind: str):
             while q and now - q[0] > 3600:
                 q.popleft()
             if len(q) >= LIMITS[kind]:
-                raise HTTPException(429, "요청이 많아 잠시 쉬어 갑니다. 한 시간쯤 뒤에 다시 시도해 주세요")
-            if kind == "heavy":
+                wait = max(1, int((3600 - (now - q[0])) // 60) + 1)
+                raise HTTPException(
+                    429,
+                    f"{_KIND_NAME[kind]}은 한 시간에 {LIMITS[kind]}번까지예요. 약 {wait}분 뒤에 다시 시도해 주세요",
+                )
+            if kind in ("heavy", "care"):
                 while _daily and now - _daily[0] > 86400:
                     _daily.popleft()
                 if len(_daily) >= DAILY_HEAVY:

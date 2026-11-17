@@ -41,7 +41,7 @@ class StartIn(BaseModel):
     program: str = "consult"
 
 
-@router.post("/api/care", dependencies=[rate_limit("heavy")])
+@router.post("/api/care", dependencies=[rate_limit("care")])
 async def care_start(body: StartIn) -> dict[str, Any]:
     """검진 기록으로 실행 계획을 만든다(변호사 권장조치 → 실행 과제)"""
     job = CHECKUP_JOBS.get(body.cid)
@@ -125,7 +125,7 @@ def _recheck(plan: dict[str, Any], item: dict[str, Any], text: str) -> dict[str,
     return rec
 
 
-@router.post("/api/care/{token}/recheck", dependencies=[rate_limit("heavy")])
+@router.post("/api/care/{token}/recheck", dependencies=[rate_limit("care")])
 async def care_recheck(token: str, item_id: str = Form(...), text: str = Form(""), files: list[UploadFile] = File(default=[])) -> dict[str, Any]:
     """고친 계약서·규정을 올리면 그 항목만 다시 검진해 전후를 비교한다(원본 파일은 저장하지 않음)"""
     plan = _load(token)
