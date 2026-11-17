@@ -53,6 +53,8 @@ LIMITS = {
 }
 _KIND_NAME = {"heavy": "규제 분석·검진", "light": "자료 읽기·질문", "care": "케어 계획·재검진"}
 DAILY_HEAVY = int(os.getenv("LD_HEAVY_PER_DAY", "150"))  # 서버 전체 하루 분석·검진 상한(비용 상한)
+# 데모·운영자 PC처럼 시간당 한도에서 뺄 IP(쉼표로 구분). 하루 전체 한도는 그대로 셈
+RATE_EXEMPT = {ip.strip() for ip in os.getenv("LD_RATE_EXEMPT", "").split(",") if ip.strip()}
 _hits: dict[tuple[str, str], deque] = {}
 _daily: deque = deque()
 _rl_lock = threading.Lock()
@@ -70,7 +72,7 @@ def rate_limit(kind: str):
             q = _hits.setdefault(key, deque())
             while q and now - q[0] > 3600:
                 q.popleft()
-            if len(q) >= LIMITS[kind]:
+            if len(q) >= LIMITS[kind] and key[1] not in RATE_EXEMPT:
                 wait = max(1, int((3600 - (now - q[0])) // 60) + 1)
                 raise HTTPException(
                     429,

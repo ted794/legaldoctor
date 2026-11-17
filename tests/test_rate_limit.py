@@ -139,3 +139,14 @@ def test_care_counted_apart_from_checkup(monkeypatch):
     assert first.status_code != 429  # 검진 한도를 다 써도 케어는 따로 셈
     over = c.post("/api/care", json={"cid": "없음", "program": "self"}, headers=h)
     assert over.status_code == 429 and "분 뒤" in over.json()["detail"]
+
+
+def test_exempt_ip_skips_hourly_limit(monkeypatch):
+    monkeypatch.setitem(web.LIMITS, "heavy", 1)
+    monkeypatch.setattr(web, "RATE_EXEMPT", {"192.0.2.50"})
+    web._hits.clear()
+    web._daily.clear()
+    c = TestClient(web.app)
+    h = {"x-real-ip": "192.0.2.50"}
+    codes = [c.post("/api/checkup/없음/run", json={"ids": []}, headers=h).status_code for _ in range(3)]
+    assert codes == [404, 404, 404]

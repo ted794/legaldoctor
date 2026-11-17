@@ -92,7 +92,7 @@ sudo systemctl disable --now legaldoctor
 ## 운영 메모
 
 - 화면의 API 호출은 모두 상대 경로(`api/...`)라 `/legaldoctor/` 아래에서 동작함. 화면 코드에 절대 경로(`/api/...`)를 넣으면 요청이 같은 도메인의 다른 서비스로 가서 깨짐
-- 남용 방지: 앱 안에 IP별 시간당 한도(분석·검진 6회, 케어 계획·재검진 12회, 자료 읽기·스무고개·실행 상담 60회)와 서버 전체 하루 분석·검진·케어 한도(150회)가 있음. `.env`에 `LD_HEAVY_PER_HOUR`, `LD_CARE_PER_HOUR`, `LD_LIGHT_PER_HOUR`, `LD_HEAVY_PER_DAY`로 바꿈. 한도는 서비스를 재시작하면 0부터 다시 셈. 진단 1건 Liner Model 비용은 약 $0.24~0.34(2026.11 실측)
+- 남용 방지: 앱 안에 IP별 시간당 한도(분석·검진 6회, 케어 계획·재검진 12회, 자료 읽기·스무고개·실행 상담 60회)와 서버 전체 하루 분석·검진·케어 한도(150회)가 있음. `.env`에 `LD_HEAVY_PER_HOUR`, `LD_CARE_PER_HOUR`, `LD_LIGHT_PER_HOUR`, `LD_HEAVY_PER_DAY`로 바꿈. 데모·운영자 PC는 `LD_RATE_EXEMPT=IP1,IP2`로 시간당 한도에서 뺌(하루 한도는 그대로). 한도는 서비스를 재시작하면 0부터 다시 셈. 진단 1건 Liner Model 비용은 약 $0.24~0.34(2026.11 실측)
 - 법령 Open API(`LAW_OC`)를 쓰려면 open.law.go.kr에 서버 공인 IP를 등록함. 비워 두면 법령 웹 원문과 `data/law_cache`로 동작함
 - 업로드 자료는 저장하지 않음(세션 메모리에서만 씀). 법령 캐시만 `data/law_cache`에 남음
 - 세션을 메모리에 두므로 워커는 하나로 띄움
