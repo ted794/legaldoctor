@@ -843,12 +843,14 @@ def checkup_page(cid: str) -> HTMLResponse:
         f'<a href="{cid}/doc" download="{name}.doc" title="워드(DOC) 파일로 받기">{_svg("doc")}<span>DOC</span></a></div>'
         f'<script>function ldPdf(){{var t=document.title;document.title={json.dumps(name)};window.print();setTimeout(function(){{document.title=t}},1000)}}</script>'
     )
+    tools += (f'<div class="ldcare">다음 단계 · <b>리걸닥터 케어</b>: 이 결과로 실행 계획을 만들고 재검진·상담으로 이어 관리해요 '
+              f'<a href="../../?carefrom={cid}">케어 프로그램 고르기 →</a></div>')
     if job.get("enrich") == "running":
         tools += (
             '<div class="ldenrich">Liner Search로 위험 높은 항목의 실제 판례·처분 사례를 찾고 있어요. 끝나면 아래에 자동으로 더해져요</div>'
             f'<script>(function p(){{fetch("{cid}/status").then(function(r){{return r.json()}}).then(function(j){{if(j.enrich==="running")setTimeout(p,4000);else location.reload()}}).catch(function(){{}})}})()</script>'
         )
-    html = _checkup_html_for(job).replace("</style>", _TOOLS_CSS + ".ldenrich{margin:0 auto 10px;max-width:1080px;background:#eef6ff;color:#1864ab;border-radius:10px;padding:8px 12px;font-size:13px}@media print{.ldenrich{display:none}}</style>", 1).replace("<body>", "<body>" + tools, 1)
+    html = _checkup_html_for(job).replace("</style>", _TOOLS_CSS + ".ldcare{margin:56px auto 10px;max-width:1080px;background:#fbeff1;color:#A51C30;border:1px solid #A51C30;border-radius:10px;padding:8px 12px;font-size:13.5px}.ldcare a{color:#A51C30;font-weight:800}@media print{.ldcare{display:none}}.ldenrich{margin:0 auto 10px;max-width:1080px;background:#eef6ff;color:#1864ab;border-radius:10px;padding:8px 12px;font-size:13px}@media print{.ldenrich{display:none}}</style>", 1).replace("<body>", "<body>" + tools, 1)
     return HTMLResponse(html)
 
 
@@ -869,3 +871,9 @@ def checkup_doc(cid: str) -> Response:
         media_type="application/msword; charset=utf-8",
         headers={"Content-Disposition": f"attachment; filename=\"checkup.doc\"; filename*=UTF-8''{quote(fname)}"},
     )
+
+
+# 리걸닥터 케어(2단계 실행 관리) API
+from legaldoctor.web.care_api import router as _care_router  # noqa: E402
+
+app.include_router(_care_router)
