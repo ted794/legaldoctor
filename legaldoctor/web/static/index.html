@@ -436,7 +436,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
 <script>
 const $=s=>document.querySelector(s);
 let sid=null,editing=false,last=null;
-async function api(path,opt={}){const r=await fetch(path,opt);if(!r.ok){throw new Error((await r.json().catch(()=>({detail:r.statusText}))).detail)}return r.json()}
+async function api(path,opt={}){const r=await fetch(path,opt);if(!r.ok){const d=(await r.json().catch(()=>({}))).detail;throw new Error(typeof d==='string'&&d?d:`서버 오류(${r.status}). 잠시 뒤 다시 시도해 주세요`)}return r.json()}
 async function session(){if(!sid){sid=(await api('api/sessions',{method:'POST'})).id}return sid}
 // 진행 안내창(가운데, 진행률 막대, 중단 버튼)과 오른쪽 진행 대화창
 let progT0=0,progIv=null,progFake=null,onStop=null;

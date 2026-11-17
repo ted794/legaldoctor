@@ -38,6 +38,7 @@
    키는 서버 터미널에서 직접 입력함. 대화창이나 다른 세션으로 주고받지 않음
 4. 서비스 등록과 실행
    ```bash
+   sudo -u legaldoctor mkdir -p /srv/legaldoctor/data/care   # 리걸닥터 케어 보관 폴더(서비스가 쓸 수 있는 곳은 law_cache와 care뿐)
    sudo cp /srv/legaldoctor/deploy/legaldoctor.service /etc/systemd/system/
    sudo systemctl daemon-reload && sudo systemctl enable --now legaldoctor
    curl -s http://127.0.0.1:8100/ | head -3      # 서버 안에서 확인
@@ -61,7 +62,8 @@
    - clone이 되는 경우: `sudo -u legaldoctor git -C /srv/legaldoctor pull`
    - 비공개 저장소(번들): 로컬에서 `git bundle create legaldoctor.bundle main` → scp → 서버에서 `sudo -u legaldoctor git -C /srv/legaldoctor pull /tmp/legaldoctor.bundle main && rm /tmp/legaldoctor.bundle`
 3. 의존성이 바뀌었으면: `sudo -u legaldoctor env HOME=/srv/legaldoctor /srv/legaldoctor/.venv/bin/pip install -e /srv/legaldoctor`
-4. `sudo systemctl restart legaldoctor` (메모리에 있던 진행 중 세션은 사라짐)
+4. `deploy/legaldoctor.service`가 바뀌었으면: `sudo cp /srv/legaldoctor/deploy/legaldoctor.service /etc/systemd/system/ && sudo systemctl daemon-reload`
+5. `sudo systemctl restart legaldoctor` (메모리에 있던 진행 중 세션은 사라짐)
 
 ### 최신 동향 미리 받기와 매주 새로 고침
 
