@@ -28,7 +28,16 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Pretendard","
 #suite{border-bottom:1px solid var(--line);background:var(--card)}
 #suite .in{max-width:1120px;margin:0 auto;padding:0 16px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 #suite a,#suite span.it{flex:none;display:inline-flex;align-items:center;gap:6px;padding:10px 12px;font-size:13px;color:var(--sub);text-decoration:none;border-bottom:2px solid transparent;white-space:nowrap}
-#suite span.it.cur{color:var(--accent);font-weight:700;border-bottom-color:var(--accent)}
+#suite span.it.cur,#suite a.cur{color:var(--accent);font-weight:700;border-bottom-color:var(--accent)}
+#suite #suiteHome{cursor:pointer}
+body.frame #suite #suiteHome{color:var(--sub);font-weight:400;border-bottom-color:transparent}
+body.frame>*:not(#suite):not(#frameView):not([role=dialog]):not(script){display:none!important}
+#frameView{display:none}
+body.frame #frameView{display:flex;flex-direction:column;height:calc(100vh - 42px)}
+#frameView .fbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;max-width:1120px;width:100%;margin:0 auto;padding:6px 16px;font-size:12.5px;color:var(--sub)}
+#frameView .fbar a,#frameView .fbar button{font:inherit;font-size:12px;color:var(--sub);background:none;border:0;padding:0;cursor:pointer;text-decoration:none}
+#frameView .fbar a:hover,#frameView .fbar button:hover{color:var(--accent)}
+#frameView iframe{flex:1;width:100%;border:0;border-top:1px solid var(--line);background:#fff}
 #suite a:hover{color:var(--ink)}
 #suite .pm{margin-left:auto;flex:none;align-self:center;font-size:12px;color:var(--ok);border:1px solid var(--ok);border-radius:999px;padding:2px 10px;white-space:nowrap}
 #suite .myb{flex:none;align-self:center;margin-left:8px;font:inherit;font-size:12.5px;font-weight:700;color:var(--accent);background:transparent;border:1px solid var(--accent);border-radius:999px;padding:3px 12px;cursor:pointer;white-space:nowrap}
@@ -346,7 +355,8 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
 </style>
 </head>
 <body class="home">
-<nav id="suite" aria-label="확장 서비스"><div class="in"><span class="it cur">스타트업 리걸닥터</span><span id="suiteX"></span><span class="pm" title="회원 가입 없이 누구나 써요. 공용 PC에서는 다른 사인으로 넘어갈 때 '지우고 넘어가기'를 골라 주세요">노네임 모드</span><button type="button" class="myb" id="myOpen">마이페이지</button></div></nav>
+<nav id="suite" aria-label="확장 서비스"><div class="in"><span class="it cur" id="suiteHome" role="link" tabindex="0">스타트업 리걸닥터</span><span id="suiteX"></span><span class="pm" title="회원 가입 없이 누구나 써요. 공용 PC에서는 다른 사인으로 넘어갈 때 '지우고 넘어가기'를 골라 주세요">노네임 모드</span><button type="button" class="myb" id="myOpen">마이페이지</button></div></nav>
+<section id="frameView" aria-label="연결 서비스"><div class="fbar"><button type="button" id="fvBack">← 스타트업 리걸닥터</button><span style="flex:1"></span><a id="fvNew" target="_blank" rel="noopener" title="화면이 비어 있거나 로그인이 막히면 새 탭에서 열어 주세요">새 탭에서 열기 ↗</a></div><span id="fvT" hidden></span><iframe id="fvF" title="연결 서비스" referrerpolicy="strict-origin-when-cross-origin"></iframe></section>
 <header>
   <a class="logo" href="./" aria-label="스타트업 리걸닥터 처음 화면" title="스타트업 리걸닥터">
     <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M24.3 82.6A40 40 0 1 1 75.7 82.6" stroke-width="5"/><path d="M30.1 68.7A26 26 0 1 1 69.9 68.7" stroke-width="5"/><path d="M50 43v16M42 51h16" stroke-width="5.5"/><path d="M45.5 61L32.5 78M48.5 63L36 79.5M54.5 61L67.5 78M51.5 63L64 79.5" stroke-width="2.6"/></svg>
@@ -497,8 +507,17 @@ async function session(){if(!sid){sid=(await api('api/sessions',{method:'POST'})
 // 진행 안내창(가운데, 진행률 막대, 중단 버튼)과 오른쪽 진행 대화창
 let progT0=0,progIv=null,progFake=null,onStop=null;
 function fmt(s){return s<60?`${s}초`:`${Math.floor(s/60)}분 ${s%60}초`}
-function renderSuite(nav){$('#suiteX').outerHTML=(nav||[]).map(n=>n.url?`<a href="${esc(n.url)}"${/^https:/.test(n.url)?' target="_blank" rel="noopener"':''}>${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</a>`:`<span class="it">${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</span>`).join('')}
-fetch('api/info').then(r=>r.json()).then(i=>renderSuite(i.nav)).catch(()=>{});
+let NAV=[];
+function renderSuite(nav){NAV=nav||[];$('#suiteX').outerHTML=(nav||[]).map((n,k)=>n.url?`<a href="${esc(n.url)}"${n.frame?` data-fr="${k}"`:/^https:/.test(n.url)?' target="_blank" rel="noopener"':''}>${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</a>`:`<span class="it">${esc(n.label)}${n.note?`<em>${esc(n.note)}</em>`:''}</span>`).join('')}
+fetch('api/info').then(r=>r.json()).then(i=>{renderSuite(i.nav);document.querySelectorAll('#suite a[data-fr]').forEach(a=>a.onclick=e=>{e.preventDefault();openFrame(+a.dataset.fr,true)});const g=new URLSearchParams(location.search).get('go');if(g!==null&&NAV[+g]&&NAV[+g].frame)openFrame(+g,false)}).catch(()=>{});
+// 상단 메뉴의 연결 서비스를 메뉴 아래 iframe으로 연다
+function openFrame(k,push){const n=NAV[k];if(!n)return;document.body.className='frame';window.scrollTo(0,0);
+  document.querySelectorAll('#suite a').forEach(a=>a.classList.toggle('cur',a.dataset.fr===String(k)));
+  $('#fvT').textContent=n.label;$('#fvNew').href=n.url;const f0=$('#fvF');if(f0.getAttribute('src')!==n.url){const f=f0.cloneNode(false);f.src=n.url;f0.replaceWith(f)}  // 새 iframe으로 바꿔 뒤로 가기 기록이 iframe에 쌓이지 않게
+  if(push)history.pushState({v:'frame'},'',location.pathname+'?go='+k)}
+function closeFrame(){document.querySelectorAll('#suite a.cur').forEach(a=>a.classList.remove('cur'));if(document.body.classList.contains('frame')){history.pushState({},'',location.pathname);goHome()}}
+$('#fvBack').onclick=closeFrame;$('#suiteHome').onclick=closeFrame;$('#suiteHome').onkeydown=e=>{if(e.key==='Enter')closeFrame()};
+window.addEventListener('popstate',()=>{const g=new URLSearchParams(location.search).get('go');if(g!==null&&NAV[+g]&&NAV[+g].frame)openFrame(+g,false);else if(document.body.classList.contains('frame')){document.querySelectorAll('#suite a.cur').forEach(a=>a.classList.remove('cur'));goHome()}});
 function setPct(p,step){p=Math.max(0,Math.min(100,Math.round(p)));$('#progBar').style.width=p+'%';$('#progP').textContent=p+'%';if(step!==undefined)$('#progS').textContent=step}
 function showProg(title,opt={}){
   $('#progT').textContent=title;$('#progH').textContent=opt.hint||'';$('#progS').textContent=opt.step||'';
@@ -641,7 +660,7 @@ async function pickCause(c,el){const [m,ck0,label]=MOD[c.module]||MOD.bm;const c
   document.querySelectorAll('.tile').forEach(t=>{t.classList.toggle('on',t===el);t.classList.toggle('same',t!==el&&t.dataset.mod===c.module)});
   enterTool('',`${esc(label)}<span>${c.no}. ${esc(c.name.split(' — ')[0])}에서 시작해요</span>`)}
 function goHome(){document.body.className='home';$('#task').hidden=true;document.querySelectorAll('.tile').forEach(x=>x.classList.remove('on','same'));window.scrollTo(0,0)}
-window.addEventListener('popstate',()=>{if(!(history.state&&history.state.v==='tool'))goHome()});
+window.addEventListener('popstate',()=>{if(history.state&&history.state.v==='tool')return;if(/[?&](go|my|care)(=|&|$)/.test(location.search))return;goHome()});  // 다른 화면(연결 서비스, 마이페이지, 케어)은 각자 처리
 // 사인을 누르면 고르기 상자: 1) 튜토리얼(팝업) 2) 검진(제자리에서 다음 화면)
 let pickC=null,pickEl=null;
 function openPick(c,el){pickC=c;pickEl=el;$('#pickN').textContent=c.no;$('#pickT').textContent=c.name;$('#pickM').textContent=c.part;
