@@ -186,6 +186,23 @@ body.care #careView{display:block}
 .cv-tools .danger{color:#c92a2a}
 .cv-warn{font-size:12.5px;color:var(--sub);background:var(--chip);border-radius:8px;padding:6px 10px;margin:0 0 12px}
 .cv-grid{display:grid;grid-template-columns:280px 1fr;gap:14px}
+.cv-prog{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
+.cv-prog .pc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px}
+.cv-prog .pc.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c)}
+.cv-prog .pc.off{opacity:.55}
+.cv-prog .pc h4{margin:0 0 4px;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.cv-prog .pc h4 small{font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;background:var(--chip);color:var(--sub)}
+.cv-prog .pc.on h4 small{background:var(--c);color:#fff}
+.cv-prog .pc ul{margin:0;padding-left:16px}
+.cv-prog .pc .go{margin-top:6px;font-size:12px}
+.cv-desk{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 14px}
+.cv-desk h3{margin:0 0 6px;font-size:15px}
+.cv-desk select,.cv-desk textarea{width:100%;font:inherit;font-size:13.5px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);color:var(--ink);margin:4px 0}
+.cv-desk textarea{min-height:60px}
+.cv-desk .lt{list-style:none;padding:0;margin:4px 0}
+.cv-desk .lt li{display:flex;justify-content:space-between;gap:8px;align-items:center;border-top:1px solid var(--line);padding:6px 0;font-size:13.5px}
+.tc .m .cq{color:var(--c);font-weight:700}
+@media (max-width:900px){.cv-prog{grid-template-columns:1fr}}
 @media (max-width:900px){.cv-grid{grid-template-columns:1fr}}
 .cv-items{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
 .cv-items h3,.cv-board h3{margin:0 0 8px;font-size:15px}
@@ -400,6 +417,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
   <div class="cv-stats" id="cvStats"></div>
   <p class="cv-warn" id="cvWarn"></p>
   <div id="cvNotice" role="status"></div>
+  <div class="cv-prog" id="cvPanel"></div>
   <div class="cv-grid"><div class="cv-items"><h3>검진 항목 · 처음 → 지금<button type="button" class="ib" data-h="care_items" aria-label="도움말">i</button></h3><div id="cvItems"></div></div>
     <div><h3 style="margin:0 0 8px;font-size:15px">실행 보드<button type="button" class="ib" data-h="care_board" aria-label="도움말">i</button></h3><div class="cv-board" id="cvBoard"></div></div></div>
 </section>
@@ -698,11 +716,26 @@ function renderCare(){const p=CP,s=p.stats;
   $('#cvStats').innerHTML=`<div>과제 완료 <b>${s.done}/${s.tasks}</b></div><div>위험 높음 <b>${s.high0} → ${s.high}</b></div><div>재검진 <b>${p.rechecks.length}</b></div><div>상담 <b>${p.chat.length}</b></div>`;
   $('#cvWarn').textContent=`가입 없이 비밀 링크로 ${p.keep_until}까지 보관해요. 이 주소를 아는 사람은 누구나 볼 수 있으니 공용 PC에서는 파일로 내보낸 뒤 지우세요. 리걸닥터 케어는 구태언 변호사가 운영하는 자문 서비스이며 대회 기간 무료예요.`;
   $('#cvExport').href=`api/care/${p.token}/export`;$('#cvExport').setAttribute('download','');$('#cvReport').href=`api/care/${p.token}/report`;
+  const pg=p.program||'consult',lv={self:0,consult:1,lawyer:2}[pg];
+  const FEAT=[['self','셀프 케어',['실행 계획·실행 보드','고친 자료로 재검진','경과 보고서']],['consult','상담 케어',['셀프 케어 전부','과제별 실행 상담(검진 근거로 답변)','Liner Search 참고 자료']],['lawyer','변호사 케어',['상담 케어 전부','변호사 확인 과제 검토 요청','경과 보고서와 함께 변호사 전달']]];
+  $('#cvPanel').innerHTML=FEAT.map(([k,n,f],i)=>`<div class="pc${k===pg?' on':''}${i>lv?' off':''}"><h4>${n}<small>${k===pg?'이용 중':i<lv?'포함':'잠김'}</small></h4><ul>${f.map(x=>`<li>${x}</li>`).join('')}</ul>${i>lv?`<button class="back go" data-p="${k}">${n}로 바꾸기</button>`:''}</div>`).join('')
+    +(lv>=1?`<div class="cv-desk" style="grid-column:1/-1"><h3>실행 상담 <span class="hint">· 과제를 고르고 물어보세요. 검진 근거 안에서 답하고 근거가 없으면 변호사 확인으로 넘겨요</span><button type="button" class="ib" data-h="care_ask" aria-label="도움말">i</button></h3>
+      <select id="dTask">${p.tasks.filter(x=>x.status!=='done').concat(p.tasks.filter(x=>x.status==='done')).map(x=>`<option value="${esc(x.id)}">${esc(x.title)}${x.status==='done'?' (완료)':''}</option>`).join('')}</select>
+      <textarea id="dQ" placeholder="예: 투자자에게 이 조항을 빼 달라고 어떻게 말하나요?"></textarea><div class="row"><button class="btn" id="dAsk">질문하기</button><span class="hint">상담 ${p.chat.length}건 · 답변은 과제 카드와 경과 보고서에 남아요</span></div>
+      <div id="dQA">${p.chat.slice(-2).reverse().map(qaHtml).join('')}</div></div>`:'')
+    +(lv>=2?(()=>{const lt=p.tasks.filter(x=>x.owner==='변호사 확인');const lq=p.chat.filter(c=>c.needs_lawyer);
+      return `<div class="cv-desk" style="grid-column:1/-1"><h3>변호사 검토 <span class="hint">· 법적 판단이 필요한 과제 ${lt.length}개, 변호사 확인이 필요한 질문 ${lq.length}건 · 대회 기간 무료</span></h3>
+      <ul class="lt">${lt.map(x=>`<li><span>${esc(x.title)} <span class="hint">· ${ST[x.status]}</span></span>${lawyerMail(x)?`<a class="btn ghost" href="${lawyerMail(x)}">검토 요청</a>`:''}</li>`).join('')||'<li class="hint">변호사 확인 과제가 없어요</li>'}</ul>
+      ${lawyerMail(null)?`<a class="btn" href="${lawyerMail(null)}">전체 경과 보고서로 검토 요청</a>`:'<p class="hint">운영자 연락처가 설정되지 않았어요.</p>'}</div>`})():'');
+  document.querySelectorAll('#cvPanel .go').forEach(b=>b.onclick=async()=>{try{CP=await api(`api/care/${p.token}/program`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({program:b.dataset.p})});renderCare();notice('ok',`${(PROG[b.dataset.p]||[''])[0]}로 바꿨어요`)}catch(e){notice('err',esc(e.message))}});
+  if($('#dAsk'))$('#dAsk').onclick=async()=>{const q=$('#dQ').value.trim(),tid=$('#dTask').value;if(!q)return;const btn=$('#dAsk');btn.disabled=true;btn.textContent='답을 찾고 있어요(10~20초)...';
+    try{const r=await api(`api/care/${p.token}/ask`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task_id:tid,question:q})});CP.chat.push(r.chat);renderCare();$('#dTask').value=tid}
+    catch(e){notice('err',esc(e.message));btn.disabled=false;btn.textContent='질문하기'}};
   $('#cvItems').innerHTML=p.items.map(i=>`<div class="ci"><b>${esc(i.label)}</b><div class="rr">${riskChip(i.risk0)} → ${riskChip(i.risk)} · ${esc(i.verdict)}</div><button data-i="${esc(i.id)}">고친 자료로 재검진</button></div>`).join('')||'<p class="hint">검진 항목이 없어요.</p>';
   document.querySelectorAll('#cvItems button').forEach(b=>b.onclick=()=>openRecheck(b.dataset.i));
   const today=new Date().toISOString().slice(0,10);
   $('#cvBoard').innerHTML=Object.keys(ST).map(k=>`<div class="col"><h4>${ST[k]} ${p.tasks.filter(t=>t.status===k).length}</h4>${p.tasks.filter(t=>t.status===k).map(t=>{const it=p.items.find(i=>i.id===t.item)||{};const late=k!=='done'&&t.due<today;
-    return `<button class="tc${late?' late':''}" data-t="${esc(t.id)}"><b>${esc(t.title)}</b><div class="m">${t.owner==='변호사 확인'?'<span class="ow">변호사 확인</span> ':''}${esc(it.label||'')} · 기한 ${esc(t.due)}${late?' (지남)':''}</div></button>`}).join('')}</div>`).join('');
+    return `<button class="tc${late?' late':''}" data-t="${esc(t.id)}"><b>${esc(t.title)}</b><div class="m">${t.owner==='변호사 확인'?`<span class="ow">${p.program==='lawyer'?'변호사 검토 대상':'변호사 확인'}</span> `:''}${p.program!=='self'&&p.chat.some(c=>c.task===t.id)?`<span class="cq">상담 ${p.chat.filter(c=>c.task===t.id).length}</span> `:''}${esc(it.label||'')} · 기한 ${esc(t.due)}${late?' (지남)':''}</div></button>`}).join('')}</div>`).join('');
   document.querySelectorAll('#cvBoard .tc').forEach(b=>b.onclick=()=>openTask(b.dataset.t))}
 function taskShow(title,meta,html){$('#taskT').textContent=title;$('#taskM').textContent=meta;$('#taskB').innerHTML=html;$('#task').hidden=false;$('#tutOv').hidden=false}
 function taskClose(){$('#task').hidden=true;$('#tutOv').hidden=true}
