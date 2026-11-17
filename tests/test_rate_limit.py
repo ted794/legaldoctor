@@ -124,3 +124,29 @@ def test_news_serves_saved_and_refreshes_stale(monkeypatch, tmp_path):
     (tmp_path / "20.json").write_text(json.dumps({"saved": time.time(), "data": {"no": 20, "answer": "b", "refs": [], "checked": "2026-11-16"}}))
     d = c.get("/api/causes/20/news").json()
     assert d["stale"] is False and calls == [20]
+
+
+def test_care_counted_apart_from_checkup(monkeypatch):
+    monkeypatch.setitem(web.LIMITS, "heavy", 1)
+    monkeypatch.setitem(web.LIMITS, "care", 1)
+    web._hits.clear()
+    web._daily.clear()
+    c = TestClient(web.app)
+    h = {"x-real-ip": "192.0.2.9"}
+    assert c.post("/api/checkup/없음/run", json={"ids": []}, headers=h).status_code == 404
+    assert c.post("/api/checkup/없음/run", json={"ids": []}, headers=h).status_code == 429
+    first = c.post("/api/care", json={"cid": "없음", "program": "self"}, headers=h)
+    assert first.status_code != 429  # 검진 한도를 다 써도 케어는 따로 셈
+    over = c.post("/api/care", json={"cid": "없음", "program": "self"}, headers=h)
+    assert over.status_code == 429 and "분 뒤" in over.json()["detail"]
+
+
+def test_limits_off_by_default(monkeypatch):
+    monkeypatch.setitem(web.LIMITS, "heavy", 0)
+    monkeypatch.setattr(web, "DAILY_HEAVY", 0)
+    web._hits.clear()
+    web._daily.clear()
+    c = TestClient(web.app)
+    h = {"x-real-ip": "192.0.2.50"}
+    codes = [c.post("/api/checkup/없음/run", json={"ids": []}, headers=h).status_code for _ in range(20)]
+    assert set(codes) == {404}  # 한도를 끄면 몇 번을 눌러도 막지 않음
