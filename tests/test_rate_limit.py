@@ -156,3 +156,13 @@ def test_nav_frame_only_for_https(monkeypatch):
     monkeypatch.setenv("LD_NAV", '[{"label":"a","url":"https://example.com/","frame":true},{"label":"b","url":"network","frame":true}]')
     nav = TestClient(web.app).get("/api/info").json()["nav"]
     assert [n["frame"] for n in nav] == [True, True]  # 안쪽 페이지는 늘 메뉴 아래에 엶
+
+
+def test_page_og_absolute(monkeypatch):
+    monkeypatch.setenv("LD_PUBLIC_URL", "https://example.com/ld")
+    c = TestClient(web.app)
+    h = c.get("/everyone").text
+    assert 'content="https://example.com/ld/og-everyone.png"' in h and 'og:url" content="https://example.com/ld/everyone"' in h
+    assert c.get("/og-everyone.png").headers["content-type"] == "image/png"
+    assert c.get("/og-network.png").status_code == 200 and c.get("/og-evil.png").status_code == 404
+    assert 'content="https://example.com/ld/og.png"' in c.get("/").text
