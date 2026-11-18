@@ -28,7 +28,7 @@ def _risk(r: str) -> str:
     return f'<span class="risk" style="background:{RISK_COLOR.get(r, "#495057")}">{e(r)}</span>'
 
 
-def checkup_html(res: CheckupResult, cases: dict | None = None) -> str:
+def checkup_html(res: CheckupResult, cases: dict | None = None, changes: dict | None = None, feed_name: str = "") -> str:
     m = res.module
     hi = sum(1 for i in res.items if i.risk == "높음")
     cause_text = ", ".join(f"{c['no']}. {c['name']}" for c in res.causes)  # 중첩 f-string은 Python 3.11 호환 형태로
@@ -77,6 +77,14 @@ def checkup_html(res: CheckupResult, cases: dict | None = None) -> str:
         parts.append("<h2>실제 판례·처분 사례 <span class='meta'>· Liner Search가 찾은 공개 자료. 원문 링크로 확인하세요</span></h2><table><tr><th>항목</th><th>사례·출처</th></tr>")
         for i, refs in found:
             li = "".join(f"<div><a href='{e(r['url'])}'>{e(r['title'] or r['url'])}</a> <span class='meta'>{e(' · '.join(x for x in (r.get('date'), r.get('host')) if x))}</span></div>" for r in refs)
+            parts.append(f"<tr><td><b>{e(i.label)}</b></td><td>{li}</td></tr>")
+        parts.append("</table>")
+    moved = [(i, (changes or {}).get(i.id) or []) for i in res.items]
+    moved = [(i, xs) for i, xs in moved if xs]
+    if moved:
+        parts.append(f"<h2>관련 법령의 최근 변화 <span class='meta'>· {e(feed_name or '규제 변화 피드')}가 분류해 둔 공개 자료</span></h2><table><tr><th>항목</th><th>변화·출처</th></tr>")
+        for i, xs in moved:
+            li = "".join(f"<div><a href='{e(x['url'])}'>{e(x['title'])}</a> <span class='meta'>{e(' · '.join(y for y in (x.get('date'), x.get('kind'), x.get('source')) if y))}</span></div>" for x in xs)
             parts.append(f"<tr><td><b>{e(i.label)}</b></td><td>{li}</td></tr>")
         parts.append("</table>")
     if res.questions:

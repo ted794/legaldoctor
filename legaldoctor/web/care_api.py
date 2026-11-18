@@ -32,7 +32,21 @@ def _view(plan: dict[str, Any]) -> dict[str, Any]:
     done = sum(1 for t in tasks if t["status"] == "done")
     hi0 = sum(1 for i in plan["items"] if i["risk0"] == "높음")
     hi = sum(1 for i in plan["items"] if i["risk"] == "높음")
-    return {**plan, "stats": {"tasks": len(tasks), "done": done, "high0": hi0, "high": hi},
+    from legaldoctor import feed
+
+    alerts = []
+    if feed.enabled():
+        since = time.strftime("%Y-%m-%d", time.localtime(plan["created"] - 60 * 86400))
+        made = time.strftime("%Y-%m-%d", time.localtime(plan["created"]))
+        seen = set()
+        for i in plan["items"]:
+            for x in feed.for_laws([l["law"] for l in i.get("laws", [])], since=since, limit=3):
+                if x["url"] in seen:
+                    continue
+                seen.add(x["url"])
+                alerts.append({**x, "item": i["label"], "new": x["date"] >= made})
+        alerts.sort(key=lambda x: x["date"], reverse=True)
+    return {**plan, "stats": {"tasks": len(tasks), "done": done, "high0": hi0, "high": hi}, "alerts": alerts[:8], "feed_name": feed.name(),
             "keep_until": time.strftime("%Y-%m-%d", time.localtime(plan["expires"]))}
 
 

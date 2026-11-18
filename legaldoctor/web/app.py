@@ -335,6 +335,16 @@ def _refresh_news_bg(no: int) -> None:
     threading.Thread(target=run, daemon=True).start()
 
 
+@app.get("/api/causes/{no}/feed")
+def cause_feed(no: int) -> dict[str, Any]:
+    """사인 튜토리얼: 운영자 보유 규제 변화 피드에서 이 사인 번호로 분류된 최근 항목(피드가 없으면 빈 목록)"""
+    from legaldoctor import feed
+
+    if not 1 <= no <= 28 or not feed.enabled():
+        return {"enabled": False, "name": feed.name(), "items": []}
+    return {"enabled": True, "name": feed.name(), "items": feed.for_cause(no)}
+
+
 @app.get("/api/causes/{no}/news", dependencies=[rate_limit("light")])
 def cause_news(no: int) -> dict[str, Any]:
     """사인 튜토리얼 '최신 동향': Liner Search로 찾은 이 사인의 최근 판례·처분·정책 소식과 출처.
@@ -603,12 +613,21 @@ def _log(job: dict[str, Any], text: str) -> None:
     job.setdefault("log", []).append({"t": round(time.time() - job["started"]), "text": text})
 
 
+def _changes(i) -> list[dict[str, Any]]:
+    """검진한 항목의 근거 법령에 걸린 규제 변화 피드 항목(피드가 없으면 빈 목록)"""
+    from legaldoctor import feed
+
+    if not i.verdict or not feed.enabled():
+        return []
+    return feed.for_laws([f.law for f in i.findings if f.grade in ("명시 규제", "의제 리스크", "해석 리스크")], limit=2)
+
+
 def _item_view(i, module) -> dict[str, Any]:
     from legaldoctor.checkup import category_risk
 
     laws = [f"「{f.law}」 {f.locator}" for f in i.findings if f.grade in ("명시 규제", "의제 리스크", "해석 리스크")][:2]
     return {"id": i.id, "label": i.label, "quote": i.quote[:140], "summary": i.summary, "expected_risk": category_risk(module, i),
-            "risk": i.risk, "verdict": i.verdict, "lawyer": i.lawyer, "action": getattr(i, "action", "") or "", "laws": laws, "checked": bool(i.verdict)}
+            "risk": i.risk, "verdict": i.verdict, "lawyer": i.lawyer, "action": getattr(i, "action", "") or "", "laws": laws, "checked": bool(i.verdict), "changes": _changes(i)}
 
 
 def _enrich_cases(cid: str) -> None:
@@ -653,7 +672,10 @@ def _checkup_html_for(job: dict[str, Any]) -> str:
     causes = [c for c in load_causes() if c["no"] in m.causes]
     left = len(job["items"]) - len(done)
     notes = [f"아직 검진하지 않은 항목 {left}개"] if left else []
-    return checkup_html(CheckupResult(m, done, job.get("questions") or [], causes, notes, job.get("halted"), []), cases=job.get("cases"))
+    from legaldoctor import feed
+
+    changes = {i.id: feed.for_laws([f.law for f in i.findings if f.grade in ("명시 규제", "의제 리스크", "해석 리스크")]) for i in done} if feed.enabled() else {}
+    return checkup_html(CheckupResult(m, done, job.get("questions") or [], causes, notes, job.get("halted"), []), cases=job.get("cases"), changes=changes, feed_name=feed.name())
 
 
 def _view(cid: str) -> dict[str, Any]:

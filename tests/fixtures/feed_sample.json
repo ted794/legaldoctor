@@ -1,0 +1,7 @@
+{"items": [
+ {"id": "s1", "date": "2026-11-10", "kind": "법령 개정", "title": "가상 예시: 개인정보 보호법 시행령 개정안 입법예고(과징금 산정 기준)", "summary": "가상 예시 항목. 과징금 산정 시 매출액 범위를 정하는 기준을 손봄.", "source": "가상 출처", "url": "https://example.com/s1", "laws": [{"law": "개인정보 보호법", "article": "제64조의2"}], "tags": ["개인정보"], "public": true},
+ {"id": "s2", "date": "2026-11-05", "kind": "가이드라인", "title": "가상 예시: 규제샌드박스 실증특례 기간 연장 절차 안내", "summary": "가상 예시 항목.", "url": "https://example.com/s2", "laws": [{"law": "정보통신 진흥 및 융합 활성화 등에 관한 특별법", "article": "제38조의2"}], "causes": [26], "public": true},
+ {"id": "s3", "date": "2026-10-01", "kind": "판례", "title": "가상 예시: 포괄임금 약정 무효 판결", "summary": "가상 예시 항목.", "url": "https://example.com/s3", "laws": [{"law": "근로기준법", "article": "제56조"}], "public": true},
+ {"id": "s4", "date": "2026-11-12", "kind": "내부", "title": "공개하지 않는 항목", "url": "https://example.com/s4", "public": false},
+ {"id": "s5", "date": "bad", "title": "", "url": "javascript:alert(1)"}
+]}

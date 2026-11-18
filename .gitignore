@@ -26,3 +26,5 @@ data/law_cache/_answers/
 data/law_cache/_metrics/
 data/law_cache/_news/
 data/care/
+data/feed/feed.json
+data/feed/*.tmp

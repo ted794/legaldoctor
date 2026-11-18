@@ -65,6 +65,18 @@
 4. `deploy/legaldoctor.service`가 바뀌었으면: `sudo cp /srv/legaldoctor/deploy/legaldoctor.service /etc/systemd/system/ && sudo systemctl daemon-reload`
 5. `sudo systemctl restart legaldoctor` (메모리에 있던 진행 중 세션은 사라짐)
 
+### 규제 변화 피드(선택)
+
+운영자가 보유한 규제 변화 분류 자료를 사인 튜토리얼, 검진결과표, 리걸닥터 케어에 이어 씁니다. 형식은 `docs/feed_spec.md`.
+
+```bash
+# .env에 LD_FEED_URL(서버 안 주소 권장), 필요하면 LD_FEED_TOKEN, 화면에 보일 이름 LD_FEED_NAME을 넣고 재시작
+sudo -u legaldoctor env HOME=/srv/legaldoctor /srv/legaldoctor/.venv/bin/python -m legaldoctor.feed   # 지금 한 번 받기
+# 매일 05:00 자동으로 받기
+( sudo -u legaldoctor crontab -l 2>/dev/null | grep -v legaldoctor.feed; echo '0 5 * * * cd /srv/legaldoctor && HOME=/srv/legaldoctor .venv/bin/python -m legaldoctor.feed >> /srv/legaldoctor/data/feed/sync.log 2>&1' ) | sudo -u legaldoctor crontab -
+```
+- 받은 자료는 `data/feed/`에 저장됩니다. 서비스가 이 폴더에 쓸 수 있도록 `deploy/legaldoctor.service`의 `ReadWritePaths`에 포함되어 있습니다
+
 ### 최신 동향 미리 받기와 매주 새로 고침
 
 사인 튜토리얼의 최신 동향(Liner Search)은 저장된 결과를 바로 보여 주고 7일이 지나면 뒤에서 새로 고칩니다. 배포 직후 한 번, 이후 매주 한 번 28개 사인을 미리 받아 둡니다(약 6분).
