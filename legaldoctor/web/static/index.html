@@ -109,6 +109,12 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
 .btn:disabled{opacity:.5;cursor:wait}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.pact[hidden]{display:none}
+.pact{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:8px 10px;margin:8px 0;position:sticky;top:8px;z-index:5;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.pact span{flex:1;min-width:140px;font-size:13px;font-weight:700;color:var(--accent)}
+#prof.pulse{animation:profPulse 1.3s ease-in-out infinite;border-color:var(--accent)}
+@keyframes profPulse{0%,100%{box-shadow:0 0 0 2px var(--accent)}50%{box-shadow:0 0 0 5px rgba(165,28,48,.25),0 0 18px rgba(165,28,48,.35)}}
+@media (prefers-reduced-motion:reduce){#prof.pulse{animation:none;box-shadow:0 0 0 3px var(--accent)}}
 .drop{display:block;border:2px dashed var(--accent);border-radius:14px;padding:22px 18px;text-align:center;color:var(--sub);cursor:pointer;background:var(--accent-soft)}
 .drop:hover{border-style:solid}
 .drop .up{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;font-weight:700;font-size:16px;border-radius:999px;padding:12px 26px;margin:2px 0 10px;box-shadow:0 4px 12px rgba(165,28,48,.25)}
@@ -452,10 +458,11 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
     <p class="warn" id="msg"></p>
   </section>
 
-  <aside class="card">
+  <aside class="card" id="prof">
     <div class="row" style="margin-top:0;justify-content:space-between">
       <strong>리걸닥터가 이해한 사업<button type="button" class="ib" data-h="reg_profile" aria-label="도움말">i</button></strong><span class="badge" id="state">아직 정보 없음</span>
     </div>
+    <div class="pact" id="profTop" hidden><span>읽은 내용이 맞는지 확인해 주세요</span><button class="btn ghost" id="editBtnTop">고칠 곳 있어요</button><button class="btn" id="okBtnTop">이대로 맞아요 → 규제 분석</button></div>
     <div class="summary" id="summary"></div>
     <div id="slots"></div>
     <div class="row">
@@ -579,6 +586,7 @@ function render(v){
   const filled=v.slots.filter(s=>s.value).length;
   $('#state').textContent=v.confirmed?'확인 완료':`${filled}/${v.slots.length} 파악`;
   $('#state').classList.toggle('ok',v.confirmed);
+  const wait=filled>0&&!v.confirmed;$('#profTop').hidden=!wait;$('#prof').classList.toggle('pulse',wait&&!editing);  // 읽기가 끝나면 확인을 기다린다는 표시
   $('#slots').innerHTML=v.slots.map(s=>`<div class="slot ${s.value?'':'empty'}"><div class="k">${esc(s.label)}</div>
     ${editing?`<input data-k="${s.key}" value="${esc(s.value||'')}" placeholder="${esc(s.why)}">`:
     `<div class="v">${esc(s.value||'아직 몰라요')}</div>${s.sources.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}`}</div>`).join('');
@@ -603,7 +611,7 @@ function afterRead(v){
   const skip=(v.skipped||[]).length?`<br>못 읽은 파일: ${esc(v.skipped.join(' / '))}`:'';
   if(v.error){notice('err',`<b>${esc(v.error)}</b>${skip}`);return}
   if(!filled){notice('err',`<b>이 자료에서는 사업 모델을 읽지 못했어요.</b> ${what}그림 위주 자료라면 어떤 서비스인지 글로 2~3줄 적어 주시거나 "스무고개로 답하기"로 진행해 주세요.${skip}`);return}
-  notice('ok',`${what}사업 모델 12개 항목 중 <b>${filled}개</b>를 채웠어요. 오른쪽 내용을 확인하고, 빈 칸은 스무고개로 채우거나 "고칠 곳 있어요"로 직접 고쳐 주세요.${skip}`)
+  notice('ok',`${what}사업 모델 12개 항목 중 <b>${filled}개</b>를 채웠어요. 오른쪽 내용을 확인하고 맞으면 오른쪽 위 "이대로 맞아요"를 눌러 주세요. 빈 칸은 스무고개로 채우거나 "고칠 곳 있어요"로 직접 고쳐요.${skip}`)
 }
 $('#sendText').onclick=()=>{const t=$('#bizText').value.trim();if(!t)return;const fd=new FormData();fd.append('text',t);sendForm(fd,'설명을 읽고 있어요...')};
 const fileIn=$('#fileIn'),drop=$('#drop');
@@ -1022,7 +1030,8 @@ async function answer(a){touched=true;await session();busy(true,'다음 질문�
 $('#startTalk').onclick=()=>answer(null);
 
 // 확인·분석
-$('#editBtn').onclick=()=>{if(!last)return;editing=!editing;$('#editBtn').textContent=editing?'수정 취소':'고칠 곳 있어요';render(last)};
+$('#editBtn').onclick=()=>{if(!last)return;editing=!editing;$('#editBtn').textContent=$('#editBtnTop').textContent=editing?'수정 취소':'고칠 곳 있어요';render(last)};
+$('#editBtnTop').onclick=()=>$('#editBtn').click();$('#okBtnTop').onclick=()=>$('#okBtn').click();
 function showResult(r){
     const out=n=>`api/sessions/${sid}/out/${n}`;
     const links=r.outputs.length?`<div class="row"><a class="btn" href="${out('regmap.html')}" target="_blank">규제 지도</a><a class="btn ghost" href="${out('consult.html')}" target="_blank">변호사 상담 준비서</a><a class="btn ghost" href="${out('application.html')}" target="_blank">신속확인 신청서 초안</a><a class="btn ghost" href="${out('application.docx')}">신청서 Word</a></div><p class="hint">열린 문서에서 인쇄(Ctrl+P)를 누르면 PDF로 저장됩니다.</p>`:'';
@@ -1044,7 +1053,8 @@ $('#okBtn').onclick=async()=>{await session();const edits={};
   $('#notice').style.display='none';$('#result').innerHTML='';
   showProg('규제를 살펴보고 있어요',{step:'분석 준비 중',hint:'보통 1~2분 걸려요. 중단 버튼을 누르기 전까지 계속 진행해요',onStop:()=>api(`api/sessions/${sid}/analyze/cancel`,{method:'POST'}).catch(()=>{})});
   logShow();$('#logl').innerHTML='';
-  try{editing=false;$('#editBtn').textContent='고칠 곳 있어요';
+  $('#prof').classList.remove('pulse');$('#profTop').hidden=true;
+  try{editing=false;$('#editBtn').textContent=$('#editBtnTop').textContent='고칠 곳 있어요';
     render(await api(`api/sessions/${sid}/confirm`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}));
     const st=await api(`api/sessions/${sid}/analyze`,{method:'POST'});
     const r=st.status==='done'?st.result:await pollJob();
