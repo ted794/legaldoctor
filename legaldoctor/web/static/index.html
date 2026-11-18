@@ -109,7 +109,12 @@ textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
 .btn:disabled{opacity:.5;cursor:wait}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
-.drop{border:2px dashed var(--line);border-radius:12px;padding:26px;text-align:center;color:var(--sub);cursor:pointer}
+.drop{display:block;border:2px dashed var(--accent);border-radius:14px;padding:22px 18px;text-align:center;color:var(--sub);cursor:pointer;background:var(--accent-soft)}
+.drop:hover{border-style:solid}
+.drop .up{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;font-weight:700;font-size:16px;border-radius:999px;padding:12px 26px;margin:2px 0 10px;box-shadow:0 4px 12px rgba(165,28,48,.25)}
+.drop .up svg{width:20px;height:20px}
+.drop .dt{display:block;font-size:14px;color:var(--ink);margin-bottom:4px}
+.drop .hint{display:block;font-size:12.5px;line-height:1.6}
 .drop.over{border-color:var(--accent);background:var(--accent-soft)}
 canvas{width:100%;height:320px;border:1px solid var(--line);border-radius:10px;background:#fff;touch-action:none;display:block}
 .hint{color:var(--sub);font-size:13px}
@@ -224,7 +229,7 @@ body.my #myView{display:block}
 .chg{font-size:12.5px;margin-top:3px;color:var(--ink)}.chg a{color:var(--accent)}
 .feedbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:8px 12px;margin:0 0 12px;background:var(--card)}
 .feedbox h4{margin:0 0 4px;font-size:14px}.feedbox ol{margin:0;padding-left:18px;font-size:13px}.feedbox li{margin:4px 0}.feedbox .nw{font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:5px;padding:0 5px;margin-right:4px}
-.demobiz{margin-top:14px}.demobiz h4{margin:0 0 6px;font-size:14px;display:flex;align-items:center;gap:6px}
+.demobiz{margin-top:18px}.demobiz h4{margin:0 0 8px;font-size:14px;line-height:1.5}.demobiz h4 .hint{display:block;font-size:12.5px}
 .demobiz .dl{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 @media (max-width:640px){.demobiz .dl{grid-template-columns:1fr}}
 .demobiz .db{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card);text-align:left;font:inherit;color:var(--ink);cursor:pointer}
@@ -408,7 +413,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
     </div>
 
     <div class="pane" id="p-file">
-      <label class="drop" id="drop">사업소개서·IR 자료를 여기에 끌어다 놓거나 눌러서 고르세요<br><span class="hint">PDF, PPTX, DOCX, HWPX, 사진. 한글(.hwp)은 PDF로 저장해서 올려 주세요. 다른 사람의 개인정보와 공개하면 안 되는 영업비밀은 빼고 올려 주세요.</span>
+      <label class="drop" id="drop"><span class="up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>사업소개서 파일 올리기</span><span class="dt">또는 파일을 이 칸에 끌어다 놓으세요</span><span class="hint">PDF, PPTX, DOCX, HWPX, 사진 · 한글(.hwp)은 PDF로 저장해서 올려 주세요 · 다른 사람의 개인정보와 영업비밀은 빼고 올려 주세요</span>
         <input type="file" id="fileIn" multiple hidden accept=".pdf,.pptx,.docx,.hwpx,.txt,.md,.png,.jpg,.jpeg,.webp"></label>
       <div class="row hint" id="fileList"></div>
       <div class="demobiz" id="demoBiz"></div>
@@ -613,7 +618,7 @@ let DEMO_BIZ=[],DEMO_NO=null;  // 시연용 가상 사업소개서, 지금 들�
 function renderDemoBiz(){const L=DEMO_BIZ;if(!L.length)return;const no=DEMO_NO;
   const hit=d=>no&&(d.causes||[]).includes(no),main=d=>no&&(d.causes||[])[0]===no;
   const S=[...L].sort((a,b)=>(main(b)-main(a))||(hit(b)-hit(a)));const n=S.filter(hit).length;
-  $('#demoBiz').innerHTML=`<h4>가상 사업소개서로 해 보기 <span class="hint" style="font-weight:400">· ${n?`${no}번 사인 예시 ${n}개를 앞에 두었어요 · `:''}모든 회사·서비스·수치는 가상이에요</span><button type="button" class="ib" data-h="demo_biz" aria-label="도움말">i</button></h4><div class="dl">${S.map(d=>`<button type="button" class="db${hit(d)?' hit':''}" data-k="${esc(d.key)}">${hit(d)?`<em class="nb">${no}번 사인 예시</em>`:''}<b>${esc(d.title)}</b><span>${esc(d.one)}</span>${(d.tags||[]).map(t=>`<em>${esc(t)}</em>`).join('')}<a href="api/demo_biz/${esc(d.key)}.pdf" target="_blank" rel="noopener">미리 보기</a></button>`).join('')}</div>`;
+  $('#demoBiz').innerHTML=`<h4>가상 사업소개서로 해 보기<button type="button" class="ib" data-h="demo_biz" aria-label="도움말">i</button><span class="hint" style="font-weight:400">${n?`${no}번 사인 예시 ${n}개를 앞에 두었어요 · `:''}모든 회사·서비스·수치는 가상이에요</span></h4><div class="dl">${S.map(d=>`<button type="button" class="db${hit(d)?' hit':''}" data-k="${esc(d.key)}">${hit(d)?`<em class="nb">${no}번 사인 예시</em>`:''}<b>${esc(d.title)}</b><span>${esc(d.one)}</span>${(d.tags||[]).map(t=>`<em>${esc(t)}</em>`).join('')}<a href="api/demo_biz/${esc(d.key)}.pdf" target="_blank" rel="noopener">미리 보기</a></button>`).join('')}</div>`;
   document.querySelectorAll('#demoBiz .db a').forEach(a=>a.onclick=e=>e.stopPropagation());
   document.querySelectorAll('#demoBiz .db').forEach(b=>b.onclick=async()=>{try{const r=await fetch(`api/demo_biz/${b.dataset.k}.pdf`);const f=new File([await r.blob()],`가상사업소개서_${b.querySelector('b').textContent}.pdf`,{type:'application/pdf'});touched=true;sendFiles([f])}catch(e){notice('err',esc(e.message))}})}
 fetch('api/demo_biz').then(r=>r.json()).then(L=>{DEMO_BIZ=L||[];renderDemoBiz()}).catch(()=>{});
