@@ -221,6 +221,9 @@ body.my #myView{display:block}
 .cv-tools .danger{color:#c92a2a}
 .cv-warn{font-size:12.5px;color:var(--sub);background:var(--chip);border-radius:8px;padding:6px 10px;margin:0 0 12px}
 .cv-grid{display:grid;grid-template-columns:280px 1fr;gap:14px}
+.chg{font-size:12.5px;margin-top:3px;color:var(--ink)}.chg a{color:var(--accent)}
+.feedbox{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:8px 12px;margin:0 0 12px;background:var(--card)}
+.feedbox h4{margin:0 0 4px;font-size:14px}.feedbox ol{margin:0;padding-left:18px;font-size:13px}.feedbox li{margin:4px 0}.feedbox .nw{font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:5px;padding:0 5px;margin-right:4px}
 .cv-prog{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
 .cv-prog .pc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px}
 .cv-prog .pc.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c)}
@@ -700,14 +703,19 @@ async function openTut(c,el){tutCause=c;tutEl=el;
 }
 // 최신 동향: Liner Search로 이 사인의 최근 판례·처분·정책 소식(서버에서 7일 캐시)
 const NEWS={};
+const feedLi=x=>`<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a><div class="hint">${esc([x.date,x.kind,x.source].filter(Boolean).join(' · '))}${(x.laws||[]).length?' · '+esc(x.laws.map(l=>`「${l.law}」 ${l.article||''}`.trim()).join(', ')):''}</div></li>`;
+async function loadFeed(no){try{const f=await api(`api/causes/${no}/feed`);if(!f.enabled||!f.items.length)return '';
+  return `<div class="feedbox"><h4>${esc(f.name)} <span class="hint">· 이 사인으로 분류된 최근 규제 변화 ${f.items.length}건(공개 출처)</span></h4><ol>${f.items.map(feedLi).join('')}</ol></div>`}catch(e){return ''}}
 async function loadNews(no){const box=$('#tabB');if(NEWS[no]){box.innerHTML=NEWS[no];return}
+  const fp=loadFeed(no);
   box.innerHTML='<p class="hint">Liner Search로 최근 판례·처분·정책 소식을 찾고 있어요. 10~30초 걸릴 수 있어요.</p>';
+  fp.then(fh=>{if(fh&&!NEWS[no]&&tutCause&&tutCause.no===no)box.insertAdjacentHTML('afterbegin',fh)});
   try{const d=await api(`api/causes/${no}/news`);
     const clean=(d.answer||'').replace(/\*\*/g,'').replace(/\s*\(\(\d+(?:\)\)\s*\(\(\d+)*\)\)/g,'').replace(/\s*\[\d+(?:,\s*\d+)*\]/g,'');
     const ans=clean.split(/\n+/).filter(Boolean).map(l=>/^#{1,4}\s/.test(l)?`<b class="nh">${esc(l.replace(/^#+\s*/,''))}</b>`:`<p>${esc(l)}</p>`).join('');
     const refs=(d.refs||[]).map(r=>`<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title||r.url)}</a><div class="hint">${esc([r.date,r.host].filter(Boolean).join(' · '))}${r.desc?' — '+esc(r.desc):''}</div></li>`).join('');
     const h=`<p class="newsnote">Liner Search가 찾은 최근 소식이에요. 요약은 AI가 쓴 것이니 원문 링크로 확인해 주세요. 검색일 ${esc(d.checked)}${d.stale?' · 새 소식을 뒤에서 찾고 있어요(다음에 열면 바뀌어요)':''}</p>${ans?`<div class="newsans">${ans}</div>`:''}<h4>출처 ${(d.refs||[]).length}건</h4><ol class="newsrefs">${refs||'<li class="hint">출처를 찾지 못했어요.</li>'}</ol>`;
-    if(tutCause&&tutCause.no===no)box.innerHTML=h;NEWS[no]=h}
+    const fh=await fp;const all=fh+h;if(tutCause&&tutCause.no===no)box.innerHTML=all;NEWS[no]=all}
   catch(e){box.innerHTML=`<p class="hint">${esc(e.message)}</p>`}}
 $('#tutX').onclick=tutClose;$('#tutC').onclick=tutClose;$('#tutOv').onclick=()=>{tutClose();pickClose()};
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#tut').hidden)tutClose();else if(!$('#pick').hidden)pickClose()});
@@ -776,7 +784,8 @@ function renderCare(){const p=CP,s=p.stats;
   $('#cvExport').href=`api/care/${p.token}/export`;$('#cvExport').setAttribute('download','');$('#cvReport').href=`api/care/${p.token}/report`;
   const pg=p.program||'consult',lv={self:0,consult:1,lawyer:2}[pg];
   const FEAT=[['self','셀프 케어',['실행 계획·실행 보드','고친 자료로 재검진','경과 보고서']],['consult','상담 케어',['셀프 케어 전부','과제별 실행 상담(검진 근거로 답변)','Liner Search 참고 자료']],['lawyer','변호사 케어',['상담 케어 전부','변호사 확인 과제 검토 요청','경과 보고서와 함께 변호사 전달']]];
-  $('#cvPanel').innerHTML=FEAT.map(([k,n,f],i)=>`<div class="pc${k===pg?' on':''}${i>lv?' off':''}"><h4>${n}<small>${k===pg?'이용 중':i<lv?'포함':'잠김'}</small></h4><ul>${f.map(x=>`<li>${x}</li>`).join('')}</ul>${i>lv?`<button class="back go" data-p="${k}">${n}로 바꾸기</button>`:''}</div>`).join('')
+  const AL=p.alerts||[];
+  $('#cvPanel').innerHTML=(AL.length?`<div class="feedbox" style="grid-column:1/-1"><h4>규제 변화 알림 <span class="hint">· 검진 근거 법령에 생긴 최근 변화 ${AL.length}건 · ${esc(p.feed_name||'')}</span></h4><ol>${AL.map(x=>`<li>${x.new?'<span class="nw">새로</span>':''}<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a><div class="hint">${esc([x.date,x.kind,x.source].filter(Boolean).join(' · '))} · 관련 항목: ${esc(x.item)}</div></li>`).join('')}</ol></div>`:'')+FEAT.map(([k,n,f],i)=>`<div class="pc${k===pg?' on':''}${i>lv?' off':''}"><h4>${n}<small>${k===pg?'이용 중':i<lv?'포함':'잠김'}</small></h4><ul>${f.map(x=>`<li>${x}</li>`).join('')}</ul>${i>lv?`<button class="back go" data-p="${k}">${n}로 바꾸기</button>`:''}</div>`).join('')
     +(lv>=1?`<div class="cv-desk" style="grid-column:1/-1"><h3>실행 상담 <span class="hint">· 과제를 고르고 물어보세요. 검진 근거 안에서 답하고 근거가 없으면 변호사 확인으로 넘겨요</span><button type="button" class="ib" data-h="care_ask" aria-label="도움말">i</button></h3>
       <select id="dTask">${p.tasks.filter(x=>x.status!=='done').concat(p.tasks.filter(x=>x.status==='done')).map(x=>`<option value="${esc(x.id)}">${esc(x.title)}${x.status==='done'?' (완료)':''}</option>`).join('')}</select>
       <textarea id="dQ" placeholder="예: 투자자에게 이 조항을 빼 달라고 어떻게 말하나요?"></textarea><div class="row"><button class="btn" id="dAsk">질문하기</button><span class="hint">상담 ${p.chat.length}건 · 답변은 과제 카드와 경과 보고서에 남아요</span></div>
@@ -860,7 +869,7 @@ function ckRender(j){
   const hi=done.filter(i=>i.risk==='높음').length;
   let h=`<h3>${esc(j.title)} · ${esc(j.causes.join(', '))}</h3>`;
   if(done.length)h+=`<p class="hint">검진한 항목 ${done.length} · 위험 높음 ${hi}<button type="button" class="ib" data-h="ck_result" aria-label="도움말">i</button></p><div class="row"><a class="btn" href="api/checkup/${j.id}" target="_blank">검진결과표 보기</a><button class="btn ghost" onclick="chooseCare('${j.id}')">다음 단계: 리걸닥터 케어</button></div>`+
-    done.map(i=>`<div class="ck-item">${riskTag(i.risk)}<b>${esc(i.label)}</b> · ${esc(i.verdict)}<div class="hint">“${esc(i.quote)}”</div>${i.laws.length?`<div class="hint">${esc(i.laws.join(' · '))}</div>`:''}</div>`).join('');
+    done.map(i=>`<div class="ck-item">${riskTag(i.risk)}<b>${esc(i.label)}</b> · ${esc(i.verdict)}<div class="hint">“${esc(i.quote)}”</div>${i.laws.length?`<div class="hint">${esc(i.laws.join(' · '))}</div>`:''}${(i.changes||[]).length?`<div class="chg">최근 변화: ${i.changes.map(x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a> <span class="hint">${esc(x.date)}</span>`).join(' · ')}</div>`:''}</div>`).join('');
   const running=j.status==='running'&&j.phase==='check';
   if(left.length){
     h+=`<h3 style="margin-top:16px">${done.length?'남은 항목':'검진할 항목을 골라 주세요'} <span class="hint">· 위험도 순, 항목 3개당 약 10초</span><button type="button" class="ib" data-h="ck_select" aria-label="도움말">i</button></h3>`+

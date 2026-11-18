@@ -206,6 +206,7 @@ uv run legaldoctor eval --set data/eval/set_b.json --out out/eval_b
 이 저장소의 코드와 데이터는 대회 개발 기간(2026.11.12~11.25)에 새로 만들었습니다. 참가자의 기존 제품이나 다른 저장소의 코드를 가져오지 않았습니다.
 
 - **기존 저작물 한 가지:** 계약·노무 검진의 사인 분류와 진단 사슬(`data/checkup/causes.json`)은 참가자가 대회 전부터 집필해 온 「스타트업 부검보고서」의 28개 사인 체계를 옮긴 것입니다. 원고 본문과 사례는 넣지 않았습니다.
+- **기존 자산과의 연결(선택 기능):** 운영자가 대회 전부터 운영해 온 규제 변화 분류 자료를 읽기 전용 피드로 받아 사인 튜토리얼, 검진결과표, 리걸닥터 케어에 "관련 법령의 최근 변화"로 보여 줄 수 있습니다. 저장소에는 피드 형식(`docs/feed_spec.md`)과 연결 코드(`legaldoctor/feed/`)만 있고 그 자료는 들어 있지 않습니다. 피드를 설정하지 않으면 기능이 꺼지며, 공개 출처 항목만 받습니다. 실시간 웹 자료는 지금처럼 Liner Search가 맡고 피드는 분류된 축적 자료를 보탭니다.
 - **오픈소스 라이브러리(모두 MIT·BSD·Apache 계열):** httpx, python-dotenv, FastAPI, uvicorn, python-multipart, pypdf, pypdfium2, python-pptx, python-docx, Pillow, pytest
 - **공개 데이터:** 국가법령정보센터 법령 원문, 공개된 규제샌드박스 승인 사례
 - **가상 자료:** 시연 사례(아파트 단지 안 자율주행 로봇 편의점 배달)와 검진 시연 자료(`data/checkup/demo_*.md`)
