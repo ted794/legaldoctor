@@ -179,6 +179,25 @@ def og_page_image(page: str) -> FileResponse:
     return FileResponse(STATIC / f"og-{page}.png", media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
 
+DEMO_BIZ_DIR = STATIC.parent.parent.parent / "data" / "demo_biz"
+
+
+@app.get("/api/demo_biz")
+def demo_biz_list() -> list[dict[str, Any]]:
+    """규제팡 시연용 가상 사업소개서 목록(모든 회사·서비스·수치는 가상)"""
+    try:
+        return json.loads((DEMO_BIZ_DIR / "index.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+
+
+@app.get("/api/demo_biz/{key}.pdf")
+def demo_biz_pdf(key: str) -> FileResponse:
+    if key not in {d["key"] for d in demo_biz_list()}:
+        raise HTTPException(404, "없는 예시")
+    return FileResponse(DEMO_BIZ_DIR / f"{key}.pdf", media_type="application/pdf", filename=f"가상사업소개서_{key}.pdf", content_disposition_type="inline")
+
+
 @app.get("/privacy")
 def privacy() -> FileResponse:
     return FileResponse(STATIC / "privacy.html")

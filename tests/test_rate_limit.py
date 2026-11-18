@@ -166,3 +166,16 @@ def test_page_og_absolute(monkeypatch):
     assert c.get("/og-everyone.png").headers["content-type"] == "image/png"
     assert c.get("/og-network.png").status_code == 200 and c.get("/og-evil.png").status_code == 404
     assert 'content="https://example.com/ld/og.png"' in c.get("/").text
+
+
+def test_demo_biz_covers_regpang_signs():
+    import json as _json
+
+    c = TestClient(web.app)
+    L = c.get("/api/demo_biz").json()
+    regpang = {x["no"] for x in _json.loads((web.STATIC.parent.parent.parent / "data" / "checkup" / "causes.json").read_text(encoding="utf-8"))["causes"] if x["module"] == "bm"}
+    covered = {n for d in L for n in d["causes"]}
+    assert regpang <= covered  # 규제팡 사인마다 가상 사업소개서가 하나 이상
+    r = c.get(f"/api/demo_biz/{L[0]['key']}.pdf")
+    assert r.status_code == 200 and r.content[:4] == b"%PDF"
+    assert c.get("/api/demo_biz/../x.pdf").status_code == 404 and c.get("/api/demo_biz/nope.pdf").status_code == 404
