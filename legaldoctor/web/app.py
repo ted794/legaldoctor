@@ -145,22 +145,38 @@ def profile_view(s: Session, **extra: Any) -> dict[str, Any]:
     }
 
 
-@app.get("/")
-def index() -> HTMLResponse:
-    # OG 이미지·주소는 메신저·SNS가 절대 주소를 요구한다. 공개 주소는 배포 서버 .env의 LD_PUBLIC_URL로 받아 저장소에 남기지 않음
-    html = (STATIC / "index.html").read_text(encoding="utf-8")
+def _public_base() -> str:
     base = os.getenv("LD_PUBLIC_URL", "").strip()
-    if base.startswith("https://"):
-        base = base.rstrip("/") + "/"
-        html = html.replace('content="og.png"', f'content="{base}og.png"').replace(
-            '<meta property="og:type"', f'<meta property="og:url" content="{base}">\n<link rel="canonical" href="{base}">\n<meta property="og:type"', 1
+    return base.rstrip("/") + "/" if base.startswith("https://") else ""
+
+
+def _with_og(name: str, path: str = "") -> HTMLResponse:
+    """OG 이미지·주소는 메신저·SNS가 절대 주소를 요구한다. 공개 주소는 배포 서버 .env의 LD_PUBLIC_URL로 받아 저장소에 남기지 않음"""
+    html = (STATIC / name).read_text(encoding="utf-8")
+    base = _public_base()
+    if base:
+        url = base + path
+        html = html.replace('content="og', f'content="{base}og').replace(
+            '<meta property="og:type"', f'<meta property="og:url" content="{url}">\n<link rel="canonical" href="{url}">\n<meta property="og:type"', 1
         )
     return HTMLResponse(html)
+
+
+@app.get("/")
+def index() -> HTMLResponse:
+    return _with_og("index.html")
 
 
 @app.get("/og.png")
 def og_image() -> FileResponse:
     return FileResponse(STATIC / "og.png", media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
+
+
+@app.get("/og-{page}.png")
+def og_page_image(page: str) -> FileResponse:
+    if page not in INTERNAL_PAGES:
+        raise HTTPException(404, "없음")
+    return FileResponse(STATIC / f"og-{page}.png", media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
 
 @app.get("/privacy")
@@ -169,13 +185,13 @@ def privacy() -> FileResponse:
 
 
 @app.get("/everyone")
-def everyone() -> FileResponse:
-    return FileResponse(STATIC / "everyone.html")
+def everyone() -> HTMLResponse:
+    return _with_og("everyone.html", "everyone")
 
 
 @app.get("/network")
-def network() -> FileResponse:
-    return FileResponse(STATIC / "network.html")
+def network() -> HTMLResponse:
+    return _with_og("network.html", "network")
 
 
 @app.get("/terms")
