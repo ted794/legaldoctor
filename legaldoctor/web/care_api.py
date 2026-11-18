@@ -276,7 +276,7 @@ def _report_html(plan: dict[str, Any]) -> str:
     ]
     if lawyer:
         parts.append("<h2>변호사 확인이 필요한 질문</h2><ul>" + "".join(f"<li>{e(c['q'])}<div class='meta'>{e(c.get('reason',''))}</div></li>" for c in lawyer) + "</ul>")
-    parts.append("<p class='meta'>리걸닥터 케어는 구태언 변호사가 운영하는 스타트업 자문 서비스의 실행 관리 도구입니다. AI가 정리한 실행 계획과 답변은 참고 자료이며 서명·분쟁 대응 등 법적 판단은 변호사 확인을 거쳐야 합니다.</p>")
+    parts.append("<p class='meta'>리걸닥터 케어는 구태언 변호사가 개인으로 운영하는 무료 프로보노 서비스의 실행 관리 도구입니다. AI가 정리한 실행 계획과 답변은 참고 자료이며 서명·분쟁 대응 등 법적 판단은 변호사 확인을 거쳐야 합니다.</p>")
     return _doc("리걸닥터 케어 경과 보고서", "".join(parts), CSS)
 
 
