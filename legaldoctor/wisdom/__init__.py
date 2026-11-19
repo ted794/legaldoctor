@@ -11,7 +11,9 @@
 - 검진 2차 보강: 같은 범주의 사례 링크가 30일 안에 쌓여 있으면 Liner Search를 다시 부르지 않음
 - 실행 상담: 비슷한 과거 상담 카드를 답변 근거 후보로 넣고 화면에 "비슷한 과거 상담 사례"로 보여 줌. 참고 링크도 신선하면 재사용
 
-위치: data/law_cache/_wisdom/wisdom.sqlite(저장소 추적 제외, 서비스가 쓸 수 있는 폴더). 끄기: LD_WISDOM=0
+보관: 카드는 개인정보가 아닌 일반화 지식이라 기간이 지났다고 지우지 않는다. 오래 쓰이지 않은 카드는 순위만 낮추고,
+인용한 조문 원문이 바뀌면 "개정 확인 필요"로 표시해 답변 근거에서 뺀다. 지우는 경우는 삭제 요청(forget)과 개인정보 패턴 발견뿐이다.
+위치: data/law_cache/_wisdom/wisdom.sqlite(저장소 추적 제외, 서비스가 쓸 수 있는 폴더). 끄기: LD_WISDOM=0(쓰지 않을 뿐 지우지 않음)
 """
 
 from __future__ import annotations
@@ -30,7 +32,7 @@ from legaldoctor.config import LAW_CACHE_DIR
 
 DB_PATH = Path(os.getenv("LD_WISDOM_PATH", str(LAW_CACHE_DIR / "_wisdom" / "wisdom.sqlite")))
 REFS_FRESH = 30 * 86400
-KEEP = 365 * 86400  # 1년 동안 다시 쓰이지 않은 카드는 지움
+STALE = 365 * 86400  # 1년 넘게 쓰이지 않은 카드는 지우지 않고 검색 순위만 낮춤(지혜는 남김)
 HITS = {"refs": 0, "consult": 0}
 _lock = threading.Lock()
 _conn: sqlite3.Connection | None = None
@@ -60,9 +62,12 @@ def _db() -> sqlite3.Connection:
             "CREATE TABLE IF NOT EXISTS cards (id TEXT PRIMARY KEY, kind TEXT, module TEXT, category TEXT, causes TEXT, q TEXT, a TEXT,"
             " laws TEXT, refs TEXT, stats TEXT, uses INTEGER DEFAULT 0, created REAL, updated REAL, refs_at REAL DEFAULT 0)"
         )
-        _conn.execute("DELETE FROM cards WHERE updated < ?", (time.time() - KEEP,))
         _conn.commit()
     return _conn
+
+
+def _norm(s: str) -> str:
+    return re.sub(r"\s+", "", s or "")
 
 
 def has_pii(text: str) -> bool:
@@ -117,6 +122,9 @@ def learn_checkup(module, item) -> None:
     for f in item.findings:
         if f.grade in ("명시 규제", "의제 리스크", "해석 리스크") and f.law and f.locator and f.locator != "-":
             x = seen.get((f.law, f.locator)) or {"law": f.law, "locator": f.locator, "quote": (f.quote or "")[:300], "url": f.url or "", "n": 0}
+            if f.quote and x.get("quote") and _norm(f.quote[:300]) != _norm(x["quote"]):
+                x["changed"] = time.strftime("%Y-%m-%d")  # 같은 조문인데 원문이 달라짐: 개정 확인 필요
+                x["quote"] = f.quote[:300]
             x["n"] += 1
             seen[(f.law, f.locator)] = x
     c["laws"] = sorted(seen.values(), key=lambda x: -x["n"])[:5]
@@ -208,10 +216,23 @@ def similar(text: str, module_key: str = "", category: str = "", k: int = 3, kin
         if not g or not h:
             continue
         s = len(g & h) / len(g | h) + (0.15 if category and c["category"] == category else 0)
+        if time.time() - max(c["updated"], c["created"]) > STALE:
+            s -= 0.08  # 오래 쓰이지 않은 카드는 뒤로(지우지는 않음)
+        if any(l.get("changed") for l in c["laws"]):
+            continue  # 인용 조문이 개정됐을 수 있으면 다시 확인될 때까지 근거로 쓰지 않음
         if s >= floor:
             out.append((s, c))
     out.sort(key=lambda x: -x[0])
-    return [{**c, "score": round(s, 3), "seed": c["stats"].get("origin") == "seed", "lawyer": bool(c["stats"].get("lawyer"))} for s, c in out[:k]]
+    return [{**c, "score": round(s, 3), "seed": c["stats"].get("origin") == "seed", "lawyer": bool(c["stats"].get("lawyer")),
+             "age_days": int((time.time() - c["created"]) // 86400)} for s, c in out[:k]]
+
+
+def forget(card_id: str) -> bool:
+    """삭제 요청이나 개인정보 패턴 발견 때만 지운다"""
+    with _lock:
+        n = _db().execute("DELETE FROM cards WHERE id=?", (card_id,)).rowcount
+        _db().commit()
+    return n > 0
 
 
 def used(cards: list[dict[str, Any]]) -> None:

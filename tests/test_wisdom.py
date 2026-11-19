@@ -91,3 +91,21 @@ def test_seed_marked(monkeypatch, tmp_path):
     monkeypatch.setattr(wisdom, "_seeded", False)
     hit = wisdom.similar("투자계약의 연대책임 조항을 어떻게 협상하나요", "invest")
     assert hit and hit[0]["seed"] is True
+
+
+def test_no_expiry_and_change_flag(monkeypatch, tmp_path):
+    import time as _t
+
+    _tmp(monkeypatch, tmp_path)
+    m = MODULES["invest"]
+    wisdom.learn_checkup(m, _item())
+    c = wisdom.get("ck:invest:personal_liability")
+    c["updated"] = c["created"] = _t.time() - 3 * 365 * 86400  # 3년 전 카드
+    wisdom._put(c)
+    monkeypatch.setattr(wisdom, "_conn", None)  # 다시 열어도 지워지지 않음
+    assert wisdom.get("ck:invest:personal_liability") is not None
+    it = _item()
+    it.findings[0].quote = "개정된 조문 원문"
+    wisdom.learn_checkup(m, it)
+    assert wisdom.get("ck:invest:personal_liability")["laws"][0].get("changed")
+    assert wisdom.forget("ck:invest:personal_liability") and wisdom.get("ck:invest:personal_liability") is None
