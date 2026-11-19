@@ -179,3 +179,9 @@ def test_demo_biz_covers_regpang_signs():
     r = c.get(f"/api/demo_biz/{L[0]['key']}.pdf")
     assert r.status_code == 200 and r.content[:4] == b"%PDF"
     assert c.get("/api/demo_biz/../x.pdf").status_code == 404 and c.get("/api/demo_biz/nope.pdf").status_code == 404
+
+
+def test_head_for_link_previews():
+    c = TestClient(web.app)
+    for p in ("/", "/og.png", "/og-everyone.png", "/everyone"):
+        assert c.head(p).status_code == 200, p  # 텔레그램 등은 미리보기 전에 HEAD로 확인함
