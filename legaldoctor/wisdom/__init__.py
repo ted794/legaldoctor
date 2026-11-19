@@ -299,7 +299,10 @@ def learn_regpang(rows: list[Any]) -> int:
             t[x.type] = t.get(x.type, 0) + 1
         if getattr(x, "ministry", ""):
             st["ministry"] = x.ministry
-        c["laws"][0]["n"] = st["n"]
+        L = c["laws"][0]
+        if x.quote and L.get("quote") and _norm(x.quote[:300]) != _norm(L["quote"]):
+            L["changed"], L["quote"] = time.strftime("%Y-%m-%d"), x.quote[:300]  # 원문이 달라짐: 개정 확인 필요
+        L["n"] = st["n"]
         c["updated"] = now
         _put(c)
     return len(seen)
