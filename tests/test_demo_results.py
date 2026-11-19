@@ -89,3 +89,12 @@ def test_other_file_or_missing_result(client, tmp_path):
     sid = _session(client)
     assert "precomputed" not in (client.post(f"/api/sessions/{sid}/analyze").json().get("result") or {})
     assert len(client.started) == 2
+
+
+def test_shipped_results_load():
+    """저장소에 든 결과 파일은 목록의 예시마다 하나씩 있고 모두 읽힌다"""
+    for d in web.demo_biz_list():
+        pre = web.demo_result(d["key"])
+        assert pre, d["key"]
+        assert pre["result"]["precomputed"]["made"] and pre["result"]["core"]
+        assert "미리 분석한 결과(" in pre["outputs"]["regmap.html"] and pre["outputs"]["application.docx"][:2] == b"PK"

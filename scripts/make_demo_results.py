@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import base64
 import json
+import re
 import sys
 import time
 import urllib.request
@@ -51,7 +52,9 @@ def make(base: str, key: str) -> bool:
         outputs[name] = base64.b64encode(b).decode() if name.endswith(".docx") else b.decode("utf-8")
     out = DIR / "results" / f"{key}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps({"key": key, "made": time.strftime("%Y.%m.%d"), "result": r, "outputs": outputs}, ensure_ascii=False), encoding="utf-8")
+    m = re.search(r"작성일 (\d{4})-(\d{2})-(\d{2})", outputs.get("regmap.html", ""))  # 문서에 찍힌 작성일과 같은 날짜로 표시
+    made = ".".join(m.groups()) if m else time.strftime("%Y.%m.%d")
+    out.write_text(json.dumps({"key": key, "made": made, "result": r, "outputs": outputs}, ensure_ascii=False), encoding="utf-8")
     print(key, f"{time.time() - t0:.0f}s", r.get("track"), "| 핵심", len(r.get("core") or []), "|", "; ".join(n for s in r["stages"] for n in (s.get("notes") or []))[:200])
     return True
 
