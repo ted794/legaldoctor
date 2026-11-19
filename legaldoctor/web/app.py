@@ -162,17 +162,17 @@ def _with_og(name: str, path: str = "") -> HTMLResponse:
     return HTMLResponse(html)
 
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])  # 메신저 미리보기는 HEAD로 먼저 확인함
 def index() -> HTMLResponse:
     return _with_og("index.html")
 
 
-@app.get("/og.png")
+@app.api_route("/og.png", methods=["GET", "HEAD"])  # 메신저 미리보기는 HEAD로 먼저 확인함
 def og_image() -> FileResponse:
     return FileResponse(STATIC / "og.png", media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
 
-@app.get("/og-{page}.png")
+@app.api_route("/og-{page}.png", methods=["GET", "HEAD"])  # 메신저 미리보기는 HEAD로 먼저 확인함
 def og_page_image(page: str) -> FileResponse:
     if page not in INTERNAL_PAGES:
         raise HTTPException(404, "없음")
@@ -198,22 +198,22 @@ def demo_biz_pdf(key: str) -> FileResponse:
     return FileResponse(DEMO_BIZ_DIR / f"{key}.pdf", media_type="application/pdf", filename=f"가상사업소개서_{key}.pdf", content_disposition_type="inline")
 
 
-@app.get("/privacy")
+@app.api_route("/privacy", methods=["GET", "HEAD"])  # 메신저 미리보기는 HEAD로 먼저 확인함
 def privacy() -> FileResponse:
     return FileResponse(STATIC / "privacy.html")
 
 
-@app.get("/everyone")
+@app.api_route("/everyone", methods=["GET", "HEAD"])  # 메신저 미리보기는 HEAD로 먼저 확인함
 def everyone() -> HTMLResponse:
     return _with_og("everyone.html", "everyone")
 
 
-@app.get("/network")
+@app.api_route("/network", methods=["GET", "HEAD"])  # 메신저 미리보기는 HEAD로 먼저 확인함
 def network() -> HTMLResponse:
     return _with_og("network.html", "network")
 
 
-@app.get("/terms")
+@app.api_route("/terms", methods=["GET", "HEAD"])  # 메신저 미리보기는 HEAD로 먼저 확인함
 def terms() -> FileResponse:
     return FileResponse(STATIC / "terms.html")
 
