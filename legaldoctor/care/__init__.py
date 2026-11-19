@@ -155,8 +155,8 @@ def ask_context(plan: dict[str, Any], task: dict[str, Any], lessons: list[dict[s
         name = f"「{x['law']}」 {x['locator']}"
         labels.append(name)
         lines.append(f"- {name}: {x.get('point','')} / 원문: {x.get('quote','')[:400]}")
-    for ls in lessons[:6]:
-        name = f"교훈: {ls['title']}"
+    for ls in lessons[:9]:
+        name = ls["title"] if ls.get("type") == "과거 상담" else f"교훈: {ls['title']}"
         labels.append(name)
         lines.append(f"- {name}: {ls.get('body','')[:300]}")
     return "\n".join(lines), labels

@@ -192,8 +192,17 @@ async def care_ask(token: str, body: AskIn) -> dict[str, Any]:
     if not task or not body.question.strip():
         raise HTTPException(400, "과제와 질문을 넣어 주세요")
     lessons = _lessons(plan, task["title"] + body.question)
+    from legaldoctor import wisdom
+
+    item = next((x for x in plan["items"] if x["id"] == task["item"]), None) or {}
+    past = wisdom.similar(task["title"] + " " + body.question, plan.get("module", ""), item.get("category", ""), k=3)
+    # 비슷한 과거 상담(일반화한 카드)을 답변 근거 후보로 함께 준다
+    lessons = lessons + [{"type": "과거 상담", "title": f"과거 상담 · {x['q']}", "body": x["a"]} for x in past]
 
     def refs():
+        kept = next((x["refs"] for x in past if x["score"] >= 0.35 and x["refs"] and time.time() - x["refs_at"] < wisdom.REFS_FRESH), None)
+        if kept:
+            return kept  # 아주 비슷한 과거 상담의 참고 자료가 신선하면 외부 검색을 생략
         try:
             r = search_client().references(f"한국 스타트업 실무: {task['title']} — {body.question[:120]}", min_refs=1)
             return _clean_refs(r.references, 4)
@@ -207,7 +216,13 @@ async def care_ask(token: str, body: AskIn) -> dict[str, Any]:
             return fa.result(), fr.result()
 
     ans, rs = await run_in_threadpool(run)
-    rec = {"task": task["id"], "at": time.strftime("%Y-%m-%d %H:%M"), "q": body.question[:800], **ans, "refs": rs}
+    wisdom.used([x for x in past if any(b.endswith(x["q"]) for b in ans.get("basis", []))])
+    rec = {"task": task["id"], "at": time.strftime("%Y-%m-%d %H:%M"), "q": body.question[:800], **ans, "refs": rs,
+           "past": [{"q": x["q"], "a": x["a"]} for x in past]}
+    laws = [f"「{l['law']}」 {l['locator']}" for l in item.get("laws", [])]
+    import threading as _th
+
+    _th.Thread(target=wisdom.learn_consult, args=(model(), plan.get("module", ""), item.get("category", ""), plan.get("causes", []), body.question, ans, rs, laws), daemon=True).start()
     plan["chat"].append(rec)
     care.save(plan)
     return {"chat": rec}
