@@ -158,8 +158,9 @@ JSON 하나만 출력한다. {"keep":true,"q":"일반 질문 한 문장","a":"�
 
 
 def learn_consult(model, module_key: str, category: str, causes: list[int], question: str, ans: dict[str, Any], refs: list[dict[str, Any]], laws: list[str]) -> bool:
-    """실행 상담 한 건을 일반화해 상담 카드로 저장한다. 근거 없는 답(변호사 확인 필요)이나 개인정보가 남는 경우는 저장하지 않음"""
-    if not enabled() or not ans.get("basis") or ans.get("needs_lawyer"):
+    """실행 상담 한 건을 일반화해 상담 카드로 저장한다. 근거 조문이 없는 답이나 개인정보가 남는 경우는 저장하지 않음.
+    변호사 확인이 필요하다고 표시된 답은 그 표시를 카드에 함께 남김"""
+    if not enabled() or not ans.get("basis"):
         return False
     try:
         d = model.chat_json([{"role": "system", "content": GEN_SYSTEM},
@@ -177,6 +178,7 @@ def learn_consult(model, module_key: str, category: str, causes: list[int], ques
     c = old or {"id": cid, "kind": "consult", "module": module_key, "category": category, "causes": causes, "q": q, "a": a,
                 "laws": [], "refs": [], "stats": {"n": 0}, "uses": 0, "created": now, "updated": now, "refs_at": 0}
     c["stats"]["n"] = c["stats"].get("n", 0) + 1
+    c["stats"]["lawyer"] = bool(ans.get("needs_lawyer"))
     c["laws"] = [{"law": x, "locator": "", "quote": "", "url": "", "n": 1} for x in laws if x.startswith("「")][:4] or c["laws"]
     if refs:
         c["refs"] = [{k: r.get(k, "") for k in ("title", "url", "host", "date")} for r in refs][:4]
@@ -195,6 +197,7 @@ def similar(text: str, module_key: str = "", category: str = "", k: int = 3, kin
     """비슷한 카드(두 글자 단위 겹침). 같은 범주면 가산점"""
     if not enabled() or not text.strip():
         return []
+    seed()
     with _lock:
         rows = _db().execute("SELECT * FROM cards WHERE kind=? AND (?='' OR module=?)", (kind, module_key, module_key)).fetchall()
     g = _grams(text)
@@ -208,7 +211,7 @@ def similar(text: str, module_key: str = "", category: str = "", k: int = 3, kin
         if s >= floor:
             out.append((s, c))
     out.sort(key=lambda x: -x[0])
-    return [{**c, "score": round(s, 3)} for s, c in out[:k]]
+    return [{**c, "score": round(s, 3), "seed": c["stats"].get("origin") == "seed", "lawyer": bool(c["stats"].get("lawyer"))} for s, c in out[:k]]
 
 
 def used(cards: list[dict[str, Any]]) -> None:
@@ -230,8 +233,75 @@ def stats() -> dict[str, Any]:
     ck = [c for c in rows if c["kind"] == "checkup"]
     return {
         "enabled": True,
-        "cards": {"checkup": len(ck), "consult": sum(1 for c in rows if c["kind"] == "consult")},
+        "cards": {"checkup": len(ck), "consult": sum(1 for c in rows if c["kind"] == "consult"), "law": sum(1 for c in rows if c["kind"] == "law"),
+                  "seed": sum(1 for c in rows if c["stats"].get("origin") == "seed")},
         "reuse": sum(c["uses"] for c in rows),
         "categories": [{"module": c["module"], "category": c["category"], "causes": c["causes"], "n": c["stats"].get("n", 0),
                         "risk": c["stats"].get("risk", {}), "refs": len(c["refs"])} for c in sorted(ck, key=lambda c: -c["stats"].get("n", 0))],
     }
+
+
+# 규제 분석(규제팡) 카드: 법령·조문 단위 판정만 -----------------------------
+def law_notes(pairs: list[tuple[str, str]]) -> dict[str, dict[str, Any]]:
+    """조문마다 지난 분석에서 몇 번 걸렸고 어떤 판정이 나왔는지(이번 분석을 더하기 전에 부름)"""
+    if not enabled():
+        return {}
+    out = {}
+    for law, loc in pairs:
+        c = get(f"rg:{law}|{loc}")
+        if c and c["stats"].get("n"):
+            out[f"{law}|{loc}"] = {"n": c["stats"]["n"], "grade": c["stats"].get("grade", {})}
+    return out
+
+
+def learn_regpang(rows: list[Any]) -> int:
+    """규제 지도의 조문별 판정을 법령·조문 카드에 더한다. 사업 설명·행위 문장·판정 요지는 넣지 않고
+    법령 이름, 조문, 판정 등급, 규제 유형, 공개 원문, 소관 부처만 남긴다(한 분석에서 같은 조문은 한 번만 셈)"""
+    if not enabled():
+        return 0
+    seen: dict[tuple[str, str], Any] = {}
+    for x in rows:
+        if x.law and x.locator and x.locator != "-":
+            seen.setdefault((x.law, x.locator), x)
+    now = time.time()
+    for (law, loc), x in seen.items():
+        cid = f"rg:{law}|{loc}"
+        c = get(cid) or {"id": cid, "kind": "law", "module": "bm", "category": law, "causes": [], "q": f"「{law}」 {loc}",
+                         "a": "", "laws": [{"law": law, "locator": loc, "quote": (x.quote or "")[:300], "url": x.url or "", "n": 0}],
+                         "refs": [], "stats": {}, "uses": 0, "created": now, "updated": now, "refs_at": 0}
+        st = c["stats"]
+        st["n"] = st.get("n", 0) + 1
+        g = st.setdefault("grade", {})
+        g[x.grade] = g.get(x.grade, 0) + 1
+        if getattr(x, "type", ""):
+            t = st.setdefault("type", {})
+            t[x.type] = t.get(x.type, 0) + 1
+        if getattr(x, "ministry", ""):
+            st["ministry"] = x.ministry
+        c["laws"][0]["n"] = st["n"]
+        c["updated"] = now
+        _put(c)
+    return len(seen)
+
+
+# 시연 준비용 씨앗 카드 ------------------------------------------------------
+SEED_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "wisdom" / "seed.json"
+_seeded = False
+
+
+def seed() -> int:
+    """저장소에 든 씨앗 카드(가상 예시 상담에서 만든 것)를 아직 없는 경우에만 넣는다. 화면에는 '시연용 예시'로 표시"""
+    global _seeded
+    if _seeded or not enabled() or not SEED_PATH.exists():
+        return 0
+    _seeded = True
+    n = 0
+    for c in json.loads(SEED_PATH.read_text(encoding="utf-8")).get("cards", []):
+        if c.get("kind") not in ("consult", "checkup") or get(c["id"]):
+            continue
+        c.setdefault("stats", {})["origin"] = "seed"
+        c["uses"], c["created"] = 0, c.get("created") or time.time()
+        c["updated"] = time.time()
+        _put(c)
+        n += 1
+    return n

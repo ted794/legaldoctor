@@ -525,6 +525,14 @@ def _run_analysis(s: Session) -> None:
         state = run(s.profile.to_business_text(), stages=stages, on_stage=on_stage)
         metrics.record("analyze", state.timings, before, halted=state.halted_at)
         report = build_report(state, s.profile)
+        try:
+            from legaldoctor import wisdom
+
+            # 지난 분석들에서 같은 조문이 어떻게 판정됐는지 붙이고, 이번 판정을 법령·조문 단위로만 더함
+            report.past = wisdom.law_notes([(x.law, x.locator) for x in report.core])
+            wisdom.learn_regpang(report.rows)
+        except Exception:  # noqa: BLE001
+            report.past = {}
         s.outputs = {
             "regmap.html": regmap_html(report),
             "consult.html": consult_html(report),

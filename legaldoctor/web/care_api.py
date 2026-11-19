@@ -218,7 +218,7 @@ async def care_ask(token: str, body: AskIn) -> dict[str, Any]:
     ans, rs = await run_in_threadpool(run)
     wisdom.used([x for x in past if any(b.endswith(x["q"]) for b in ans.get("basis", []))])
     rec = {"task": task["id"], "at": time.strftime("%Y-%m-%d %H:%M"), "q": body.question[:800], **ans, "refs": rs,
-           "past": [{"q": x["q"], "a": x["a"]} for x in past]}
+           "past": [{"q": x["q"], "a": x["a"], "seed": x.get("seed", False), "lawyer": x.get("lawyer", False)} for x in past]}
     laws = [f"「{l['law']}」 {l['locator']}" for l in item.get("laws", [])]
     import threading as _th
 
