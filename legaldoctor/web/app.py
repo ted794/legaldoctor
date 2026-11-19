@@ -39,6 +39,8 @@ app = FastAPI(title="스타트업 리걸닥터")
 # 남용 방지 -------------------------------------------------------------------
 # 분석·검진은 Liner 유료 API를 수십 번 부른다. IP별 시간당 한도와 서버 전체 하루 한도를 둔다.
 # 앞단 nginx가 X-Real-IP를 넣어 준다(앱은 127.0.0.1에만 열어 둠). 값은 환경변수로 바꿀 수 있음
+import base64
+import hashlib
 import json
 import re
 import os
@@ -97,6 +99,7 @@ class Session:
     edits: int = 0
     outputs: dict[str, Any] = field(default_factory=dict)
     job: dict[str, Any] = field(default_factory=dict)  # 규제 분석 진행 상황(백그라운드 실행)
+    demo: str = ""  # 시연용 가상 사업소개서만 올린 세션이면 그 예시의 key(자료를 더하거나 고치면 비움)
     created: float = field(default_factory=time.time)
 
     @property
@@ -189,6 +192,43 @@ def demo_biz_list() -> list[dict[str, Any]]:
         return json.loads((DEMO_BIZ_DIR / "index.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return []
+
+
+DEMO_RESULT_DIR = DEMO_BIZ_DIR / "results"
+_demo_hash: dict[str, str] = {}
+PRECOMPUTED_NOTE = '<div style="margin:0 0 14px;padding:10px 14px;border:1px solid #c9b458;background:#fff8dc;border-radius:8px;font-size:14px">미리 분석한 결과({made}). 시연용 가상 사업소개서를 미리 분석해 저장해 둔 것이며, 화면에서 "지금 새로 분석"을 누르면 다시 분석함</div>'
+
+
+def demo_key_of(data: bytes) -> str:
+    """올린 파일이 시연용 가상 사업소개서와 바이트까지 같으면 그 key, 아니면 빈 문자열"""
+    if not _demo_hash:
+        for d in demo_biz_list():
+            try:
+                _demo_hash[hashlib.sha256((DEMO_BIZ_DIR / f"{d['key']}.pdf").read_bytes()).hexdigest()] = d["key"]
+            except (OSError, KeyError):
+                continue
+    return _demo_hash.get(hashlib.sha256(data).hexdigest(), "")
+
+
+def demo_result(key: str) -> dict[str, Any] | None:
+    """미리 분석해 저장한 결과(scripts/make_demo_results.py가 만듦). 없거나 깨졌으면 None이고 그때는 보통처럼 분석한다"""
+    if not key or key not in {d.get("key") for d in demo_biz_list()}:
+        return None
+    try:
+        d = json.loads((DEMO_RESULT_DIR / f"{key}.json").read_text(encoding="utf-8"))
+        result, made = dict(d["result"]), str(d["made"])
+        outputs: dict[str, Any] = {}
+        for name, v in d["outputs"].items():
+            if name.endswith(".docx"):
+                outputs[name] = base64.b64decode(v)
+            else:
+                outputs[name] = re.sub(r'(<div class="page">)', lambda m: m.group(1) + PRECOMPUTED_NOTE.format(made=made), v, count=1)
+        if not result.get("stages") or result.get("halted_at") or set(result.get("outputs") or []) != set(outputs):
+            return None
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    result["precomputed"] = {"made": made}
+    return {"result": result, "outputs": outputs}
 
 
 @app.get("/api/demo_biz/{key}.pdf")
@@ -425,6 +465,8 @@ async def add_materials(
     s = get(sid)
     new: list[Material] = []
     skipped: list[str] = []
+    demo, first = "", not s.materials
+    s.demo = ""  # 자료가 더해지면 미리 분석한 결과와 달라질 수 있음
     if text.strip():
         new.append(from_text(text, name=f"직접 입력 {sum(m.kind == 'text' for m in s.materials) + 1}"))
     if drawing:
@@ -435,6 +477,8 @@ async def add_materials(
         if len(data) > MAX_UPLOAD_BYTES:
             skipped.append(f"{f.filename}: 20MB 초과")
             continue
+        if first and len(files) == 1 and not text.strip() and not drawing:
+            demo = demo_key_of(data)
         try:
             new += await run_in_threadpool(from_file, data, f.filename or "파일")
         except UnsupportedFile as e:
@@ -449,6 +493,7 @@ async def add_materials(
         _, rejected = await run_in_threadpool(extract_profile, model(), new, s.profile)
     except Exception as e:  # noqa: BLE001  모델 호출 실패를 화면에 알린다
         return profile_view(s, skipped=skipped, rejected=[], read=read, error=f"자료는 받았지만 사업 모델을 정리하지 못했어요. 잠시 뒤 다시 시도하거나 글로 2~3줄 설명해 주세요({str(e)[:80]})")
+    s.demo = demo
     return profile_view(s, skipped=skipped, rejected=rejected, read=read)
 
 
@@ -459,6 +504,8 @@ class AnswerIn(BaseModel):
 @app.post("/api/sessions/{sid}/interview", dependencies=[rate_limit("light")])
 def interview_step(sid: str, body: AnswerIn) -> dict[str, Any]:
     s = get(sid)
+    if body.answer:
+        s.demo = ""
     q = s.interview.step(body.answer)
     return profile_view(s, question=q.__dict__ if q else None)
 
@@ -473,6 +520,7 @@ def confirm(sid: str, body: ConfirmIn) -> dict[str, Any]:
     for k, v in body.edits.items():
         if k in SLOT_KEYS and v.strip():
             s.edits += 1
+            s.demo = ""
             name = f"창업자 수정 {s.edits}"
             s.materials.append(from_text(f"{SLOT_LABEL[k]}: {v}", name=name))
             s.profile.slots[k] = SlotValue(value=v.strip(), sources=[name])
@@ -583,12 +631,20 @@ def analyze_cancel(sid: str) -> dict[str, Any]:
 
 
 @app.post("/api/sessions/{sid}/analyze", dependencies=[rate_limit("heavy")])
-def analyze(sid: str) -> dict[str, Any]:
-    """분석을 백그라운드로 시작한다. 진행 상황은 GET 같은 주소로 본다(약 2분)."""
+def analyze(sid: str, fresh: bool = False) -> dict[str, Any]:
+    """분석을 백그라운드로 시작한다. 진행 상황은 GET 같은 주소로 본다(약 2분).
+    시연용 가상 사업소개서만 올린 세션은 미리 분석해 둔 결과를 바로 준다(fresh=1이면 새로 분석)."""
     s = get(sid)
     if not s.profile.slots:
         raise HTTPException(400, "사업 모델 정보가 아직 없음")
     if s.job.get("status") == "running":
+        return _job_view(s)
+    pre = None if fresh else demo_result(s.demo)
+    if pre:
+        now = time.time()
+        s.outputs = pre["outputs"]
+        s.job = {"status": "done", "started": now, "ended": now, "stages": [], "result": pre["result"], "log": []}
+        _log(s.job, "미리 분석해 둔 결과를 불러왔어요")
         return _job_view(s)
     s.job = {"status": "running", "started": time.time(), "stages": []}
     threading.Thread(target=_run_analysis, args=(s,), daemon=True).start()

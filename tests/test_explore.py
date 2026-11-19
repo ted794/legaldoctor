@@ -228,3 +228,37 @@ def test_engine_marks_existing_regulation():
     r = eng(state_with([ACTS[0]]))
     f = next(f for f in r.payload["findings"] if f.locator == "제10조의2")
     assert f.reg_status.startswith("현존 규제")
+
+
+def test_search_timeout_drops_late_clues(monkeypatch):
+    """검색 대기 상한: 늦는 검색 단서는 기다리지 않고 받은 것만으로 진행하고 그 사실을 남긴다"""
+    import time
+
+    import legaldoctor.explore.engine as engine
+
+    def slow(model, search, activity):
+        if activity.id != ACTS[0].id:
+            time.sleep(5)
+        return [], []
+
+    monkeypatch.setattr(engine, "search_clues", slow)
+    eng = Explore(ScriptedModel(), object(), LawSource(FakeDrf()), use_search=True, workers=4, search_timeout=0.2, use_shadow=False)
+    t0 = time.perf_counter()
+    r = eng(state_with(ACTS))
+    assert time.perf_counter() - t0 < 4  # 5초짜리 검색을 기다리지 않음
+    late = [n for n in r.notes if "검색 단서가 늦어" in n]
+    assert len(late) == len(ACTS) - 1
+    assert r.payload["findings"]  # 가설만으로도 결과는 나옴
+
+
+def test_search_timeout_env(monkeypatch):
+    from legaldoctor.pipeline.runner import search_timeout
+
+    monkeypatch.delenv("LD_SEARCH_TIMEOUT", raising=False)
+    assert search_timeout() == 60.0
+    monkeypatch.setenv("LD_SEARCH_TIMEOUT", "90")
+    assert search_timeout() == 90.0
+    monkeypatch.setenv("LD_SEARCH_TIMEOUT", "0")
+    assert search_timeout() is None  # 0이면 끝까지 기다림
+    monkeypatch.setenv("LD_SEARCH_TIMEOUT", "abc")
+    assert search_timeout() == 60.0

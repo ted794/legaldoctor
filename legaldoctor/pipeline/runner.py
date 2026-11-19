@@ -15,6 +15,17 @@ STAGES: Sequence[S.Stage] = (
 )
 
 
+def search_timeout() -> float | None:
+    """규제 탐색에서 Liner Search 단서를 기다리는 상한(초). LD_SEARCH_TIMEOUT으로 바꾸고 0이면 끝까지 기다린다."""
+    import os
+
+    try:
+        v = float(os.getenv("LD_SEARCH_TIMEOUT", "60"))
+    except ValueError:
+        v = 60.0
+    return v if v > 0 else None
+
+
 def build_stages(model, settings=None, *, use_search: bool = True, cases=None) -> list[S.Stage]:
     """실제 실행용 단계 목록. 구현된 단계부터 차례로 바꿔 끼운다."""
     from legaldoctor.config import load_settings
@@ -30,7 +41,7 @@ def build_stages(model, settings=None, *, use_search: bool = True, cases=None) -
     cases = cases if cases is not None else load_index()
     return [
         Decompose(model),
-        build_explore(model, settings, use_search=use_search, cases=cases),
+        build_explore(model, settings, use_search=use_search, cases=cases, search_timeout=search_timeout()),
         Classify(),
         Jurisdiction(),
         Precedent(),
