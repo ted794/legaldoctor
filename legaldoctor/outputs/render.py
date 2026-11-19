@@ -99,6 +99,15 @@ def _folded(x) -> bool:
     return is_auto_chain(x) or x.score < LOW
 
 
+def _past(r: Report, x) -> str:
+    """상담 지혜 저장소: 지난 분석들에서 같은 조문이 걸린 횟수와 판정(법령·조문 단위 익명 집계)"""
+    p = (getattr(r, "past", None) or {}).get(f"{x.law}|{x.locator}")
+    if not p:
+        return ""
+    g = " · ".join(f"{k} {v}" for k, v in sorted(p["grade"].items(), key=lambda kv: -kv[1]))
+    return f"<div class='chain'>지난 분석 {p['n']}건에서도 걸림({e(g)})</div>"
+
+
 def _core_block(r: Report) -> str:
     if not r.core:
         return ""
@@ -106,7 +115,7 @@ def _core_block(r: Report) -> str:
     trs = "".join(
         f"<tr><td class='rk'>{i}</td><td>{_grade(x.grade)}<div class='chain'>{e(x.type)}</div></td><td>{_law_cell(x)}{_src(x)}"
         + (f"<div class='chain'>소관 {e(x.ministry)}</div>" if x.ministry else "")
-        + f"</td><td>{e(x.point)}<div class='chain'>{e(x.activity_id)}. {e(act.get(x.activity_id, ''))}</div></td><td class='why'>{e(' · '.join(x.reasons) or '-')}</td></tr>"
+        + f"</td><td>{e(x.point)}<div class='chain'>{e(x.activity_id)}. {e(act.get(x.activity_id, ''))}</div></td><td class='why'>{e(' · '.join(x.reasons) or '-')}{_past(r, x)}</td></tr>"
         for i, x in enumerate(r.core, 1)
     )
     return (

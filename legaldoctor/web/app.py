@@ -354,6 +354,14 @@ def _refresh_news_bg(no: int) -> None:
     threading.Thread(target=run, daemon=True).start()
 
 
+@app.get("/api/wisdom/stats")
+def wisdom_stats() -> dict[str, Any]:
+    """상담 지혜 저장소의 익명 집계(카드 수, 범주별 검진 수·위험 분포, 재사용 횟수). 이용자 자료는 없음"""
+    from legaldoctor import wisdom
+
+    return wisdom.stats()
+
+
 @app.get("/api/causes/{no}/feed")
 def cause_feed(no: int) -> dict[str, Any]:
     """사인 튜토리얼: 운영자 보유 규제 변화 피드에서 이 사인 번호로 분류된 최근 항목(피드가 없으면 빈 목록)"""
@@ -517,6 +525,14 @@ def _run_analysis(s: Session) -> None:
         state = run(s.profile.to_business_text(), stages=stages, on_stage=on_stage)
         metrics.record("analyze", state.timings, before, halted=state.halted_at)
         report = build_report(state, s.profile)
+        try:
+            from legaldoctor import wisdom
+
+            # 지난 분석들에서 같은 조문이 어떻게 판정됐는지 붙이고, 이번 판정을 법령·조문 단위로만 더함
+            report.past = wisdom.law_notes([(x.law, x.locator) for x in report.core])
+            wisdom.learn_regpang(report.rows)
+        except Exception:  # noqa: BLE001
+            report.past = {}
         s.outputs = {
             "regmap.html": regmap_html(report),
             "consult.html": consult_html(report),
@@ -661,13 +677,20 @@ def _enrich_cases(cid: str) -> None:
     job["enrich"] = "running"
     _log(job, f"위험 높은 항목 {len(todo)}개의 실제 판례·처분 사례를 Liner Search로 찾고 있어요. 끝나면 검진결과표에 더해져요")
 
+    from legaldoctor import wisdom
+
     def one(i):
+        kept = wisdom.fresh_refs(job["module"].key, i.category)  # 같은 범주에서 30일 안에 찾아 둔 사례가 있으면 다시 검색하지 않음
+        if kept:
+            return i.id, kept
         q = f"한국 법원 판결이나 정부 처분으로 확인된 '{i.label}' 관련 실제 사례(대법원·하급심 판례, 공정위·개인정보위·노동위 결정, 언론 보도): {(i.summary or i.quote)[:120]}"
         try:
             res = search_client().references(q, min_refs=1)  # 출처만 받고 답변 생성은 기다리지 않음(약 2배 빠름)
         except Exception:  # noqa: BLE001
             return i.id, []
-        return i.id, _clean_refs(res.references, 3)
+        refs = _clean_refs(res.references, 3)
+        wisdom.learn_refs(job["module"].key, i.category, refs)
+        return i.id, refs
 
     try:
         from concurrent.futures import ThreadPoolExecutor
@@ -768,6 +791,12 @@ def _check_job(cid: str, ids: list[str]) -> None:
     def on_item(i):
         laws = ", ".join(_item_view(i, m)["laws"]) or "직접 다루는 조문 없음"
         _log(job, f"[{i.risk}] {i.label}: {i.verdict} · {laws}")
+        try:
+            from legaldoctor import wisdom
+
+            wisdom.learn_checkup(m, i)  # 범주 카드에 판정 분포와 공개 근거 조문만 더함(이용자 원문은 넣지 않음)
+        except Exception:  # noqa: BLE001
+            pass
 
     try:
         if job.get("explore") is None:

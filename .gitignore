@@ -28,3 +28,4 @@ data/law_cache/_news/
 data/care/
 data/feed/feed.json
 data/feed/*.tmp
+data/law_cache/_wisdom/
