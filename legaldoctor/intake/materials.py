@@ -26,6 +26,13 @@ MAX_IMAGE_SIDE = 1280
 MAX_PDF_PAGE_IMAGES = 6
 MAX_PDF_PAGE_IMAGES_NO_TEXT = 10
 MAX_TEXT_PER_MATERIAL = 6000
+# 조작된 파일로 서버 메모리·시간을 소진시키는 것을 막는 상한
+MAX_FILE_BYTES = 20 * 1024 * 1024
+MAX_PDF_PAGES = 300
+MAX_SLIDES = 300
+MAX_IMAGE_PIXELS = 40_000_000  # 약 6300x6300
+MAX_ZIP_BYTES = 200 * 1024 * 1024  # 압축을 푼 크기 합(docx·pptx·hwpx는 zip 구조)
+MAX_ZIP_ENTRIES = 5000
 
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
 DOC_EXT = {".pdf", ".pptx", ".docx", ".hwpx", ".txt", ".md"}
@@ -60,7 +67,11 @@ def image_to_b64(img: Image.Image) -> tuple[str, str]:
 def from_image_bytes(data: bytes, name: str) -> Material:
     try:
         img = Image.open(io.BytesIO(data))
+        if img.size[0] * img.size[1] > MAX_IMAGE_PIXELS:
+            raise UnsupportedFile(f"그림이 너무 큼: {name}")
         img.load()
+    except UnsupportedFile:
+        raise
     except Exception as e:  # noqa: BLE001
         raise UnsupportedFile(f"그림을 열 수 없음: {name}") from e
     if img.mode in ("RGBA", "LA", "P"):
@@ -92,6 +103,8 @@ def _pdf(data: bytes, fname: str) -> list[Material]:
 
     out: list[Material] = []
     reader = pypdf.PdfReader(io.BytesIO(data))
+    if len(reader.pages) > MAX_PDF_PAGES:
+        raise UnsupportedFile(f"{fname}: {MAX_PDF_PAGES}쪽이 넘는 PDF는 필요한 부분만 나눠서 올려 주세요")
     for i, page in enumerate(reader.pages, 1):
         text = _clip(page.extract_text() or "")
         if text:
@@ -111,6 +124,8 @@ def _pptx(data: bytes, fname: str) -> list[Material]:
 
     out: list[Material] = []
     prs = Presentation(io.BytesIO(data))
+    if len(prs.slides) > MAX_SLIDES:
+        raise UnsupportedFile(f"{fname}: 슬라이드가 {MAX_SLIDES}장이 넘으면 필요한 부분만 나눠서 올려 주세요")
     for i, slide in enumerate(prs.slides, 1):
         texts: list[str] = []
         for shape in slide.shapes:
@@ -162,9 +177,24 @@ def _chunks(text: str, fname: str) -> list[Material]:
     return [Material(kind="document", name=f"{fname} {k}부분", text=_clip(p)) for k, p in enumerate(pieces, 1)]
 
 
+def _check_zip(data: bytes, fname: str) -> None:
+    """압축을 풀면 터무니없이 커지는 파일(zip 폭탄)을 풀기 전에 거른다"""
+    try:
+        with zipfile.ZipFile(io.BytesIO(data)) as z:
+            infos = z.infolist()
+            if len(infos) > MAX_ZIP_ENTRIES or sum(i.file_size for i in infos) > MAX_ZIP_BYTES:
+                raise UnsupportedFile(f"{fname}: 파일 안의 내용이 너무 커서 읽지 않음. PDF로 저장해 올려 주세요")
+    except zipfile.BadZipFile as e:
+        raise UnsupportedFile(f"{fname}: 파일을 열 수 없음(손상됐거나 형식이 다름)") from e
+
+
 def from_file(data: bytes, filename: str) -> list[Material]:
     fname = Path(filename).name
     ext = Path(fname).suffix.lower()
+    if len(data) > MAX_FILE_BYTES:
+        raise UnsupportedFile(f"{fname}: 20MB 초과")
+    if ext in (".pptx", ".docx", ".hwpx"):
+        _check_zip(data, fname)
     if ext in IMAGE_EXT:
         return [from_image_bytes(data, fname)]
     if ext == ".pdf":

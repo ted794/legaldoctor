@@ -53,6 +53,8 @@ def test_consult_card_generalized_and_pii_blocked(monkeypatch, tmp_path):
                                 "invest", "personal_liability", [13], "q", ok, [{"title": "t", "url": "https://r"}], ["「벤처투자 촉진에 관한 법률」 제2조"])
     nolaw = {"answer": "모름", "basis": [], "needs_lawyer": True}
     assert wisdom.learn_consult(FakeModel({"keep": True, "q": "x", "a": "y"}), "invest", "", [], "q", nolaw, [], []) is False  # 근거 없는 답은 저장 안 함
+    assert wisdom.similar("창업자 연대책임 조항 협상", "invest", "personal_liability") == []  # 운영자 확인 전에는 쓰지 않음
+    assert wisdom.approve(wisdom.pending()[0]["id"])
     hit = wisdom.similar("창업자 연대책임 조항 협상", "invest", "personal_liability")
     assert hit and hit[0]["q"].startswith("투자계약의 창업자 연대책임")
     assert hit[0]["lawyer"] is True  # 변호사 확인 표시는 카드에 남음

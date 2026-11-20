@@ -65,6 +65,37 @@
 4. `deploy/legaldoctor.service`가 바뀌었으면: `sudo cp /srv/legaldoctor/deploy/legaldoctor.service /etc/systemd/system/ && sudo systemctl daemon-reload`
 5. `sudo systemctl restart legaldoctor` (메모리에 있던 진행 중 세션은 사라짐)
 
+### 보안 설정
+
+- 보안 헤더(CSP, HSTS, 클릭재킹 방지, Referrer-Policy 등)와 검진·분석·케어 응답의 `Cache-Control: no-store`는 앱이 붙임. nginx에서 같은 헤더를 또 붙이지 않음. HSTS는 같은 도메인의 다른 서비스에도 적용되므로 문제가 있으면 `.env`에 `LD_HSTS=0`
+- 같은 도메인에 다른 서비스가 있을 때
+  - HSTS 값을 그 서비스와 똑같이 맞춤(`.env`의 `LD_HSTS`에 값 전체). 리걸닥터 응답이 더 약한 값을 내면 그 응답을 본 브라우저에서 도메인 전체의 보호가 약해짐
+  - 상단 메뉴에서 iframe으로 여는 연결 서비스는 그쪽 응답의 `frame-ancestors`가 리걸닥터 주소를 허용해야 보임. 이 허용을 nginx에서 헤더를 바꿔 넣는 방식으로 하고 있다면 그 서비스가 CSP를 고쳐도 해당 경로에는 반영되지 않으므로, 그 서비스가 직접 `frame-ancestors`를 내도록 바꾸고 nginx 쪽은 걷어내는 것이 맞음
+  - 연결 서비스 주소에는 토큰이 든 경로를 넣지 않음(주소가 화면과 브라우저 기록에 남음)
+  - 접속 기록 파일 권한을 다른 기록과 같게 둠: `sudo chown www-data:adm /var/log/nginx/legaldoctor.access.log && sudo chmod 640 /var/log/nginx/legaldoctor.access.log`
+- 접속 기록: `deploy/nginx-legaldoctor.conf` 맨 위 주석의 `map`과 `log_format`을 http 블록에 두면 리걸닥터 경로의 기록에서 비밀 링크 토큰이 가려짐. 케어 화면 주소의 토큰은 `#` 뒤에 있어 서버로 오지 않음
+- 파일 권한: 서비스 파일의 `UMask=0077`로 새 케어 기록과 캐시는 서비스 계정만 읽음. 이미 있는 파일은 한 번 맞춤
+  ```bash
+  sudo chmod 700 /srv/legaldoctor/data/care /srv/legaldoctor/data/law_cache/_answers /srv/legaldoctor/data/law_cache/_wisdom
+  sudo find /srv/legaldoctor/data/care /srv/legaldoctor/data/law_cache/_answers /srv/legaldoctor/data/law_cache/_wisdom -type f -exec chmod 600 {} +
+  ```
+- 서비스 격리: `deploy/legaldoctor.service`에 권한·장치·커널 기능 제한을 둠. 바꾼 뒤 `sudo systemd-analyze security legaldoctor`로 점수를 볼 수 있음. 재시작 뒤 서비스가 뜨지 않으면 `journalctl -u legaldoctor -n 50`을 보고 이전 서비스 파일로 되돌림
+- 판정 응답 캐시 보관 일수는 `LD_ANSWER_CACHE_DAYS`(1~30)로 줄일 수 있음
+
+### 남용 방어와 알림
+
+- 텔레그램 알림: `.env`에 `LD_TG_TOKEN`(봇 토큰)과 `LD_TG_CHAT`(받을 대화 id)을 넣고 재시작. 토큰은 서버 터미널에서 직접 입력함
+  - 시험: `cd /srv/legaldoctor && sudo -u legaldoctor env HOME=/srv/legaldoctor .venv/bin/python -m legaldoctor.alert "시험 알림"`
+  - 알림이 가는 때: 10분 동안 분석·검진이 15건 이상, 한 IP가 한 시간에 8건 이상, 한도 초과 거절이 10분 동안 20건 이상, 하루 상한의 80%와 100%
+  - 같은 알림은 15분에 한 번. 공격이 이어지면 15분마다 다시 옴. 알림에는 이용자 자료가 없고 IP는 앞부분만 넣음
+  - 재시작하면 세던 숫자는 0부터 다시 셈
+- 비용 한도: `LD_HEAVY_PER_HOUR`(IP별), `LD_HEAVY_PER_DAY`(서버 전체)를 넣어야 실제로 막음. 한도가 꺼져 있어도 알림은 감
+- 상담 지혜 저장소: 이용자 상담에서 만든 카드는 운영자가 확인한 뒤에만 다른 이용자에게 쓰임
+  - 대기 목록: `sudo -u legaldoctor env HOME=/srv/legaldoctor .venv/bin/python -m legaldoctor.wisdom list`
+  - 승인·삭제: 같은 명령 끝에 `approve <id>` 또는 `forget <id>`
+  - 주소·광고·연락처·지시문이 든 카드와 근거에 없는 법령 이름을 댄 카드는 저장하지 않음. 새 카드는 하루 30건까지
+- 업로드 상한: 파일당 20MB, 한 번에 10개, PDF 300쪽, 슬라이드 300장, 압축을 푼 크기 200MB, 그림 4천만 화소
+
 ### 규제 변화 피드(선택)
 
 운영자가 보유한 규제 변화 분류 자료를 사인 튜토리얼, 검진결과표, 리걸닥터 케어에 이어 씁니다. 형식은 `docs/feed_spec.md`.

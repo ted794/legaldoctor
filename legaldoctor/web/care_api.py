@@ -146,6 +146,8 @@ async def care_recheck(token: str, item_id: str = Form(...), text: str = Form(""
     item = next((x for x in plan["items"] if x["id"] == item_id), None)
     if not item:
         raise HTTPException(404, "그런 검진 항목이 없음")
+    if len(files) > 10:
+        raise HTTPException(400, "파일은 한 번에 10개까지 올릴 수 있어요")
     texts = [text]
     for f in files:
         data = await f.read()

@@ -98,3 +98,22 @@ def test_shipped_results_load():
         assert pre, d["key"]
         assert pre["result"]["precomputed"]["made"] and pre["result"]["core"]
         assert "미리 분석한 결과(" in pre["outputs"]["regmap.html"] and pre["outputs"]["application.docx"][:2] == b"PK"
+
+
+def test_precomputed_does_not_count_toward_limits(client, monkeypatch):
+    """저장해 둔 결과는 비용이 들지 않으므로 한도와 급증 알림에 세지 않는다(시연에서 여러 번 눌러도 막히지 않게)"""
+    from legaldoctor import alert
+
+    monkeypatch.setitem(web.LIMITS, "heavy", 2)
+    for q in (web._hits, web._daily, web._recent_heavy, alert.SENT):
+        q.clear()
+    h = {"x-real-ip": "203.0.113.50"}
+    for _ in range(5):
+        sid = _session(client)
+        j = client.post(f"/api/sessions/{sid}/analyze", headers=h)
+        assert j.status_code == 200 and j.json()["result"]["precomputed"]
+    assert not web._daily and not web._recent_heavy and not web._hits.get(("heavy", "203.0.113.50"))
+    sid = _session(client)
+    assert [client.post(f"/api/sessions/{sid}/analyze?fresh=1", headers=h).status_code for _ in range(1)] == [200]  # 새로 분석은 셈
+    assert len(web._daily) == 1
+

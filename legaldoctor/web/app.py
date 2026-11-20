@@ -33,8 +33,43 @@ from legaldoctor.liner import LinerModel
 
 STATIC = Path(__file__).parent / "static"
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
+MAX_FILES = 10  # 한 번에 올리는 파일 수
 
 app = FastAPI(title="스타트업 리걸닥터")
+
+# 보안 헤더 ------------------------------------------------------------------
+# 화면과 결과 문서는 스크립트·스타일을 문서 안에 두므로 'unsafe-inline'을 허용하되, 외부 출처의 스크립트·연결·플러그인은 막는다.
+# frame-src의 https:는 상단 메뉴의 연결 서비스(LD_NAV의 frame)를 여는 데 필요함
+CSP = (
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+    "font-src 'self' data:; connect-src 'self'; frame-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+)
+SECURITY_HEADERS = {
+    "Content-Security-Policy": CSP,
+    "X-Frame-Options": "SAMEORIGIN",  # 다른 사이트가 화면을 겹쳐 씌워 누르게 하는 것(클릭재킹)을 막음
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",  # 비밀 링크가 든 주소가 다른 사이트로 넘어가지 않게
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+    "Cross-Origin-Opener-Policy": "same-origin",
+}
+_PUBLIC_API = ("/api/demo_biz", "/api/causes", "/api/info", "/api/checkup/demo/")  # 이용자 정보가 없는 응답
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    resp = await call_next(request)
+    for k, v in SECURITY_HEADERS.items():
+        resp.headers.setdefault(k, v)
+    # HTTPS로 들어온 요청에만 HSTS. 브라우저는 같은 도메인에서 마지막으로 받은 값을 쓰므로, 같은 도메인에 다른 서비스가 있으면
+    # LD_HSTS에 그 서비스와 똑같은 값을 통째로 넣는다(예: "max-age=31536000; includeSubDomains"). 값이 다르면 더 약한 쪽으로 덮어쓸 수 있음. 끄기: LD_HSTS=0
+    hsts = os.getenv("LD_HSTS", "1").strip()
+    if hsts != "0" and request.headers.get("x-forwarded-proto", request.url.scheme) == "https":
+        resp.headers.setdefault("Strict-Transport-Security", hsts if re.fullmatch(r"max-age=\d+(;\s*includeSubDomains)?(;\s*preload)?", hsts) else "max-age=15552000")
+    path = request.url.path
+    if path.startswith("/api/") and not path.startswith(_PUBLIC_API):
+        resp.headers["Cache-Control"] = "no-store"  # 검진·분석·케어 응답은 브라우저나 중간 서버에 남기지 않음
+    return resp
+
 
 # 남용 방지 -------------------------------------------------------------------
 # 분석·검진은 Liner 유료 API를 수십 번 부른다. IP별 시간당 한도와 서버 전체 하루 한도를 둔다.
@@ -60,6 +95,45 @@ _hits: dict[tuple[str, str], deque] = {}
 _daily: deque = deque()
 _rl_lock = threading.Lock()
 
+# 남용 감시 ----------------------------------------------------------------
+# 한도를 켜지 않았어도 유료 호출(분석·검진·케어)이 몰리면 운영자에게 알린다(legaldoctor.alert, 텔레그램)
+WATCH_WINDOW = 600  # 10분
+ALERT_HEAVY_10MIN = int(os.getenv("LD_ALERT_HEAVY_10MIN", "15"))  # 10분 동안 서버 전체 유료 호출 수
+ALERT_IP_HOUR = int(os.getenv("LD_ALERT_IP_HOUR", "8"))  # 한 IP의 시간당 유료 호출 수
+ALERT_REJECTS_10MIN = int(os.getenv("LD_ALERT_REJECTS_10MIN", "20"))  # 10분 동안 한도에 걸려 거절한 요청 수
+COST_PER_HEAVY = 0.3  # 분석·검진 1건의 대략 비용(달러, 2026.11 실측 0.24~0.34)
+_recent_heavy: deque = deque()
+_rejects: deque = deque()
+
+
+def _trim(q: deque, now: float, span: float) -> None:
+    while q and now - q[0] > span:
+        q.popleft()
+
+
+def _watch_reject(now: float, kind: str, ip: str) -> None:
+    from legaldoctor import alert
+
+    _rejects.append(now)
+    _trim(_rejects, now, WATCH_WINDOW)
+    if ALERT_REJECTS_10MIN and len(_rejects) >= ALERT_REJECTS_10MIN:
+        alert.notify("rejects", f"한도를 넘겨 거절한 요청이 10분 동안 {len(_rejects)}건임. 자동 반복 호출이 이어지는 것으로 보임(최근 {_KIND_NAME[kind]}, IP {alert.mask_ip(ip)})")
+
+
+def _watch_heavy(now: float, ip: str, ip_count: int) -> None:
+    from legaldoctor import alert
+
+    _recent_heavy.append(now)
+    _trim(_recent_heavy, now, WATCH_WINDOW)
+    n = len(_recent_heavy)
+    if ALERT_HEAVY_10MIN and n >= ALERT_HEAVY_10MIN:
+        alert.notify("heavy", f"분석·검진 요청이 10분 동안 {n}건으로 몰림(Liner 비용 약 ${n * COST_PER_HEAVY:.0f} 추정). 오늘 누적 {len(_daily)}건"
+                              + (f", 하루 상한 {DAILY_HEAVY}건" if DAILY_HEAVY else ", 하루 상한 꺼짐"))
+    if ALERT_IP_HOUR and ip_count >= ALERT_IP_HOUR:
+        alert.notify(f"ip:{ip}", f"한 IP({alert.mask_ip(ip)})가 한 시간에 분석·검진을 {ip_count}건 요청함" + ("" if LIMITS["heavy"] else ". IP별 한도가 꺼져 있어 막지 못함"))
+    if DAILY_HEAVY and len(_daily) >= DAILY_HEAVY * 0.8:
+        alert.notify("daily80", f"오늘 분석·검진이 하루 상한의 80%를 넘음({len(_daily)}/{DAILY_HEAVY}건)", cooldown=6 * 3600)
+
 
 def _client_ip(request: Request) -> str:
     return request.headers.get("x-real-ip") or (request.client.host if request.client else "-")
@@ -74,6 +148,7 @@ def rate_limit(kind: str):
             while q and now - q[0] > 3600:
                 q.popleft()
             if LIMITS[kind] and len(q) >= LIMITS[kind]:
+                _watch_reject(now, kind, key[1])
                 wait = max(1, int((3600 - (now - q[0])) // 60) + 1)
                 raise HTTPException(
                     429,
@@ -83,11 +158,29 @@ def rate_limit(kind: str):
                 while _daily and now - _daily[0] > 86400:
                     _daily.popleft()
                 if DAILY_HEAVY and len(_daily) >= DAILY_HEAVY:
+                    from legaldoctor import alert
+
+                    alert.notify("daily100", f"오늘 분석·검진이 하루 상한({DAILY_HEAVY}건)에 닿아 새 요청을 거절하고 있음", cooldown=3 * 3600)
+                    _watch_reject(now, kind, key[1])
                     raise HTTPException(429, "오늘 준비한 무료 분석 분량이 모두 소진됐습니다. 내일 다시 이용해 주세요")
                 _daily.append(now)
             q.append(now)
+            if kind in ("heavy", "care"):
+                _watch_heavy(now, key[1], len(q))
 
     return Depends(dep)
+
+
+def rate_refund(kind: str, request: Request) -> None:
+    """방금 센 요청 한 건을 되돌린다(외부 호출 없이 끝난 요청은 한도와 급증 알림에 넣지 않음)"""
+    with _rl_lock:
+        q = _hits.get((kind, _client_ip(request)))
+        if q:
+            q.pop()
+        if kind in ("heavy", "care"):
+            for d in (_daily, _recent_heavy):
+                if d:
+                    d.pop()
 
 
 
@@ -445,7 +538,7 @@ def create_session() -> dict[str, str]:
     now = time.time()
     for k in [k for k, s in SESSIONS.items() if now - s.created > 6 * 3600]:
         SESSIONS.pop(k, None)  # 세션(입력 자료·결과물)은 메모리에 6시간만 둠
-    sid = secrets.token_urlsafe(12)
+    sid = secrets.token_urlsafe(18)
     SESSIONS[sid] = Session(interview=Interview(model=model()))
     return {"id": sid}
 
@@ -463,6 +556,8 @@ async def add_materials(
     files: list[UploadFile] = File(default=[]),
 ) -> dict[str, Any]:
     s = get(sid)
+    if len(files) > MAX_FILES:
+        raise HTTPException(400, f"파일은 한 번에 {MAX_FILES}개까지 올릴 수 있어요")
     new: list[Material] = []
     skipped: list[str] = []
     demo, first = "", not s.materials
@@ -631,7 +726,7 @@ def analyze_cancel(sid: str) -> dict[str, Any]:
 
 
 @app.post("/api/sessions/{sid}/analyze", dependencies=[rate_limit("heavy")])
-def analyze(sid: str, fresh: bool = False) -> dict[str, Any]:
+def analyze(sid: str, request: Request, fresh: bool = False) -> dict[str, Any]:
     """분석을 백그라운드로 시작한다. 진행 상황은 GET 같은 주소로 본다(약 2분).
     시연용 가상 사업소개서만 올린 세션은 미리 분석해 둔 결과를 바로 준다(fresh=1이면 새로 분석)."""
     s = get(sid)
@@ -641,6 +736,7 @@ def analyze(sid: str, fresh: bool = False) -> dict[str, Any]:
         return _job_view(s)
     pre = None if fresh else demo_result(s.demo)
     if pre:
+        rate_refund("heavy", request)  # 저장해 둔 결과라 비용이 들지 않음
         now = time.time()
         s.outputs = pre["outputs"]
         s.job = {"status": "done", "started": now, "ended": now, "stages": [], "result": pre["result"], "log": []}
@@ -885,6 +981,8 @@ async def checkup(module: str = Form(...), text: str = Form(""), files: list[Upl
 
     if module not in MODULES:
         raise HTTPException(400, "검진 종류를 고르세요")
+    if len(files) > MAX_FILES:
+        raise HTTPException(400, f"파일은 한 번에 {MAX_FILES}개까지 올릴 수 있어요")
     texts = [text]
     skipped = []
     for f in files:
@@ -899,7 +997,7 @@ async def checkup(module: str = Form(...), text: str = Form(""), files: list[Upl
     if not body:
         raise HTTPException(400, "계약서나 설명을 넣어 주세요" + (f" ({' / '.join(skipped)})" if skipped else ""))
     _sweep()
-    cid = secrets.token_urlsafe(10)
+    cid = secrets.token_urlsafe(18)
     CHECKUP_JOBS[cid] = {"status": "running", "phase": "extract", "started": time.time(), "module": MODULES[module], "body": body, "items": [], "skipped": skipped}
     threading.Thread(target=_extract_job, args=(cid, module, body), daemon=True).start()
     return _view(cid)
