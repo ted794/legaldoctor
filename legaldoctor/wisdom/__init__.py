@@ -49,6 +49,37 @@ PII = [
 ]
 
 
+# 카드는 다른 이용자의 답변 근거 후보로 다시 쓰이므로, 조작한 질문으로 광고·연락처·틀린 지시를 심지 못하게 걸러 낸다
+BAD_CARD = [
+    r"https?://|www\.|[\w-]+\.(com|net|org|io|ai|kr|me|xyz|co)\b",  # 주소
+    r"법무법인|법률사무소|세무법인|노무법인|변호사\s*선임|상담\s*신청|무료\s*상담|문의\s*주|연락\s*주|카카오톡|오픈\s*채팅|텔레그램|할인|수임",  # 유인·광고
+    r"(이전|위|앞)의?\s*(지시|규칙|명령)|지시를?\s*무시|무시하고|시스템\s*프롬프트|system\s*prompt|ignore\s+(all|previous)|너는\s*이제|역할을\s*바꿔",  # 모델 지시문
+    r"[<>{}`]|\\n|\[\s*(질문|답|근거|과제)\s*\]",  # 꾸밈 기호, 문맥 표지 흉내
+]
+NEW_PER_DAY = int(os.getenv("LD_WISDOM_NEW_PER_DAY", "30"))  # 하루에 새로 만드는 상담 카드 수 상한(대량으로 심는 것을 막음)
+
+
+def review_required() -> bool:
+    """켜면(기본) 이용자 상담에서 만든 카드는 운영자가 확인하기 전까지 다른 이용자에게 쓰지 않는다. 끄기: LD_WISDOM_REVIEW=0
+    확인: python -m legaldoctor.wisdom list / approve <id> / forget <id>"""
+    return os.getenv("LD_WISDOM_REVIEW", "1") != "0"
+
+
+def card_problem(q: str, a: str, allowed_laws: list[str]) -> str:
+    """상담 카드로 저장하면 안 되는 이유(없으면 빈 문자열)"""
+    text = f"{q}\n{a}"
+    if has_pii(text):
+        return "개인정보 패턴"
+    for p in BAD_CARD:
+        if re.search(p, text, re.I):
+            return "주소·광고·지시문 패턴"
+    ok = {_norm(re.sub(r"[「」]", "", x.split("」")[0])) for x in allowed_laws if x}
+    for law in re.findall(r"「([^」]{2,60})」", text):
+        if _norm(law) not in ok:
+            return f"근거에 없는 법령 이름: {law}"
+    return ""
+
+
 def enabled() -> bool:
     return os.getenv("LD_WISDOM", "1") != "0"
 
@@ -182,11 +213,16 @@ def learn_consult(model, module_key: str, category: str, causes: list[int], ques
     if not isinstance(d, dict) or not d.get("keep"):
         return False
     q, a = str(d.get("q") or "").strip()[:200], str(d.get("a") or "").strip()[:600]
-    if not q or not a or has_pii(q) or has_pii(a):
+    if not q or not a or card_problem(q, a, list(laws) + list(ans.get("basis", []))):
         return False
     cid = "cs:" + hashlib.sha256(re.sub(r"\s+", "", q).encode()).hexdigest()[:16]
     now = time.time()
     old = get(cid)
+    if not old and NEW_PER_DAY:
+        with _lock:
+            made = _db().execute("SELECT COUNT(*) FROM cards WHERE kind='consult' AND created > ?", (now - 86400,)).fetchone()[0]
+        if made >= NEW_PER_DAY:
+            return False
     c = old or {"id": cid, "kind": "consult", "module": module_key, "category": category, "causes": causes, "q": q, "a": a,
                 "laws": [], "refs": [], "stats": {"n": 0}, "uses": 0, "created": now, "updated": now, "refs_at": 0}
     c["stats"]["n"] = c["stats"].get("n", 0) + 1
@@ -224,6 +260,8 @@ def similar(text: str, module_key: str = "", category: str = "", k: int = 3, kin
             s -= 0.08  # 오래 쓰이지 않은 카드는 뒤로(지우지는 않음)
         if any(l.get("changed") for l in c["laws"]):
             continue  # 인용 조문이 개정됐을 수 있으면 다시 확인될 때까지 근거로 쓰지 않음
+        if kind == "consult" and review_required() and c["stats"].get("origin") != "seed" and not c["stats"].get("approved"):
+            continue  # 운영자가 확인하지 않은 이용자 유래 카드는 다른 이용자에게 쓰지 않음
         if s >= floor:
             out.append((s, c))
     out.sort(key=lambda x: -x[0])
@@ -333,3 +371,20 @@ def seed() -> int:
         _put(c)
         n += 1
     return n
+
+
+# 운영자 확인 ---------------------------------------------------------------
+def pending() -> list[dict[str, Any]]:
+    """운영자 확인을 기다리는 이용자 유래 상담 카드"""
+    with _lock:
+        rows = [_row(r) for r in _db().execute("SELECT * FROM cards WHERE kind='consult' ORDER BY created DESC").fetchall()]
+    return [c for c in rows if c["stats"].get("origin") != "seed" and not c["stats"].get("approved")]
+
+
+def approve(card_id: str) -> bool:
+    c = get(card_id)
+    if not c or c["kind"] != "consult":
+        return False
+    c["stats"]["approved"] = time.strftime("%Y-%m-%d")
+    _put(c)
+    return True
