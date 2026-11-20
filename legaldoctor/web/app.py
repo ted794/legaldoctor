@@ -60,9 +60,11 @@ async def security_headers(request: Request, call_next):
     resp = await call_next(request)
     for k, v in SECURITY_HEADERS.items():
         resp.headers.setdefault(k, v)
-    # HTTPS로 들어온 요청에만 HSTS(같은 도메인 전체에 적용되므로 하위 도메인은 포함하지 않음). 끄기: LD_HSTS=0
-    if os.getenv("LD_HSTS", "1") != "0" and request.headers.get("x-forwarded-proto", request.url.scheme) == "https":
-        resp.headers.setdefault("Strict-Transport-Security", "max-age=15552000")
+    # HTTPS로 들어온 요청에만 HSTS. 브라우저는 같은 도메인에서 마지막으로 받은 값을 쓰므로, 같은 도메인에 다른 서비스가 있으면
+    # LD_HSTS에 그 서비스와 똑같은 값을 통째로 넣는다(예: "max-age=31536000; includeSubDomains"). 값이 다르면 더 약한 쪽으로 덮어쓸 수 있음. 끄기: LD_HSTS=0
+    hsts = os.getenv("LD_HSTS", "1").strip()
+    if hsts != "0" and request.headers.get("x-forwarded-proto", request.url.scheme) == "https":
+        resp.headers.setdefault("Strict-Transport-Security", hsts if re.fullmatch(r"max-age=\d+(;\s*includeSubDomains)?(;\s*preload)?", hsts) else "max-age=15552000")
     path = request.url.path
     if path.startswith("/api/") and not path.startswith(_PUBLIC_API):
         resp.headers["Cache-Control"] = "no-store"  # 검진·분석·케어 응답은 브라우저나 중간 서버에 남기지 않음
