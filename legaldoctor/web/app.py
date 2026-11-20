@@ -33,6 +33,7 @@ from legaldoctor.liner import LinerModel
 
 STATIC = Path(__file__).parent / "static"
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
+MAX_FILES = 10  # 한 번에 올리는 파일 수
 
 app = FastAPI(title="스타트업 리걸닥터")
 
@@ -90,6 +91,45 @@ _hits: dict[tuple[str, str], deque] = {}
 _daily: deque = deque()
 _rl_lock = threading.Lock()
 
+# 남용 감시 ----------------------------------------------------------------
+# 한도를 켜지 않았어도 유료 호출(분석·검진·케어)이 몰리면 운영자에게 알린다(legaldoctor.alert, 텔레그램)
+WATCH_WINDOW = 600  # 10분
+ALERT_HEAVY_10MIN = int(os.getenv("LD_ALERT_HEAVY_10MIN", "15"))  # 10분 동안 서버 전체 유료 호출 수
+ALERT_IP_HOUR = int(os.getenv("LD_ALERT_IP_HOUR", "8"))  # 한 IP의 시간당 유료 호출 수
+ALERT_REJECTS_10MIN = int(os.getenv("LD_ALERT_REJECTS_10MIN", "20"))  # 10분 동안 한도에 걸려 거절한 요청 수
+COST_PER_HEAVY = 0.3  # 분석·검진 1건의 대략 비용(달러, 2026.11 실측 0.24~0.34)
+_recent_heavy: deque = deque()
+_rejects: deque = deque()
+
+
+def _trim(q: deque, now: float, span: float) -> None:
+    while q and now - q[0] > span:
+        q.popleft()
+
+
+def _watch_reject(now: float, kind: str, ip: str) -> None:
+    from legaldoctor import alert
+
+    _rejects.append(now)
+    _trim(_rejects, now, WATCH_WINDOW)
+    if ALERT_REJECTS_10MIN and len(_rejects) >= ALERT_REJECTS_10MIN:
+        alert.notify("rejects", f"한도를 넘겨 거절한 요청이 10분 동안 {len(_rejects)}건임. 자동 반복 호출이 이어지는 것으로 보임(최근 {_KIND_NAME[kind]}, IP {alert.mask_ip(ip)})")
+
+
+def _watch_heavy(now: float, ip: str, ip_count: int) -> None:
+    from legaldoctor import alert
+
+    _recent_heavy.append(now)
+    _trim(_recent_heavy, now, WATCH_WINDOW)
+    n = len(_recent_heavy)
+    if ALERT_HEAVY_10MIN and n >= ALERT_HEAVY_10MIN:
+        alert.notify("heavy", f"분석·검진 요청이 10분 동안 {n}건으로 몰림(Liner 비용 약 ${n * COST_PER_HEAVY:.0f} 추정). 오늘 누적 {len(_daily)}건"
+                              + (f", 하루 상한 {DAILY_HEAVY}건" if DAILY_HEAVY else ", 하루 상한 꺼짐"))
+    if ALERT_IP_HOUR and ip_count >= ALERT_IP_HOUR:
+        alert.notify(f"ip:{ip}", f"한 IP({alert.mask_ip(ip)})가 한 시간에 분석·검진을 {ip_count}건 요청함" + ("" if LIMITS["heavy"] else ". IP별 한도가 꺼져 있어 막지 못함"))
+    if DAILY_HEAVY and len(_daily) >= DAILY_HEAVY * 0.8:
+        alert.notify("daily80", f"오늘 분석·검진이 하루 상한의 80%를 넘음({len(_daily)}/{DAILY_HEAVY}건)", cooldown=6 * 3600)
+
 
 def _client_ip(request: Request) -> str:
     return request.headers.get("x-real-ip") or (request.client.host if request.client else "-")
@@ -104,6 +144,7 @@ def rate_limit(kind: str):
             while q and now - q[0] > 3600:
                 q.popleft()
             if LIMITS[kind] and len(q) >= LIMITS[kind]:
+                _watch_reject(now, kind, key[1])
                 wait = max(1, int((3600 - (now - q[0])) // 60) + 1)
                 raise HTTPException(
                     429,
@@ -113,9 +154,15 @@ def rate_limit(kind: str):
                 while _daily and now - _daily[0] > 86400:
                     _daily.popleft()
                 if DAILY_HEAVY and len(_daily) >= DAILY_HEAVY:
+                    from legaldoctor import alert
+
+                    alert.notify("daily100", f"오늘 분석·검진이 하루 상한({DAILY_HEAVY}건)에 닿아 새 요청을 거절하고 있음", cooldown=3 * 3600)
+                    _watch_reject(now, kind, key[1])
                     raise HTTPException(429, "오늘 준비한 무료 분석 분량이 모두 소진됐습니다. 내일 다시 이용해 주세요")
                 _daily.append(now)
             q.append(now)
+            if kind in ("heavy", "care"):
+                _watch_heavy(now, key[1], len(q))
 
     return Depends(dep)
 
@@ -455,6 +502,8 @@ async def add_materials(
     files: list[UploadFile] = File(default=[]),
 ) -> dict[str, Any]:
     s = get(sid)
+    if len(files) > MAX_FILES:
+        raise HTTPException(400, f"파일은 한 번에 {MAX_FILES}개까지 올릴 수 있어요")
     new: list[Material] = []
     skipped: list[str] = []
     if text.strip():
@@ -861,6 +910,8 @@ async def checkup(module: str = Form(...), text: str = Form(""), files: list[Upl
 
     if module not in MODULES:
         raise HTTPException(400, "검진 종류를 고르세요")
+    if len(files) > MAX_FILES:
+        raise HTTPException(400, f"파일은 한 번에 {MAX_FILES}개까지 올릴 수 있어요")
     texts = [text]
     skipped = []
     for f in files:

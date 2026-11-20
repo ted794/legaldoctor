@@ -77,6 +77,20 @@
 - 서비스 격리: `deploy/legaldoctor.service`에 권한·장치·커널 기능 제한을 둠. 바꾼 뒤 `sudo systemd-analyze security legaldoctor`로 점수를 볼 수 있음. 재시작 뒤 서비스가 뜨지 않으면 `journalctl -u legaldoctor -n 50`을 보고 이전 서비스 파일로 되돌림
 - 판정 응답 캐시 보관 일수는 `LD_ANSWER_CACHE_DAYS`(1~30)로 줄일 수 있음
 
+### 남용 방어와 알림
+
+- 텔레그램 알림: `.env`에 `LD_TG_TOKEN`(봇 토큰)과 `LD_TG_CHAT`(받을 대화 id)을 넣고 재시작. 토큰은 서버 터미널에서 직접 입력함
+  - 시험: `cd /srv/legaldoctor && sudo -u legaldoctor env HOME=/srv/legaldoctor .venv/bin/python -m legaldoctor.alert "시험 알림"`
+  - 알림이 가는 때: 10분 동안 분석·검진이 15건 이상, 한 IP가 한 시간에 8건 이상, 한도 초과 거절이 10분 동안 20건 이상, 하루 상한의 80%와 100%
+  - 같은 알림은 15분에 한 번. 공격이 이어지면 15분마다 다시 옴. 알림에는 이용자 자료가 없고 IP는 앞부분만 넣음
+  - 재시작하면 세던 숫자는 0부터 다시 셈
+- 비용 한도: `LD_HEAVY_PER_HOUR`(IP별), `LD_HEAVY_PER_DAY`(서버 전체)를 넣어야 실제로 막음. 한도가 꺼져 있어도 알림은 감
+- 상담 지혜 저장소: 이용자 상담에서 만든 카드는 운영자가 확인한 뒤에만 다른 이용자에게 쓰임
+  - 대기 목록: `sudo -u legaldoctor env HOME=/srv/legaldoctor .venv/bin/python -m legaldoctor.wisdom list`
+  - 승인·삭제: 같은 명령 끝에 `approve <id>` 또는 `forget <id>`
+  - 주소·광고·연락처·지시문이 든 카드와 근거에 없는 법령 이름을 댄 카드는 저장하지 않음. 새 카드는 하루 30건까지
+- 업로드 상한: 파일당 20MB, 한 번에 10개, PDF 300쪽, 슬라이드 300장, 압축을 푼 크기 200MB, 그림 4천만 화소
+
 ### 규제 변화 피드(선택)
 
 운영자가 보유한 규제 변화 분류 자료를 사인 튜토리얼, 검진결과표, 리걸닥터 케어에 이어 씁니다. 형식은 `docs/feed_spec.md`.
