@@ -102,9 +102,10 @@ class Explore:
         ex = ThreadPoolExecutor(self.workers + 1)
         hypo = ex.submit(hypothesize, self.model, state.business, acts, hint=self.hint, workers=self.workers) if self.use_hypotheses else None
         searches = [(a, ex.submit(search_clues, self.model, self.search, a)) for a in acts] if self.use_search else []
+        # 대기 상한은 검색을 맡긴 때부터 잰다(가설을 기다린 시간만큼 더 늘어나지 않게)
+        deadline = (time.perf_counter() + self.search_timeout) if self.search_timeout else None
         if hypo is not None:
             cands += hypo.result()
-        deadline = (time.perf_counter() + self.search_timeout) if self.search_timeout else None
         for a, fut in searches:
             try:
                 left = None if deadline is None else max(0.5, deadline - time.perf_counter())
