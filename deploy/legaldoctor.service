@@ -10,7 +10,7 @@ Group=legaldoctor
 WorkingDirectory=/srv/legaldoctor
 EnvironmentFile=/srv/legaldoctor/.env
 # 세션을 메모리에 두므로 워커는 하나. 127.0.0.1에만 엶(앞단 nginx가 연결)
-ExecStart=/srv/legaldoctor/.venv/bin/uvicorn legaldoctor.web.app:app --host 127.0.0.1 --port 8100 --workers 1 --proxy-headers
+ExecStart=/srv/legaldoctor/.venv/bin/uvicorn legaldoctor.web.app:app --host 127.0.0.1 --port 8100 --workers 1 --proxy-headers --no-server-header
 Restart=always
 RestartSec=3
 # 기존 서비스와 격리
@@ -19,6 +19,27 @@ PrivateTmp=true
 ProtectSystem=strict
 ReadWritePaths=/srv/legaldoctor/data/law_cache -/srv/legaldoctor/data/care -/srv/legaldoctor/data/feed
 ProtectHome=true
+# 새로 만드는 파일(케어 기록, 캐시)은 서비스 계정만 읽고 쓰게
+UMask=0077
+# 서비스가 쓰지 않는 권한·장치·커널 기능을 막음(침해가 생겨도 서버의 다른 서비스로 번지지 않게)
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
 
 [Install]
 WantedBy=multi-user.target

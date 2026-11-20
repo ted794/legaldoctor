@@ -670,11 +670,15 @@ async function resetTool(){
 }
 let touched=false;  // 이번에 무언가 입력·검진했는지
 async function wipeAll(){
-  const ids=histGet();try{localStorage.removeItem('ld_hist');localStorage.removeItem('ld_care')}catch(e){}
-  const del=u=>fetch(u,{method:'DELETE'}).catch(()=>{});
-  ids.forEach(x=>del(x.kind==='checkup'?`api/checkup/${x.id}`:`api/sessions/${x.id}`));
-  if(ck&&ck.id)del(`api/checkup/${ck.id}`);if(sid)del(`api/sessions/${sid}`);
-}
+  const ids=histGet();
+  const del=u=>fetch(u,{method:'DELETE'}).then(r=>r.ok).catch(()=>false);
+  const jobs=ids.map(x=>del(x.kind==='checkup'?`api/checkup/${x.id}`:`api/sessions/${x.id}`));
+  if(ck&&ck.id)jobs.push(del(`api/checkup/${ck.id}`));if(sid)jobs.push(del(`api/sessions/${sid}`));
+  const ok=(await Promise.all(jobs)).every(Boolean);
+  // 서버에서 지워진 것을 확인한 뒤에만 이 브라우저의 목록을 지운다(실패했는데 지운 것처럼 보이지 않게)
+  if(!ok){alert('서버의 기록을 지우지 못했어요. 기록이 아직 남아 있을 수 있어요. 연결을 확인하고 다시 눌러 주세요.');return false}
+  try{localStorage.removeItem('ld_hist');localStorage.removeItem('ld_care')}catch(e){}
+  return true}
 function askWipe(){return new Promise(res=>{$('#wipe').hidden=false;$('#tutOv').hidden=false;$('#wipeYes').focus();
   const done=v=>{$('#wipe').hidden=true;$('#tutOv').hidden=true;res(v)};
   $('#wipeYes').onclick=()=>done(true);$('#wipeNo').onclick=()=>done(false)})}
@@ -699,7 +703,7 @@ async function pickCause(c,el){const [m,ck0,label]=MOD[c.module]||MOD.bm;const c
   DEMO_NO=m==='reg'?c.no:null;renderDemoBiz();
   if(m==='reg'&&DEMO_BIZ.some(d=>(d.causes||[]).includes(c.no))){const t=document.querySelector('#tabs [data-p="file"]');if(t)t.click()}}  // 규제팡 사인은 그 사인의 가상 사업소개서가 보이게
 function goHome(){document.body.className='home';$('#task').hidden=true;document.querySelectorAll('.tile').forEach(x=>x.classList.remove('on','same'));window.scrollTo(0,0)}
-window.addEventListener('popstate',()=>{if(history.state&&history.state.v==='tool')return;if(/[?&](go|my|care)(=|&|$)/.test(location.search))return;goHome()});  // 다른 화면(연결 서비스, 마이페이지, 케어)은 각자 처리
+window.addEventListener('popstate',()=>{if(history.state&&history.state.v==='tool')return;if(/[?&](go|my|care)(=|&|$)/.test(location.search)||/care=/.test(location.hash))return;goHome()});  // 다른 화면(연결 서비스, 마이페이지, 케어)은 각자 처리
 // 사인을 누르면 고르기 상자: 1) 튜토리얼(팝업) 2) 검진(제자리에서 다음 화면)
 let pickC=null,pickEl=null;
 function openPick(c,el){pickC=c;pickEl=el;$('#pickN').textContent=c.no;$('#pickT').textContent=c.name;$('#pickM').textContent=c.part;
@@ -800,7 +804,7 @@ function chooseCare(cid){taskShow('다음 단계: 리걸닥터 케어','검진 �
   document.querySelectorAll('#taskB .opt').forEach(b=>b.onclick=()=>{taskClose();startCare(cid,b.dataset.p)})}
 function changeProgram(){taskShow('케어 프로그램 바꾸기','언제든 바꿀 수 있어요 · 모두 무료',careChoices(CP.program));
   document.querySelectorAll('#taskB .opt').forEach(b=>b.onclick=async()=>{try{CP=await api(`api/care/${CP.token}/program`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({program:b.dataset.p})});taskClose();renderCare()}catch(e){notice('err',esc(e.message))}})}
-function lawyerMail(t){const u=location.origin+location.pathname+'?care='+CP.token;const rep=location.origin+location.pathname+`api/care/${CP.token}/report`;
+function lawyerMail(t){const u=location.origin+location.pathname+'#care='+CP.token;const rep=location.origin+location.pathname+`api/care/${CP.token}/report`;
   const sub=encodeURIComponent(`[리걸닥터 케어] 변호사 검토 요청: ${t?t.title:CP.title}`);
   const body=encodeURIComponent(`검토 요청 과제: ${t?t.title:'(전체)'}\n경과 보고서: ${rep}\n케어 링크: ${u}\n\n상황 설명:\n`);
   return INFO.contact?`mailto:${INFO.contact}?subject=${sub}&body=${body}`:''}
@@ -813,7 +817,7 @@ async function startCare(cid,program){
   try{const plan=await api('api/care',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cid,program:program||'consult'})});hideProg();openCare(plan,true)}
   catch(e){hideProg();notice('err',`<b>실행 계획을 만들지 못했어요.</b> ${esc(e.message)}`)}}
 function openCare(plan,push){CP=plan;careRemember(plan);document.body.className='care';window.scrollTo(0,0);
-  const u=location.pathname+'?care='+plan.token;if(push)history.pushState({v:'care'},'',u);else history.replaceState({v:'care'},'',u);renderCare()}
+  const u=location.pathname+'#care='+plan.token;if(push)history.pushState({v:'care'},'',u);else history.replaceState({v:'care'},'',u);renderCare()}
 function renderCare(){const p=CP,s=p.stats;
   $('#cvTitle').innerHTML=`${esc(p.title)}<span class="pgb">${esc((PROG[p.program]||PROG.consult)[0])}</span> <button class="back" id="cvProg" style="font-size:12px;vertical-align:3px">프로그램 바꾸기</button>`;$('#cvProg').onclick=changeProgram;
   $('#cvStats').innerHTML=`<div>과제 완료 <b>${s.done}/${s.tasks}</b></div><div>위험 높음 <b>${s.high0} → ${s.high}</b></div><div>재검진 <b>${p.rechecks.length}</b></div><div>상담 <b>${p.chat.length}</b></div>`;
@@ -876,16 +880,18 @@ function openRecheck(iid){const p=CP,it=p.items.find(i=>i.id===iid);if(!it)retur
       notice('ok',`<b>재검진 결과: ${esc(l.label)}</b> ${esc(l.before)} → ${esc(l.after)} · ${esc(l.verdict)}${l.after==='낮음'?' 관련 과제를 완료로 옮겨도 돼요.':''}`);$('#cvNotice').scrollIntoView({block:'nearest'})}
     catch(e){hideProg();notice('err',`<b>재검진하지 못했어요.</b> ${esc(e.message)}`)}}}
 $('#careBack').onclick=()=>{CP=null;history.pushState({},'',location.pathname);goHome()};
-$('#cvCopy').onclick=async()=>{const u=location.origin+location.pathname+'?care='+CP.token;try{await navigator.clipboard.writeText(u);$('#cvCopy').textContent='복사했어요'}catch(e){prompt('이 주소를 저장해 두세요',u)}};
-$('#cvDel').onclick=async()=>{if(!confirm('이 케어 기록(실행 계획, 과제, 재검진, 상담)을 서버에서 지울까요? 되돌릴 수 없어요.'))return;try{await fetch(`api/care/${CP.token}`,{method:'DELETE'})}catch(e){}careForget(CP.token);CP=null;history.pushState({},'',location.pathname);goHome()};
+$('#cvCopy').onclick=async()=>{const u=location.origin+location.pathname+'#care='+CP.token;try{await navigator.clipboard.writeText(u);$('#cvCopy').textContent='복사했어요'}catch(e){prompt('이 주소를 저장해 두세요',u)}};
+$('#cvDel').onclick=async()=>{if(!confirm('이 케어 기록(실행 계획, 과제, 재검진, 상담)을 서버에서 지울까요? 되돌릴 수 없어요.'))return;try{const r=await fetch(`api/care/${CP.token}`,{method:'DELETE'});if(!r.ok)throw new Error(r.status)}catch(e){alert('서버에서 지우지 못했어요. 케어 기록이 아직 남아 있어요. 연결을 확인하고 다시 눌러 주세요.');return}careForget(CP.token);CP=null;history.pushState({},'',location.pathname);goHome()};
 $('#careOpen').onclick=()=>{taskShow('리걸닥터 케어 이어 보기','비밀 링크나 내보낸 파일로 이어 봐요',`<h4>비밀 링크</h4><input id="oLink" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:10px;font:inherit" placeholder="비밀 링크를 붙여 넣으세요"><div class="row"><button class="btn" id="oGo">열기</button></div>
   <h4>내보낸 파일</h4><div class="row"><label class="btn ghost">파일 올리기<input type="file" id="oFile" hidden accept=".json"></label></div>`);
   $('#oGo').onclick=async()=>{const m=($('#oLink').value.match(/care=([A-Za-z0-9_-]{16,64})/)||[])[1]||$('#oLink').value.trim();try{const pl=await api('api/care/'+m);taskClose();openCare(pl,true)}catch(e){notice('err',esc(e.message))}};
   $('#oFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;const fd=new FormData();fd.append('file',f);try{const pl=await api('api/care/import',{method:'POST',body:fd});taskClose();openCare(pl,true)}catch(er){notice('err',esc(er.message))}}};
 $('#progCare').onclick=()=>{const id=ck&&ck.id;progClose();if(id)chooseCare(id)};
-window.addEventListener('popstate',()=>{const tk=new URLSearchParams(location.search).get('care');if(tk&&(!CP||CP.token!==tk))api('api/care/'+tk).then(pl=>openCare(pl,false)).catch(()=>goHome());else if(!tk&&document.body.classList.contains('care'))goHome()});
+// 비밀 링크의 토큰은 주소의 # 뒤에 둔다(# 뒤는 서버로 보내지 않아 서버 기록에 남지 않음). 예전 ?care= 링크도 열림
+function careTok(){return new URLSearchParams(location.hash.slice(1)).get('care')||new URLSearchParams(location.search).get('care')}
+window.addEventListener('popstate',()=>{const tk=careTok();if(tk&&(!CP||CP.token!==tk))api('api/care/'+tk).then(pl=>openCare(pl,false)).catch(()=>goHome());else if(!tk&&document.body.classList.contains('care'))goHome()});
 (()=>{const cf=new URLSearchParams(location.search).get('carefrom');if(cf){history.replaceState({},'',location.pathname);setTimeout(()=>chooseCare(cf),300)}})();
-(()=>{const tk=new URLSearchParams(location.search).get('care');if(tk)api('api/care/'+tk).then(pl=>openCare(pl,false)).catch(e=>notice('err',esc(e.message)))})();
+(()=>{const tk=careTok();if(tk)api('api/care/'+tk).then(pl=>openCare(pl,false)).catch(e=>notice('err',esc(e.message)))})();
 
 // 계약·노무 검진: ① 조항 뽑기 → 항목 고르기 → ② 고른 항목 검진(끝나는 대로 표시) → 남은 항목 이어서
 let ckModule='invest',ck=null;

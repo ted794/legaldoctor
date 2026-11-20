@@ -65,6 +65,18 @@
 4. `deploy/legaldoctor.service`가 바뀌었으면: `sudo cp /srv/legaldoctor/deploy/legaldoctor.service /etc/systemd/system/ && sudo systemctl daemon-reload`
 5. `sudo systemctl restart legaldoctor` (메모리에 있던 진행 중 세션은 사라짐)
 
+### 보안 설정
+
+- 보안 헤더(CSP, HSTS, 클릭재킹 방지, Referrer-Policy 등)와 검진·분석·케어 응답의 `Cache-Control: no-store`는 앱이 붙임. nginx에서 같은 헤더를 또 붙이지 않음. HSTS는 같은 도메인의 다른 서비스에도 적용되므로 문제가 있으면 `.env`에 `LD_HSTS=0`
+- 접속 기록: `deploy/nginx-legaldoctor.conf` 맨 위 주석의 `map`과 `log_format`을 http 블록에 두면 리걸닥터 경로의 기록에서 비밀 링크 토큰이 가려짐. 케어 화면 주소의 토큰은 `#` 뒤에 있어 서버로 오지 않음
+- 파일 권한: 서비스 파일의 `UMask=0077`로 새 케어 기록과 캐시는 서비스 계정만 읽음. 이미 있는 파일은 한 번 맞춤
+  ```bash
+  sudo chmod 700 /srv/legaldoctor/data/care /srv/legaldoctor/data/law_cache/_answers /srv/legaldoctor/data/law_cache/_wisdom
+  sudo find /srv/legaldoctor/data/care /srv/legaldoctor/data/law_cache/_answers /srv/legaldoctor/data/law_cache/_wisdom -type f -exec chmod 600 {} +
+  ```
+- 서비스 격리: `deploy/legaldoctor.service`에 권한·장치·커널 기능 제한을 둠. 바꾼 뒤 `sudo systemd-analyze security legaldoctor`로 점수를 볼 수 있음. 재시작 뒤 서비스가 뜨지 않으면 `journalctl -u legaldoctor -n 50`을 보고 이전 서비스 파일로 되돌림
+- 판정 응답 캐시 보관 일수는 `LD_ANSWER_CACHE_DAYS`(1~30)로 줄일 수 있음
+
 ### 규제 변화 피드(선택)
 
 운영자가 보유한 규제 변화 분류 자료를 사인 튜토리얼, 검진결과표, 리걸닥터 케어에 이어 씁니다. 형식은 `docs/feed_spec.md`.

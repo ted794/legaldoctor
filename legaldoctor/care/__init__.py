@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import secrets
 import threading
@@ -33,12 +34,15 @@ def _path(token: str) -> Path:
 
 
 def save(plan: dict[str, Any]) -> None:
-    CARE_DIR.mkdir(parents=True, exist_ok=True)
+    CARE_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
     plan["updated"] = time.time()
     p = _path(plan["token"])
     tmp = p.with_suffix(".tmp")
     with _lock:
-        tmp.write_text(json.dumps(plan, ensure_ascii=False), encoding="utf-8")
+        # 서비스 계정만 읽고 쓸 수 있게 만든다(같은 서버의 다른 계정이 케어 기록을 읽지 못하게)
+        with os.fdopen(os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w", encoding="utf-8") as f:
+            f.write(json.dumps(plan, ensure_ascii=False))
+        os.chmod(tmp, 0o600)
         tmp.replace(p)
 
 
