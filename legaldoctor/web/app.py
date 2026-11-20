@@ -36,6 +36,38 @@ MAX_UPLOAD_BYTES = 20 * 1024 * 1024
 
 app = FastAPI(title="스타트업 리걸닥터")
 
+# 보안 헤더 ------------------------------------------------------------------
+# 화면과 결과 문서는 스크립트·스타일을 문서 안에 두므로 'unsafe-inline'을 허용하되, 외부 출처의 스크립트·연결·플러그인은 막는다.
+# frame-src의 https:는 상단 메뉴의 연결 서비스(LD_NAV의 frame)를 여는 데 필요함
+CSP = (
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+    "font-src 'self' data:; connect-src 'self'; frame-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+)
+SECURITY_HEADERS = {
+    "Content-Security-Policy": CSP,
+    "X-Frame-Options": "SAMEORIGIN",  # 다른 사이트가 화면을 겹쳐 씌워 누르게 하는 것(클릭재킹)을 막음
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",  # 비밀 링크가 든 주소가 다른 사이트로 넘어가지 않게
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+    "Cross-Origin-Opener-Policy": "same-origin",
+}
+_PUBLIC_API = ("/api/demo_biz", "/api/causes", "/api/info", "/api/checkup/demo/")  # 이용자 정보가 없는 응답
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    resp = await call_next(request)
+    for k, v in SECURITY_HEADERS.items():
+        resp.headers.setdefault(k, v)
+    # HTTPS로 들어온 요청에만 HSTS(같은 도메인 전체에 적용되므로 하위 도메인은 포함하지 않음). 끄기: LD_HSTS=0
+    if os.getenv("LD_HSTS", "1") != "0" and request.headers.get("x-forwarded-proto", request.url.scheme) == "https":
+        resp.headers.setdefault("Strict-Transport-Security", "max-age=15552000")
+    path = request.url.path
+    if path.startswith("/api/") and not path.startswith(_PUBLIC_API):
+        resp.headers["Cache-Control"] = "no-store"  # 검진·분석·케어 응답은 브라우저나 중간 서버에 남기지 않음
+    return resp
+
+
 # 남용 방지 -------------------------------------------------------------------
 # 분석·검진은 Liner 유료 API를 수십 번 부른다. IP별 시간당 한도와 서버 전체 하루 한도를 둔다.
 # 앞단 nginx가 X-Real-IP를 넣어 준다(앱은 127.0.0.1에만 열어 둠). 값은 환경변수로 바꿀 수 있음
@@ -405,7 +437,7 @@ def create_session() -> dict[str, str]:
     now = time.time()
     for k in [k for k, s in SESSIONS.items() if now - s.created > 6 * 3600]:
         SESSIONS.pop(k, None)  # 세션(입력 자료·결과물)은 메모리에 6시간만 둠
-    sid = secrets.token_urlsafe(12)
+    sid = secrets.token_urlsafe(18)
     SESSIONS[sid] = Session(interview=Interview(model=model()))
     return {"id": sid}
 
@@ -843,7 +875,7 @@ async def checkup(module: str = Form(...), text: str = Form(""), files: list[Upl
     if not body:
         raise HTTPException(400, "계약서나 설명을 넣어 주세요" + (f" ({' / '.join(skipped)})" if skipped else ""))
     _sweep()
-    cid = secrets.token_urlsafe(10)
+    cid = secrets.token_urlsafe(18)
     CHECKUP_JOBS[cid] = {"status": "running", "phase": "extract", "started": time.time(), "module": MODULES[module], "body": body, "items": [], "skipped": skipped}
     threading.Thread(target=_extract_job, args=(cid, module, body), daemon=True).start()
     return _view(cid)

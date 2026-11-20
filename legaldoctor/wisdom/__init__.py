@@ -58,6 +58,10 @@ def _db() -> sqlite3.Connection:
     if _conn is None:
         DB_PATH.parent.mkdir(parents=True, exist_ok=True)
         _conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+        try:
+            os.chmod(DB_PATH, 0o600)  # 서비스 계정만 읽게
+        except OSError:
+            pass
         _conn.execute(
             "CREATE TABLE IF NOT EXISTS cards (id TEXT PRIMARY KEY, kind TEXT, module TEXT, category TEXT, causes TEXT, q TEXT, a TEXT,"
             " laws TEXT, refs TEXT, stats TEXT, uses INTEGER DEFAULT 0, created REAL, updated REAL, refs_at REAL DEFAULT 0)"

@@ -23,7 +23,18 @@ from typing import Any
 from legaldoctor.config import LAW_CACHE_DIR
 
 DB_PATH = Path(os.getenv("LD_ANSWER_CACHE_PATH", str(LAW_CACHE_DIR / "_answers" / "answers.sqlite")))
-TTL = {"model": 30 * 86400, "search": 7 * 86400}
+
+
+def _days(name: str, default: int, cap: int) -> int:
+    """보관 일수. 개인정보 처리방침에 적은 상한(cap)보다 길게는 잡지 않는다"""
+    try:
+        return max(1, min(cap, int(os.getenv(name, str(default)))))
+    except ValueError:
+        return default
+
+
+# 판정 응답에는 사업 설명 일부가 섞일 수 있으므로 줄일 수 있게 둔다(LD_ANSWER_CACHE_DAYS, 1~30일)
+TTL = {"model": _days("LD_ANSWER_CACHE_DAYS", 30, 30) * 86400, "search": 7 * 86400}
 _lock = threading.Lock()
 _conn: sqlite3.Connection | None = None
 
@@ -37,6 +48,10 @@ def _db() -> sqlite3.Connection:
     if _conn is None:
         DB_PATH.parent.mkdir(parents=True, exist_ok=True)
         _conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+        try:
+            os.chmod(DB_PATH, 0o600)  # 서비스 계정만 읽게
+        except OSError:
+            pass
         _conn.execute("CREATE TABLE IF NOT EXISTS answers (k TEXT PRIMARY KEY, kind TEXT, v TEXT, t REAL)")
         _conn.execute("DELETE FROM answers WHERE (kind='model' AND t < ?) OR (kind='search' AND t < ?)", (time.time() - TTL["model"], time.time() - TTL["search"]))
         _conn.commit()
