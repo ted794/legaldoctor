@@ -68,6 +68,11 @@
 ### 보안 설정
 
 - 보안 헤더(CSP, HSTS, 클릭재킹 방지, Referrer-Policy 등)와 검진·분석·케어 응답의 `Cache-Control: no-store`는 앱이 붙임. nginx에서 같은 헤더를 또 붙이지 않음. HSTS는 같은 도메인의 다른 서비스에도 적용되므로 문제가 있으면 `.env`에 `LD_HSTS=0`
+- 같은 도메인에 다른 서비스가 있을 때
+  - HSTS 값을 그 서비스와 똑같이 맞춤(`.env`의 `LD_HSTS`에 값 전체). 리걸닥터 응답이 더 약한 값을 내면 그 응답을 본 브라우저에서 도메인 전체의 보호가 약해짐
+  - 상단 메뉴에서 iframe으로 여는 연결 서비스는 그쪽 응답의 `frame-ancestors`가 리걸닥터 주소를 허용해야 보임. 이 허용을 nginx에서 헤더를 바꿔 넣는 방식으로 하고 있다면 그 서비스가 CSP를 고쳐도 해당 경로에는 반영되지 않으므로, 그 서비스가 직접 `frame-ancestors`를 내도록 바꾸고 nginx 쪽은 걷어내는 것이 맞음
+  - 연결 서비스 주소에는 토큰이 든 경로를 넣지 않음(주소가 화면과 브라우저 기록에 남음)
+  - 접속 기록 파일 권한을 다른 기록과 같게 둠: `sudo chown www-data:adm /var/log/nginx/legaldoctor.access.log && sudo chmod 640 /var/log/nginx/legaldoctor.access.log`
 - 접속 기록: `deploy/nginx-legaldoctor.conf` 맨 위 주석의 `map`과 `log_format`을 http 블록에 두면 리걸닥터 경로의 기록에서 비밀 링크 토큰이 가려짐. 케어 화면 주소의 토큰은 `#` 뒤에 있어 서버로 오지 않음
 - 파일 권한: 서비스 파일의 `UMask=0077`로 새 케어 기록과 캐시는 서비스 계정만 읽음. 이미 있는 파일은 한 번 맞춤
   ```bash

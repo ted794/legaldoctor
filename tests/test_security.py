@@ -17,6 +17,10 @@ def test_security_headers_on_pages_and_api(monkeypatch):
         assert h["x-frame-options"] == "SAMEORIGIN" and h["x-content-type-options"] == "nosniff" and h["referrer-policy"] == "no-referrer"
     assert "strict-transport-security" not in c.get("/").headers  # 평문 요청에는 붙이지 않음
     assert c.get("/", headers={"x-forwarded-proto": "https"}).headers["strict-transport-security"] == "max-age=15552000"
+    monkeypatch.setenv("LD_HSTS", "max-age=31536000; includeSubDomains")  # 같은 도메인의 다른 서비스와 맞출 때
+    assert c.get("/", headers={"x-forwarded-proto": "https"}).headers["strict-transport-security"] == "max-age=31536000; includeSubDomains"
+    monkeypatch.setenv("LD_HSTS", "아무 글자")  # 형식이 틀리면 기본값
+    assert c.get("/", headers={"x-forwarded-proto": "https"}).headers["strict-transport-security"] == "max-age=15552000"
     monkeypatch.setenv("LD_HSTS", "0")
     assert "strict-transport-security" not in c.get("/", headers={"x-forwarded-proto": "https"}).headers
 
