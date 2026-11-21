@@ -102,7 +102,10 @@ ALERT_HEAVY_10MIN = int(os.getenv("LD_ALERT_HEAVY_10MIN", "15"))  # 10분 동안
 ALERT_IP_HOUR = int(os.getenv("LD_ALERT_IP_HOUR", "8"))  # 한 IP의 시간당 유료 호출 수
 ALERT_REJECTS_10MIN = int(os.getenv("LD_ALERT_REJECTS_10MIN", "20"))  # 10분 동안 한도에 걸려 거절한 요청 수
 COST_PER_HEAVY = 0.3  # 분석·검진 1건의 대략 비용(달러, 2026.11 실측 0.24~0.34)
+# 하루 누적 이용량 단계 알림: 한도를 꺼 두었을 때도 쓰임이 늘면 알 수 있게 함. 쉼표로 구분, 빈 값이면 끔
+ALERT_DAILY_STEPS = sorted(int(x) for x in os.getenv("LD_ALERT_DAILY_STEPS", "20,50,100,200,300,500,1000").split(",") if x.strip().isdigit())
 _recent_heavy: deque = deque()
+_daily_ips: deque = deque()  # (시각, IP): 최근 24시간에 분석·검진·케어를 부른 IP 수를 세는 데 씀
 _rejects: deque = deque()
 
 
@@ -131,6 +134,12 @@ def _watch_heavy(now: float, ip: str, ip_count: int) -> None:
                               + (f", 하루 상한 {DAILY_HEAVY}건" if DAILY_HEAVY else ", 하루 상한 꺼짐"))
     if ALERT_IP_HOUR and ip_count >= ALERT_IP_HOUR:
         alert.notify(f"ip:{ip}", f"한 IP({alert.mask_ip(ip)})가 한 시간에 분석·검진을 {ip_count}건 요청함" + ("" if LIMITS["heavy"] else ". IP별 한도가 꺼져 있어 막지 못함"))
+    n_day = len(_daily)
+    step = max((x for x in ALERT_DAILY_STEPS if n_day >= x), default=0)
+    if step:  # 단계마다 하루에 한 번만 알림(가장 높은 단계 하나만)
+        users = len({i for _, i in _daily_ips})
+        alert.notify(f"day:{step}", f"최근 24시간 분석·검진·케어가 {n_day}건({step}건 단계를 넘음), 이용한 IP {users}곳, Liner 비용 약 ${n_day * COST_PER_HEAVY:.0f} 추정"
+                                    + (f", 하루 상한 {DAILY_HEAVY}건" if DAILY_HEAVY else ", 하루 상한 꺼짐"), cooldown=20 * 3600)
     if DAILY_HEAVY and len(_daily) >= DAILY_HEAVY * 0.8:
         alert.notify("daily80", f"오늘 분석·검진이 하루 상한의 80%를 넘음({len(_daily)}/{DAILY_HEAVY}건)", cooldown=6 * 3600)
 
@@ -164,6 +173,9 @@ def rate_limit(kind: str):
                     _watch_reject(now, kind, key[1])
                     raise HTTPException(429, "오늘 준비한 무료 분석 분량이 모두 소진됐습니다. 내일 다시 이용해 주세요")
                 _daily.append(now)
+                _daily_ips.append((now, key[1]))
+                while _daily_ips and now - _daily_ips[0][0] > 86400:
+                    _daily_ips.popleft()
             q.append(now)
             if kind in ("heavy", "care"):
                 _watch_heavy(now, key[1], len(q))
@@ -178,7 +190,7 @@ def rate_refund(kind: str, request: Request) -> None:
         if q:
             q.pop()
         if kind in ("heavy", "care"):
-            for d in (_daily, _recent_heavy):
+            for d in (_daily, _recent_heavy, _daily_ips):
                 if d:
                     d.pop()
 
