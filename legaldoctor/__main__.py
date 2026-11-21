@@ -27,8 +27,41 @@ def _fail(label: str, msg: str) -> None:
     print(f"[FAIL] {label}: {msg}")
 
 
-def cmd_doctor(_: argparse.Namespace) -> int:
+def _info(label: str, msg: str) -> None:
+    print(f"[안내] {label}: {msg}")
+
+
+def _check_law(s) -> bool:
+    """법령 원문을 받을 수 있는지 본다. LAW_OC는 선택이라, 비어 있으면 실제로 쓰이는 길(국가법령정보센터 웹 원문)을 점검한다."""
     from legaldoctor.law import DrfClient, DrfUnavailable
+
+    if s.has_law_oc:
+        try:
+            r = DrfClient(s).search("law", "산업융합 촉진법")
+        except DrfUnavailable as e:
+            _fail("국가법령정보", str(e)[:200])
+            return False
+        if r.from_cache:
+            _info("국가법령정보", f"Open API 원격 호출이 안 되어 저장본을 씀({r.fallback_reason})")
+        else:
+            _ok("국가법령정보", "Open API(DRF) 원격 호출 성공")
+        return True
+    from legaldoctor.law.web import WebLaw
+
+    _info("설정", "LAW_OC가 비어 있음(선택 항목). 국가법령정보센터 웹 원문으로 법령을 받음")
+    try:
+        doc = WebLaw().load("산업융합 촉진법")
+    except Exception as e:  # noqa: BLE001
+        _fail("국가법령정보(웹 원문)", str(e)[:200])
+        return False
+    if doc is None or not doc.articles:
+        _fail("국가법령정보(웹 원문)", "「산업융합 촉진법」 원문을 받지 못함")
+        return False
+    _ok("국가법령정보(웹 원문)", f"「산업융합 촉진법」 조문 {len(doc.articles)}개" + (" (저장본)" if doc.from_cache else ""))
+    return True
+
+
+def cmd_doctor(_: argparse.Namespace) -> int:
     from legaldoctor.liner import LinerModel, LinerSearch
 
     s = load_settings()
@@ -48,16 +81,7 @@ def cmd_doctor(_: argparse.Namespace) -> int:
     except Exception as e:  # noqa: BLE001
         _fail("Liner Search", str(e)[:200])
         bad += 1
-    if not s.has_law_oc:
-        _fail("설정", "LAW_OC가 비어 있음. 국가법령정보센터 웹 원문과 캐시로 대신함(분석은 동작)")
-    try:
-        r = DrfClient(s).search("law", "산업융합 촉진법")
-        if r.from_cache:
-            _fail("국가법령정보", f"원격 실패, 캐시 사용({r.fallback_reason})")
-        else:
-            _ok("국가법령정보", "DRF 원격 호출 성공")
-    except DrfUnavailable as e:
-        _fail("국가법령정보", str(e)[:200])
+    if not _check_law(s):
         bad += 1
     return 1 if bad else 0
 
