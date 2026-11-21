@@ -1,0 +1,1247 @@
+{
+ "version": 1,
+ "note": "확대 검증 세트: 앞의 세 세트와 겹치지 않는 공개 승인 사례 60건(고정 시드 20261122). 규칙 조정에 쓰지 않음",
+ "items": [
+  {
+   "id": "sbx-ict-00224",
+   "title": "농어촌 빈집 활용 공유숙박",
+   "field": "ict",
+   "approved_date": "2024-04-26",
+   "input": "농어촌 빈집을 소유주로부터 장기임대(10년)하여 재생한 후, 중개 플랫폼을 활용해 여행객들에게 숙박시설로 제공하는 서비스 ※ 장기임대 기간 종료 후 재생된 주택은 소유주에게 반납",
+   "gold": {
+    "laws": [
+     "농어촌도로 정비법"
+    ],
+    "articles": [
+     "농어촌도로 정비법 2"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1206"
+  },
+  {
+   "id": "sbx-ict-00104",
+   "title": "자율주행 모빌리티용 고해상도 3차원 정밀지도",
+   "field": "ict",
+   "approved_date": "2021-05-26",
+   "input": "자율주행 로봇의 정확성‧안전성 향상을 위해 LiDAR 센서 등을 활용하여 공간데이터를 수집해 고해상도 3차원 정밀지도를 제작‧제공하는 서비스 클라우드 기술을 활용, 수집한 데이터를 정밀지도에 일 단위로 업데이트하여 지도의 최신성 유지 동 서비스를 통해 자율주행 로봇은 현 위치, 지형지물 등을 보다 정확하게 파악하여 목적지까지 더 빠르고 안전하게 이동 가능",
+   "gold": {
+    "laws": [
+     "국토교통부 국가공간정보 보안관리규정"
+    ],
+    "articles": [
+     "국토교통부 국가공간정보 보안관리규정 16",
+     "국토교통부 국가공간정보 보안관리규정 6"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=456"
+  },
+  {
+   "id": "sbx-ict-00011",
+   "title": "가상현실(VR) 모션 시뮬레이터",
+   "field": "ict",
+   "approved_date": "2019-05-09",
+   "input": "VR콘텐츠(레이싱·슈팅·놀이기구 등)의 몰입감·현장감을 극대화하는 체험 서비스 제공을 위한 모션 시뮬레이터 개발하고, 직영 테마파크를 운영하여 모션 시뮬레이터 기반 서비스를 제공",
+   "gold": {
+    "laws": [
+     "방송통신기자재등의 적합성평가에 관한 고시",
+     "전파법"
+    ],
+    "articles": [
+     "방송통신기자재등의 적합성평가에 관한 고시 3",
+     "전파법 58의2"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=118"
+  },
+  {
+   "id": "sbx-ict-00198",
+   "title": "블록체인 기반 전자공증시스템 고도화",
+   "field": "ict",
+   "approved_date": "2023-12-21",
+   "input": "공증인이 공정증서*를 전자문서로 작성하고, 공증인과 촉탁인이 화상회의 방식으로 서류를 확인한 후, 전자서명하는 전자공증시스템 운영 * 금전소비대차계약, 건물임대차계약 공정증서",
+   "gold": {
+    "laws": [
+     "공증인법"
+    ],
+    "articles": [
+     "공증인법 27",
+     "공증인법 38"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1107"
+  },
+  {
+   "id": "sbx-ict-00233",
+   "title": "도심형 스마트 보관 편의서비스",
+   "field": "ict",
+   "approved_date": "2024-06-28",
+   "input": "도심지 건물내 일정 공간·시설*을 이용자에게 물품 보관 등의 목적으로 대여해주고, 관리하는 서비스 IoT 기술을 활용한 항온·항습 등 무인관리시스템 구축",
+   "gold": {
+    "laws": [
+     "건축법 시행령",
+     "국토의 계획 및 이용에 관한 법률 시행령"
+    ],
+    "articles": [
+     "건축법 시행령 3의5",
+     "국토의 계획 및 이용에 관한 법률 시행령 71"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1285"
+  },
+  {
+   "id": "sbx-ict-00192",
+   "title": "모바일 폐차 중개 플랫폼",
+   "field": "ict",
+   "approved_date": "2023-09-26",
+   "input": "이용자와 폐차장 간 폐차거래를 중개하는 모바일 플랫폼 서비스 이용자가 원하는 폐차 보상금을 제시하면, 폐차장에서 수락하여 거래가 성립되는 방식으로 중개",
+   "gold": {
+    "laws": [
+     "자동차관리법"
+    ],
+    "articles": [
+     "자동차관리법 57"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1044"
+  },
+  {
+   "id": "sbx-ict-00245",
+   "title": "도심 내·외국인 공유숙박 서비스",
+   "field": "ict",
+   "approved_date": "2024-10-17",
+   "input": "서울·부산 지역 내·외국인 관광객들을 대상으로 도시민박업을 제공하는 공유숙박 서비스 공유숙박 서비스 및 지역 특성에 맞는 관광 서비스 등을 연계하여 제공",
+   "gold": {
+    "laws": [
+     "관광진흥법 시행령"
+    ],
+    "articles": [
+     "관광진흥법 시행령 2"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1460"
+  },
+  {
+   "id": "sbx-ict-00027",
+   "title": "본인인증코드 활용 모바일 환전 서비스",
+   "field": "ict",
+   "approved_date": "2019-09-26",
+   "input": "사용자가 모바일 앱으로 환전(송금)을 신청하고, 해외국가 내 가맹점．ATM에서 여권번호 및 QR코드(또는 OTP코드)로 인증하여 현지 통화를 직접 수령하는 선불충전형 모바일 환전(송금)서비스 * 서비스 지역은 한국, 일본, 홍콩, 대만이며 추후 호주 및 싱가폴 추가 검토 ** 국내→해외 송금은 ATM을 통한 수령으로 제한하고 1회 100만원, 1일 3천불, 1주 1500만원 한도 준수",
+   "gold": {
+    "laws": [
+     "외국환거래법 시행령"
+    ],
+    "articles": [
+     "외국환거래법 시행령 15의2",
+     "외국환거래법 시행령 15의3"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=134"
+  },
+  {
+   "id": "sbx-ict-00099",
+   "title": "안면인식 기반 모바일 운전면허 확인 서비스",
+   "field": "ict",
+   "approved_date": "2021-04-22",
+   "input": "자동차운전면허증을 발급받은 사람이 코인플러그의 ‘마이키핀*’ 앱에 운전면허증을 등록하면 기존 운전면허증과 동일한 효력(운전면허 자격·개인신분 확인)으로 사용할 수 있는 서비스 * 블록체인 기반 신원증명 앱",
+   "gold": {
+    "laws": [
+     "도로교통법",
+     "도로교통법 시행규칙"
+    ],
+    "articles": [
+     "도로교통법 85",
+     "도로교통법 시행규칙 77"
+    ],
+    "track": "임시허가",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=448"
+  },
+  {
+   "id": "sbx-ict-00189",
+   "title": "농수산물 온라인 도매시장 개설 및 운영",
+   "field": "ict",
+   "approved_date": "2023-09-26",
+   "input": "전국단위 공영 농수산물 온라인 도매거래 시장 개설 및 운영 오프라인 시장과는 별개로, 어디서나 자유롭게 거래하는 온라인 시장으로 판매자*와 구매자**의 범위도 확대 * 도매시장법인, 산지 APC, 공판장, 시장도매인 등 ** 중도매인, 대형마트, 중소형마트, 식자재업체 등 청과류, 축산물, 양곡류, 수산물 및 가공식품 등에 대하여 기존 오프라인 시장의 참여주체들이 거래 상대방, 거래장소 등의 제한을 받지 않고 농수산물 온라인도매시장에서 전국 단위로 거래 * 추후 거래부류(변경) 필요 시 관계부처 협의 후 진행 ※ 거래참여자 : 산지조직(APC 농업법인 등), 도매시장 법인, 공판장, 시장도매인, 중도매인, 대형마트, 중소형마트, 식자재업체, 가공업체 등 기존 오프라인 도매시장과는 별개로 시공간 제약 없이 판·구매자*가 자유롭게 거래하는 농수산물 온라인 도매거래 시스템 * (판매자) 도매시장법인, 산지조직(APC, 농업법인 등), 공판장, 시잔도매인 등(구매자) 중도매인, 대형마트, 중소형마트, 식자재업체, 가공업체, 외식업체 등",
+   "gold": {
+    "laws": [
+     "농수산물 유통 및 가격안정에 관한 법률"
+    ],
+    "articles": [
+     "농수산물 유통 및 가격안정에 관한 법률 31",
+     "농수산물 유통 및 가격안정에 관한 법률 44"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1041"
+  },
+  {
+   "id": "sbx-ict-00155",
+   "title": "TVWS 기반 지하터널 중대산업재해 예방 솔루션",
+   "field": "ict",
+   "approved_date": "2022-09-16",
+   "input": "TVWS 고정형 기기를 활용한 지하터널 통신망 구축으로 지하터널 출입자 현황 및 위치 파악, 재난시 긴급통신망 등이 가능한 지하터널 중대산업재해 예방 솔루션 제공",
+   "gold": {
+    "laws": [
+     "신고하지 아니하고 개설할 수 있는 무선국용 무선설비의 기술기준"
+    ],
+    "articles": [
+     "신고하지 아니하고 개설할 수 있는 무선국용 무선설비의 기술기준 13"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=751"
+  },
+  {
+   "id": "sbx-ict-00025",
+   "title": "TV 유휴채널 활용 와이파이 서비스",
+   "field": "ict",
+   "approved_date": "2019-09-26",
+   "input": "1W 이하의 출력기준으로 TV유휴채널(TVWS)을 활용하여 일정한 경로로 이동하는 유람선·모노레일에 와이파이 서비스 제공",
+   "gold": {
+    "laws": [
+     "신고하지 아니하고 개설할 수 있는 무선국용 무선설비의 기술기준",
+     "전파법"
+    ],
+    "articles": [
+     "신고하지 아니하고 개설할 수 있는 무선국용 무선설비의 기술기준 13",
+     "전파법 45"
+    ],
+    "track": "실증특례",
+    "field": "ict",
+    "ministry": "과학기술정보통신부(ICT융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=132"
+  },
+  {
+   "id": "sbx-ind-00331",
+   "title": "화재감시 및 학생범죄 예방용 드론 자동운영 시스템",
+   "field": "industry",
+   "approved_date": "2023-03-30",
+   "input": "전자광학/열상 카메라, LED경광등을 장착한 드론을 활용하여 화재(산불)를 감시하고 대학 內 학생범죄 예방 활동으로 학생 및 인근 주민의 안전도 향상 도모",
+   "gold": {
+    "laws": [
+     "개인정보 보호법"
+    ],
+    "articles": [
+     "개인정보 보호법 15"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=886"
+  },
+  {
+   "id": "sbx-ind-00184",
+   "title": "셀프 수소충전소 구축 및 운영",
+   "field": "industry",
+   "approved_date": "2021-12-30",
+   "input": "300kg/h급 수소충전소 내 셀프충전기 1기를 운영하여, 충전원 없이 직접 수소충전이 가능하도록 셀프 수소충전소 운영 * 창원 수소충전소에서 수행(‘22.6월 완공예정, 경상남도 창원시 성산구 성주동 181)",
+   "gold": {
+    "laws": [
+     "고압가스 안전관리법",
+     "고압가스 안전관리법 시행규칙"
+    ],
+    "articles": [
+     "고압가스 안전관리법 10",
+     "고압가스 안전관리법 23",
+     "고압가스 안전관리법 시행규칙 116",
+     "고압가스 안전관리법 시행규칙 61"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=623"
+  },
+  {
+   "id": "sbx-ind-00539",
+   "title": "자율운항선박을 이용한 무인·원격 해상물류 운송 서비스",
+   "field": "industry",
+   "approved_date": "2024-07-18",
+   "input": "자율운항 및 원격조종이 가능한 수상 모빌리티를 통해 정박중인 선박에 필요한 물자를 조달하는 물류 운송 서비스",
+   "gold": {
+    "laws": [
+     "국제항해선박 및 항만시설의 보안에 관한 법률",
+     "선원법"
+    ],
+    "articles": [
+     "국제항해선박 및 항만시설의 보안에 관한 법률 33",
+     "선원법 2"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1319"
+  },
+  {
+   "id": "sbx-ind-00333",
+   "title": "렌터카 기반 반려동물 운송서비스",
+   "field": "industry",
+   "approved_date": "2023-03-30",
+   "input": "카카오모빌리티와 계약을 맺은 동물운송업자가 렌터카*를 활용하여 모바일 어플리케이션을 통한 반려동물 운송서비스 제공 (고객) 모바일 어플리케이션에 호출 정보*를 입력 * 출발지/도착지, 반려동물 마릿수 및 반려동물 단독 이동 또는 동반 이동 등 (드라이버) 드라이버용 모바일 어플리케이션을 통해 반려동물 이동서비스 요청을 수락 후 출발지로 이동 → pick-up & Drop-off",
+   "gold": {
+    "laws": [
+     "동물보호법",
+     "여객자동차 운수사업법"
+    ],
+    "articles": [
+     "동물보호법 33",
+     "여객자동차 운수사업법 34"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=888"
+  },
+  {
+   "id": "sbx-ind-00168",
+   "title": "태양광 발전과 ESS를 활용한 전기차 충전 서비스",
+   "field": "industry",
+   "approved_date": "2021-09-15",
+   "input": "소규모 태양광발전설비로 생산한 전력을 전력시장을 거치지 않고, 직접 또는 ESS에 저장후 전기차에 충전하는 솔라스테이션 * ESS내 충전용 전력이 부족할 경우 한전에서 전력을 충당하여 전기차에 공급",
+   "gold": {
+    "laws": [
+     "전기사업법"
+    ],
+    "articles": [
+     "전기사업법 19"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=536"
+  },
+  {
+   "id": "sbx-ind-00154",
+   "title": "융복합 건강기능식품",
+   "field": "industry",
+   "approved_date": "2021-09-15",
+   "input": "건강기능식품(캡슐 등 소분)과 일반식품(음료 등)을 한 제품에 담아 간편하게 섭취할 수 있도록 구성한 일체형 융복합 건강기능식품 제조·판매",
+   "gold": {
+    "laws": [
+     "건강기능식품에 관한 법률",
+     "건강기능식품의 표시기준",
+     "식품 등의 표시ㆍ광고에 관한 법률",
+     "식품등의 표시기준",
+     "식품위생법"
+    ],
+    "articles": [
+     "건강기능식품에 관한 법률 10",
+     "건강기능식품에 관한 법률 4",
+     "건강기능식품의 표시기준 5",
+     "식품 등의 표시ㆍ광고에 관한 법률 4",
+     "식품위생법 36"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=522"
+  },
+  {
+   "id": "sbx-ind-00963",
+   "title": "수소저장합금 저장시스템을 적용한 실내 물류용 수소지게차 실증 및 저압수소충전소",
+   "field": "industry",
+   "approved_date": "2026-04-02",
+   "input": "수소저장합금 저장시스템이 적용된 수소 지게차의 운용 (충전 포함) 및 지게차 을 위한 수소를 충전할 수 있는 수소 저장 합금용 저압 수소충전소 운영",
+   "gold": {
+    "laws": [
+     "고압가스 안전관리법 시행규칙"
+    ],
+    "articles": [
+     "고압가스 안전관리법 시행규칙 8"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2790"
+  },
+  {
+   "id": "sbx-ind-00356",
+   "title": "위생용품 소분(리필) 판매 서비스",
+   "field": "industry",
+   "approved_date": "2023-03-30",
+   "input": "대용량 용기에 담긴 위생용품(세척제)을 고객이 필요한 만큼 리필 용기에 덜어 구매할 수 있는 소분 및 판매 서비스 위생용품 정보는 ①벌크 용기에 부착된 라벨, ②소분제품과 함께 가져갈 수 있도록 비치한 인쇄물을 통해 제공",
+   "gold": {
+    "laws": [
+     "위생용품 관리법"
+    ],
+    "articles": [
+     "위생용품 관리법 11",
+     "위생용품 관리법 13",
+     "위생용품 관리법 2",
+     "위생용품 관리법 3",
+     "위생용품 관리법 7"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=911"
+  },
+  {
+   "id": "sbx-ind-00142",
+   "title": "휴게소 식당 주방 공유를 통한 청년창업 매장",
+   "field": "industry",
+   "approved_date": "2021-07-29",
+   "input": "고속도로 휴게소에서 야간 시간에 운영하지 않는 매장 공간을 활용(공유)하여, 청년·취약계층 창업자들이 공유주방(Shared Kitchen)방식으로 야간 창업매장을 운영 주간(08~20시)에는 일반운영자가 영업하고, 야간(20~24시)은 동일매장에서 창업자(청년·취약계층 모집)가 운영하는 형태 동일 매장에 별도의 사업자로 영업신고하여 야간매장 운영",
+   "gold": {
+    "laws": [
+     "식품위생법",
+     "식품위생법 시행규칙"
+    ],
+    "articles": [
+     "식품위생법 36",
+     "식품위생법 시행규칙 36"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=510"
+  },
+  {
+   "id": "sbx-ind-00042",
+   "title": "개인맞춤형 건강기능식품 소분·판매",
+   "field": "industry",
+   "approved_date": "2020-04-27",
+   "input": "소비자가 구매한 건강기능식품을 소비자가 원하는 형태로 나누고 조합하여 작은 포장제품으로 제공 (설문, 개인용의료기기 자가 측정 및 DTC 유전자검사 결과 등을 통해 소비자의 현재 식습관ㆍ생활습관을 분석하여 보충이 필요한 건강기능식품을 추천, 소분·판매하는 서비스)",
+   "gold": {
+    "laws": [
+     "건강기능식품에 관한 법률",
+     "건강기능식품에 관한 법률 시행규칙",
+     "식품 등의 표시ㆍ광고에 관한 법률",
+     "식품 등의 표시ㆍ광고에 관한 법률 시행규칙"
+    ],
+    "articles": [
+     "건강기능식품에 관한 법률 10",
+     "건강기능식품에 관한 법률 시행규칙 12",
+     "식품 등의 표시ㆍ광고에 관한 법률 4의3",
+     "식품 등의 표시ㆍ광고에 관한 법률 시행규칙 3",
+     "식품 등의 표시ㆍ광고에 관한 법률 시행규칙 5"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=233"
+  },
+  {
+   "id": "sbx-ind-00501",
+   "title": "수소연료전지 스키드로더의 수소 충전 및 운용시험",
+   "field": "industry",
+   "approved_date": "2024-03-29",
+   "input": "수소연료전지를 동력원으로 사용하는 스키드로더의 수소충전 안전성과 스키드로더 운용을 통한 성능 및 안전성 검증",
+   "gold": {
+    "laws": [
+     "수소경제 육성 및 수소 안전관리에 관한 법률"
+    ],
+    "articles": [
+     "수소경제 육성 및 수소 안전관리에 관한 법률 36",
+     "수소경제 육성 및 수소 안전관리에 관한 법률 43",
+     "수소경제 육성 및 수소 안전관리에 관한 법률 44",
+     "수소경제 육성 및 수소 안전관리에 관한 법률 48"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1212"
+  },
+  {
+   "id": "sbx-ind-00737",
+   "title": "민간참여형 식품안전관리시스템",
+   "field": "industry",
+   "approved_date": "2024-12-19",
+   "input": "국내(HACCP)/해외(GFSI) 식품 규격 인증을 모두 보유한 식품제조업체에 대해 HACCP 조사·평가와 민간인증기관의 GFSI 인증·사후관리를 통합하는 운영체계(HACCP 조사·평가 면제)",
+   "gold": {
+    "laws": [
+     "식품 및 축산물 안전관리인증기준"
+    ],
+    "articles": [
+     "식품 및 축산물 안전관리인증기준 15"
+    ],
+    "track": "실증특례",
+    "field": "industry",
+    "ministry": "산업통상부(산업융합)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1701"
+  },
+  {
+   "id": "sbx-fin-00395",
+   "title": "일반 공모펀드의 상장클래스 신설을 통한 상장거래 서비스",
+   "field": "finance",
+   "approved_date": "2024-11-13",
+   "input": "일반 공모펀드에 상장을 위한 종류형 수익증권을 신설 후 한국거래소 유가증권시장에 상장하여 투자자가 직접 거래토록 하는 서비스",
+   "gold": {
+    "laws": [
+     "자본시장과 금융투자업에 관한 법률",
+     "자본시장과 금융투자업에 관한 법률 시행령"
+    ],
+    "articles": [
+     "자본시장과 금융투자업에 관한 법률 188",
+     "자본시장과 금융투자업에 관한 법률 235",
+     "자본시장과 금융투자업에 관한 법률 236",
+     "자본시장과 금융투자업에 관한 법률 237",
+     "자본시장과 금융투자업에 관한 법률 84",
+     "자본시장과 금융투자업에 관한 법률 89",
+     "자본시장과 금융투자업에 관한 법률 시행령 92"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1785"
+  },
+  {
+   "id": "sbx-fin-01117",
+   "title": "생성형 AI 기반 비즈니스 어시스턴트 서비스",
+   "field": "finance",
+   "approved_date": "2026-07-01",
+   "input": "보험 약관 어시스턴트, 콜센터·오퍼레이션 센터 업무 매뉴얼 에이전트를 통해 임직원이 고객 문의에 대해 일관되고 정확한 안내를 신속하게 제공 사내 규정·지침 에이전트를 활용한 정확한 규정 해석으로 소비자 안내 오류 최소화 및 코딩/SQL 어시스턴트, 일반 업무 어시스턴트 활용으로 임직원의 단순·반복 업무 시간 절감 → 고객 응대 및 상담 시간 증대",
+   "gold": {
+    "laws": [
+     "전자금융감독규정"
+    ],
+    "articles": [
+     "전자금융감독규정 15"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2906"
+  },
+  {
+   "id": "sbx-fin-00118",
+   "title": "포인트 플랫폼을 통한 보험금 지급 서비스",
+   "field": "finance",
+   "approved_date": "2020-11-18",
+   "input": "저축성보험 상품에서 발생하는 중도·만기보험금을 포인트로 지급하여 소비자가 포인트 플랫폼*에서 물품이나 서비스 등을 할인된 가격으로 구매할 수 있도록 하는 서비스 * 포인트를 관리·정산하고, 각종 물품·서비스 판매사와 제휴하여 금융소비자가 보험금으로 지급된 포인트로 결제시 할인된 가격으로 제공하는 플랫폼",
+   "gold": {
+    "laws": [
+     "보험업법"
+    ],
+    "articles": [
+     "보험업법 2"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=361"
+  },
+  {
+   "id": "sbx-fin-00088",
+   "title": "지역경제 활성화를 위한 모바일 지역사랑상품권 플랫폼 서비스",
+   "field": "finance",
+   "approved_date": "2020-03-18",
+   "input": "㈜KT가 부산광역시와 제휴하여 이른바 지역사랑상품권인 ‘부산동백전’을 모바일 형태로 발행하여 부산광역시 내의 가맹점에서 지급수단으로 사용할 수 있도록 하는 서비스",
+   "gold": {
+    "laws": [
+     "전자금융거래법",
+     "전자금융거래법 시행령"
+    ],
+    "articles": [
+     "전자금융거래법 28",
+     "전자금융거래법 30",
+     "전자금융거래법 시행령 15"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=209"
+  },
+  {
+   "id": "sbx-fin-01107",
+   "title": "생성형 AI 기반 내부지식 통합 및 업무 효율화 서비스",
+   "field": "finance",
+   "approved_date": "2026-07-01",
+   "input": "내부 임직원이 자연어로 질문을 입력하면, 당사 주전산센터(IDC) 내 Knowledge Backend와 LLM Gateway(마스킹 엔진)에서 질의 내 개인정보를 전처리한 뒤, 당사가 구축·통제하는 AWS IaaS위에서 VPC Peering을 통해 AWS Bedrock에 RAG 기반 분석을 요청하고, 그 결과를 담당자가 근거 출처(원본 문서)를 확인·검토한 후 업무에 활용하는 5단계(문서 연결·색인 → 질의 입력 → 보안 전처리 → AI 분석(RAG+근거 출처 명시) → 결과 검토·활용) 구조로 운영",
+   "gold": {
+    "laws": [
+     "전자금융감독규정"
+    ],
+    "articles": [
+     "전자금융감독규정 15"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2896"
+  },
+  {
+   "id": "sbx-fin-00591",
+   "title": "쇼핑플랫폼 이용 고객(개인+사업자) 대상 패키지형 금융상품·서비스 제공('쓱KB은행')",
+   "field": "finance",
+   "approved_date": "2025-04-16",
+   "input": "① 에스에스지닷컴의 쇼핑몰*(이하 ‘쓱닷컴 쇼핑몰’) 이용 개인 고객을 대상으로 국민은행의 파킹통장(이하 ‘제휴 계좌’) 개설을 중개하여 고객의 선불충전금을 제휴 계좌에 보관하고, 고객에게 국민은행의 금융상품·서비스**를 광고하는 서비스 * ㈜에스에스지닷컴에서 운영 중인 쓱닷컴, 이마트몰, 신세계몰, 신세계백화점 쇼핑몰 플랫폼 통칭 ** 파킹통장, 적금, 체크카드, 환전, 모바일 서비스 등 ② 쓱닷컴 쇼핑몰에 입점한 사업자 고객(개인사업자 및 법인, 이하 ’셀러 고객‘)을 대상으로 셀러 전용 관리 채널에서 국민은행의 파킹통장 개설을 중개하고, 셀러 고객의 수요에 맞는 국민은행의 금융상품·서비스*를 광고하는 서비스 * 파킹통장, 적금, 팩토링, 사업자대출, 사업자 컨설팅 서비스 등",
+   "gold": {
+    "laws": [
+     "금융기관의 업무위탁 등에 관한 규정",
+     "금융소비자 보호에 관한 법률"
+    ],
+    "articles": [
+     "금융기관의 업무위탁 등에 관한 규정 3",
+     "금융소비자 보호에 관한 법률 11",
+     "금융소비자 보호에 관한 법률 12",
+     "금융소비자 보호에 관한 법률 22"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2121"
+  },
+  {
+   "id": "sbx-fin-01021",
+   "title": "비대면 계좌개설 및 체크카드 신청, 대출서비스",
+   "field": "finance",
+   "approved_date": "2026-01-14",
+   "input": "생성형 AI 기술을 활용해 개발자와 운영자가 프로그램 개발부터 시스템 유지보수까지의 전 과정을 효율적으로 수행할 수 있도록 지원하는 통합 플랫폼을 제공",
+   "gold": {
+    "laws": [
+     "금융소비자 보호에 관한 법률"
+    ],
+    "articles": [
+     "금융소비자 보호에 관한 법률 11",
+     "금융소비자 보호에 관한 법률 22"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2676"
+  },
+  {
+   "id": "sbx-fin-01169",
+   "title": "생성형 AI를 활용한 커뮤니티 콘텐츠 이해 및 큐레이션 서비스",
+   "field": "finance",
+   "approved_date": "2026-10-07",
+   "input": "커뮤니티 게시글(텍스트·이미지)을 종목 연관성·콘텐츠 유형·톤·위험요소 등 구조화된 메타데이터로 자동 변환해 콘텐츠를 이해",
+   "gold": {
+    "laws": [
+     "전자금융감독규정"
+    ],
+    "articles": [
+     "전자금융감독규정 15"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=3013"
+  },
+  {
+   "id": "sbx-fin-00783",
+   "title": "클라우드를 활용한 소프트웨어 서비스(SaaS)의 내부망 이용(Genesys cloud)",
+   "field": "finance",
+   "approved_date": "2025-07-09",
+   "input": "(업무 방법) 임직원의 단말기에서 SaaS 접속을 통한 고객 상담 관리(채팅 상담, 상담 내용 녹취, 텍스트 변환, 내용 요약 등) 및 맞춤형 서비스 제공을 위한 의도 분석(AI 기반 문의 답변 스크립트 작성 등)에 이용",
+   "gold": {
+    "laws": [
+     "전자금융감독규정"
+    ],
+    "articles": [
+     "전자금융감독규정 15"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2315"
+  },
+  {
+   "id": "sbx-fin-00094",
+   "title": "금융관련 기술 개발·협력을 위한 금융기술연구소",
+   "field": "finance",
+   "approved_date": "2020-04-01",
+   "input": "한국카카오은행 내에 금융기술연구소*(기업부설연구소)를 설립하여 동 연구소가 핀테크 및 IT기업과 협업하여 신기술에 기반한 금융서비스를 연구·개발할 수 있도록 지원 * 독립된 인적·물적 설비를 마련하고, 금융관련 업무가 아닌 연구·개발 활동에만 주력",
+   "gold": {
+    "laws": [
+     "전자금융감독규정"
+    ],
+    "articles": [
+     "전자금융감독규정 15",
+     "전자금융감독규정 17"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=222"
+  },
+  {
+   "id": "sbx-fin-00097",
+   "title": "매출채권을 활용한 상환청구권 없는 팩토링 서비스",
+   "field": "finance",
+   "approved_date": "2020-04-01",
+   "input": "신용보증기금이 상거래 매출채권을 매입하면서 판매기업에 자금을 제공하고, 매출채권 만기일에 구매기업으로부터 대금을 회수하는 상환청구권 없는(without recourse)* 팩토링 금융서비스 * 신용보증기금은 매출채권 지급기일에 구매기업의 지급불능으로 인해 대금을 회수하지 못하더라도 신용보증기금은 판매기업에게 대금지급 청구를 하지 않음",
+   "gold": {
+    "laws": [
+     "신용보증기금법"
+    ],
+    "articles": [
+     "신용보증기금법 23의2"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=225"
+  },
+  {
+   "id": "sbx-fin-00040",
+   "title": "반려동물보험에 대한 리워드형 커뮤니티 플랫폼 서비스",
+   "field": "finance",
+   "approved_date": "2019-07-24",
+   "input": "반려동물보험 계약자(반려동물보호자)에게 보험에 가입한 경우, 건강증진 활동 목표를 달성한 경우, 계약 종료시까지 일정 수준 미만의 보험금 지급을 청구한 경우 제휴처(동물병원．운동센터 등)에서 사용가능한 리워드(포인트)를 제공하는 플랫폼",
+   "gold": {
+    "laws": [
+     "보험업법"
+    ],
+    "articles": [
+     "보험업법 98"
+    ],
+    "track": "실증특례",
+    "field": "finance",
+    "ministry": "금융위원회(혁신금융)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=60"
+  },
+  {
+   "id": "sbx-mob-00131",
+   "title": "교통약자 보호구역 내 자율주행 셔틀 서비스 시범운행",
+   "field": "mobility",
+   "approved_date": "2025-11-25",
+   "input": "교통약자 보호구역 내 라이다(LiDAR) 인프라 시스템 구축 및 자율주행자동차의 교통상황•돌발상황 등 실시간 사전인지를 통해, 교통약자의 보행 안전성을 확보한 자율주행 셔틀 서비스 구현",
+   "gold": {
+    "laws": [
+     "자동차관리법",
+     "자동차관리법 시행규칙"
+    ],
+    "articles": [
+     "자동차관리법 27",
+     "자동차관리법 시행규칙 26의2"
+    ],
+    "track": "실증특례",
+    "field": "mobility",
+    "ministry": "국토교통부(모빌리티)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2542"
+  },
+  {
+   "id": "sbx-mob-00124",
+   "title": "고속도로 장거리 전용차로 도입",
+   "field": "mobility",
+   "approved_date": "2025-07-25",
+   "input": "고속도로 IC간 간격이 짧고 단거리 무료통행이 많아 잦은 차로변경으로 인한 교통흐름 약화로 정체가 발생하는 구간에, 장거리와 단거리 교통류를 분리 운영하여 교통정체를 완화시키고자 함",
+   "gold": {
+    "laws": [
+     "도로교통법 시행규칙"
+    ],
+    "articles": [
+     "도로교통법 시행규칙 16"
+    ],
+    "track": "실증특례",
+    "field": "mobility",
+    "ministry": "국토교통부(모빌리티)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2352"
+  },
+  {
+   "id": "sbx-mob-00095",
+   "title": "자동차 폐차 중개 온라인 서비스",
+   "field": "mobility",
+   "approved_date": "2025-04-23",
+   "input": "폐차를 희망하는 차량 소유주와 정부로부터 허가받은 전국 자동차해체재활용업자를 중개·알선하는 온라인 폐차 플랫폼을 운영하여, 공정한 가격 경쟁 등 투명한 거래환경 제공",
+   "gold": {
+    "laws": [
+     "자동차관리법"
+    ],
+    "articles": [
+     "자동차관리법 57의2"
+    ],
+    "track": "실증특례",
+    "field": "mobility",
+    "ministry": "국토교통부(모빌리티)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1861"
+  },
+  {
+   "id": "sbx-mob-00129",
+   "title": "1톤 화물자동차 사고 대차 서비스",
+   "field": "mobility",
+   "approved_date": "2025-11-25",
+   "input": "1톤 화물차 사고 또는 고장으로 인하여 일시적으로 사용할 수 없는 경우, 자사가 소유하고 있는 1톤 화물자동차 대여 서비스를 제공",
+   "gold": {
+    "laws": [
+     "화물자동차 운수사업법"
+    ],
+    "articles": [
+     "화물자동차 운수사업법 56"
+    ],
+    "track": "실증특례",
+    "field": "mobility",
+    "ministry": "국토교통부(모빌리티)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2540"
+  },
+  {
+   "id": "sbx-mob-00075",
+   "title": "영업용 전기차(택시, 물류) 배터리 교체형 공유(구독) 서비스",
+   "field": "mobility",
+   "approved_date": "2024-10-14",
+   "input": "전기차 차체와 배터리의 소유권을 분리하고 방전 시 완충된 공유 배터리로 빠르게 교체 가능한 BSS(Battery Swap Service) 제공 *안양을 시작으로 2028년까지 수도권에 총 5개소의 직영 거점 스테이션(안양, 수원, 용인, 인천, 성남) 구축 예정",
+   "gold": {
+    "laws": [
+     "자동차관리법"
+    ],
+    "articles": [
+     "자동차관리법 7",
+     "자동차관리법 8",
+     "자동차관리법 8의2"
+    ],
+    "track": "실증특례",
+    "field": "mobility",
+    "ministry": "국토교통부(모빌리티)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1476"
+  },
+  {
+   "id": "sbx-mob-00118",
+   "title": "이웃간 유휴 자동차 대여사업 중개 플랫폼",
+   "field": "mobility",
+   "approved_date": "2025-07-25",
+   "input": "특정지역 내 개인이 보유한 자동차가 유휴상태일 때 지역 내 유휴지를 이용하여 이웃간 차량공유가 가능한 공유 플랫폼",
+   "gold": {
+    "laws": [
+     "여객자동차 운수사업법",
+     "여객자동차 운수사업법 시행규칙",
+     "여객자동차 운수사업법 시행령"
+    ],
+    "articles": [
+     "여객자동차 운수사업법 16",
+     "여객자동차 운수사업법 28",
+     "여객자동차 운수사업법 29",
+     "여객자동차 운수사업법 31",
+     "여객자동차 운수사업법 34의2",
+     "여객자동차 운수사업법 84",
+     "여객자동차 운수사업법 시행규칙 61",
+     "여객자동차 운수사업법 시행령 40"
+    ],
+    "track": "실증특례",
+    "field": "mobility",
+    "ministry": "국토교통부(모빌리티)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2346"
+  },
+  {
+   "id": "sbx-circ-00028",
+   "title": "LFP배터리 재자원화를 위한 재활용 기준 마련",
+   "field": "circular",
+   "approved_date": "2025-11-19",
+   "input": "LFP 배터리 재활용 기준 마련, 유가금속 회수 및 재활용 공정 , 전처리 및 재자원화 공정 등을 포함한 경제성 및 환경성 분석 등",
+   "gold": {
+    "laws": [
+     "폐기물관리법 시행규칙"
+    ],
+    "articles": [
+     "폐기물관리법 시행규칙 14의3"
+    ],
+    "track": "실증특례",
+    "field": "circular",
+    "ministry": "기후에너지환경부(순환경제)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2605"
+  },
+  {
+   "id": "sbx-circ-00019",
+   "title": "식물부산물(맥주박, 감귤박, 쌀겨) 업사이클링을 통한 화장품 원료 생산 및 이를 활용한 화장품 생산 기술",
+   "field": "circular",
+   "approved_date": "2025-09-04",
+   "input": "식물부산물(맥주박, 감귤박, 쌀겨) 업사이클링을 통한 화장품 원료 생산(그래뉼, 스크럽, 엑소좀) 및 이를 활용한 화장품(스킨케어, 클렌징, 샴푸, 스크럽 등) 생산",
+   "gold": {
+    "laws": [
+     "폐기물관리법",
+     "폐기물관리법 시행규칙"
+    ],
+    "articles": [
+     "폐기물관리법 25",
+     "폐기물관리법 시행규칙 4의2"
+    ],
+    "track": "실증특례",
+    "field": "circular",
+    "ministry": "기후에너지환경부(순환경제)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2364"
+  },
+  {
+   "id": "sbx-circ-00015",
+   "title": "감귤 부산물을 활용하여 토양 관리 자재와 친환경 소재를 제조하는 기술",
+   "field": "circular",
+   "approved_date": "2025-04-24",
+   "input": "감귤 부산물을 활용한 토양 관리 자재 및 친환경 소재 생산에 대한 안전성 감귤부산물을 활용한 토양 관리 자재(토양개량제, 토양보습제, 멀칭재)를 생산하여 감귤부산물의 활용 가치 평가를 위한 안전성 검증 감귤부산물로부터 친환경 소재(복합 유기산, 그린솔벤트, 추출 오일)를 생산하여 감귤부산물의 활용 가치 검증",
+   "gold": {
+    "laws": [
+     "폐기물관리법",
+     "폐기물관리법 시행규칙"
+    ],
+    "articles": [
+     "폐기물관리법 25",
+     "폐기물관리법 시행규칙 4의2"
+    ],
+    "track": "실증특례",
+    "field": "circular",
+    "ministry": "기후에너지환경부(순환경제)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1853"
+  },
+  {
+   "id": "sbx-circ-00062",
+   "title": "(기획형) 생활화학제품 표시방식 개선(e-라벨)을 통한 포장 폐기물 감량",
+   "field": "circular",
+   "approved_date": "2026-04-30",
+   "input": "｢화학제품안전법｣에 따라 안전확인대상 생활화학제품의 표시사항 23개 항목 중 필수 10개 항목만 제품 겉면‧포장지에 기재하고, 나머지는 QR코드(e-라벨)로 제공* * QR 활용, 기후에너지환경부 화학제품안전포털 ‘초록누리’ 연계",
+   "gold": {
+    "laws": [
+     "생활화학제품 및 살생물제의 안전관리에 관한 법률",
+     "생활화학제품 및 살생물제의 안전관리에 관한 법률 시행규칙",
+     "생활화학제품 및 살생물제의 안전관리에 관한 법률 시행령",
+     "안전확인대상생활화학제품 지정 및 안전·표시기준"
+    ],
+    "articles": [
+     "생활화학제품 및 살생물제의 안전관리에 관한 법률 10",
+     "생활화학제품 및 살생물제의 안전관리에 관한 법률 시행규칙 7",
+     "생활화학제품 및 살생물제의 안전관리에 관한 법률 시행령 7",
+     "안전확인대상생활화학제품 지정 및 안전·표시기준 0"
+    ],
+    "track": "실증특례",
+    "field": "circular",
+    "ministry": "기후에너지환경부(순환경제)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2849"
+  },
+  {
+   "id": "sbx-circ-00042",
+   "title": "기업 재고‧폐현수막 자원순환형 업사이클 패널 제조 서비스",
+   "field": "circular",
+   "approved_date": "2026-04-30",
+   "input": "생활폐기물(폐의류‧현수막) 및 사업장폐기물(폐섬유류)를 전처리-성형-제품화하여 건축자재로 생산하는 기술‧서비스",
+   "gold": {
+    "laws": [
+     "폐기물관리법",
+     "폐기물관리법 시행규칙"
+    ],
+    "articles": [
+     "폐기물관리법 25",
+     "폐기물관리법 시행규칙 4의2"
+    ],
+    "track": "실증특례",
+    "field": "circular",
+    "ministry": "기후에너지환경부(순환경제)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2825"
+  },
+  {
+   "id": "mcee-2026-01-065",
+   "title": "폐플라스틱·폐섬유 해중합을 통한 재생원료 생산",
+   "field": "circular",
+   "approved_date": "2026-09-10",
+   "input": "폐플라스틱(PET)와 섬유를 화학적 재활용(해중합 기술)로 원재료인 재생 TPA(테레 프탈산)과 EG(에틸렌 글리콜)로 재활용하는 기술",
+   "gold": {
+    "laws": [
+     "및 기준",
+     "자원의 절약과 재활용 촉진에 관한 법률"
+    ],
+    "articles": [
+     "및 기준 13의2"
+    ],
+    "track": "실증특례",
+    "field": "circular",
+    "ministry": "기후에너지환경부"
+   },
+   "source_url": "https://www.mcee.go.kr/home/web/board/read.do?menuId=&boardMasterId=39&boardCategoryId=&boardId=1900750"
+  },
+  {
+   "id": "sbx-scity-00110",
+   "title": "디지털 트윈 기반 급경사지 AI 관리 시스템 실증사업",
+   "field": "smartcity",
+   "approved_date": "2025-09-05",
+   "input": "예산·인력·안전문제로 사면 재해 관리에 어려움을 겪고 있는 지방자치단체에 드론·위성을 활용한 디지털 트윈 기반 급경사지 AI 관리 시스템",
+   "gold": {
+    "laws": [
+     "국가공간정보 기본법"
+    ],
+    "articles": [
+     "국가공간정보 기본법 34"
+    ],
+    "track": "실증특례",
+    "field": "smartcity",
+    "ministry": "국토교통부(스마트도시)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=2528"
+  },
+  {
+   "id": "sbx-scity-00054",
+   "title": "대구형 DRT 운행 실증",
+   "field": "smartcity",
+   "approved_date": "2024-04-30",
+   "input": "대구광역시 북구, 동구, 수성구에서 고정된 운행 계획 없이 사용자의 수요에 따라 정류소, 배차 등을 탄력적으로 운행하는 수요응답형 교통서비스 제공",
+   "gold": {
+    "laws": [
+     "여객자동차 운수사업법"
+    ],
+    "articles": [
+     "여객자동차 운수사업법 3"
+    ],
+    "track": "실증특례",
+    "field": "smartcity",
+    "ministry": "국토교통부(스마트도시)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1244"
+  },
+  {
+   "id": "sbx-scity-00043",
+   "title": "ICT 기반의 미세먼지 저감 및 실시간 LCD 디스플레이 장치 사업",
+   "field": "smartcity",
+   "approved_date": "2023-05-30",
+   "input": "시내버스 차량 상부에 미세먼지 저감 통합시스템을 적용하여 버스노선에 해당하는 지역을 대상으로 대기질 개선 및 디스플레이를 활용하여 수집 데이터 기반 대시민 미세먼지 정책 홍보사업 추진 단순 대기오염 모니터링뿐만 아니라, 정화량을 실시간 제공하는 디스플레이를 설치함으로써 대시민 체감도 향상에 기여 버스노선별 미세먼지 오염도 Dust-Map을 구축하여 생활권 이동 경로의 오염도 실시간 제공하여 데이터 기반의 부가가치 창출 빅데이터를 활용해 의정부시 지역·행정구·노선별 실시간 미세먼지 농도 추이 파악(센서 위치상 시민들과 동일 공간선상에서 정확한 측정)",
+   "gold": {
+    "laws": [
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률 시행령",
+     "자동차 및 자동차부품의 성능과 기준에 관한 규칙"
+    ],
+    "articles": [
+     "옥외광고물 등의 관리와 옥외광고산업 진흥에 관한 법률 시행령 19",
+     "자동차 및 자동차부품의 성능과 기준에 관한 규칙 47"
+    ],
+    "track": "실증특례",
+    "field": "smartcity",
+    "ministry": "국토교통부(스마트도시)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=931"
+  },
+  {
+   "id": "sbx-scity-00049",
+   "title": "CCTV 및 차량 라이브뷰 영상을 활용한 AI 도로안전 모니터링 시스템 구축",
+   "field": "smartcity",
+   "approved_date": "2023-10-06",
+   "input": "춘천시 일원에서 버스 및 순회 차량에 설치된 라이브뷰 카메라와 고정형 CCTV의 도로 영상 데이터를 인공지능으로 분석하여 도로시설물, 공사현장 등 관련된 위험 요소를 감지하고 신속한 대응 서비스 제공",
+   "gold": {
+    "laws": [
+     "개인정보 보호법",
+     "여객자동차 운수사업법"
+    ],
+    "articles": [
+     "개인정보 보호법 15",
+     "여객자동차 운수사업법 27"
+    ],
+    "track": "실증특례",
+    "field": "smartcity",
+    "ministry": "국토교통부(스마트도시)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1049"
+  },
+  {
+   "id": "sbx-scity-00019",
+   "title": "초도 순찰형 CCTV 패트롤 로봇 실증",
+   "field": "smartcity",
+   "approved_date": "2021-03-10",
+   "input": "부산 국가시범도시 내 스마트빌리지에서 자율주행 경비 로봇을 활용한 무인경비 서비스(로봇의 자율주행 알고리즘 검증 및 무인 경비 서비스 사업성 검증)",
+   "gold": {
+    "laws": [
+     "개인정보 보호법",
+     "도로교통법"
+    ],
+    "articles": [
+     "개인정보 보호법 15",
+     "도로교통법 2"
+    ],
+    "track": "실증특례",
+    "field": "smartcity",
+    "ministry": "국토교통부(스마트도시)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=432"
+  },
+  {
+   "id": "sbx-scity-00053",
+   "title": "실시간 모니터링 기능 탑재 자율주행 휠체어 환자 이송 서비스",
+   "field": "smartcity",
+   "approved_date": "2024-04-30",
+   "input": "삼성서울병원 내 환자의 실시간 상태(안면·자세) 모니터링 및 중앙관제 기능을 갖춘 자율주행 휠체어를 이용한 환자 이송 서비스",
+   "gold": {
+    "laws": [
+     "승강기안전부품 안전기준 및 승강기 안전기준"
+    ],
+    "articles": [
+     "승강기안전부품 안전기준 및 승강기 안전기준 4"
+    ],
+    "track": "실증특례",
+    "field": "smartcity",
+    "ministry": "국토교통부(스마트도시)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1243"
+  },
+  {
+   "id": "sbx-rfz-00020",
+   "title": "(전남) 개인용 이동수단(PM) 주행 실증",
+   "field": "rfz",
+   "approved_date": "2019-07-23",
+   "input": "＊ PM의 자전거전용도로 주행 ＊ PM 사용자 자전거용 안전모 착용 ＊ PM 사용자 원동기장치자전거 면허이상 소지 면제",
+   "gold": {
+    "laws": [
+     "도로교통법",
+     "도로교통법 시행규칙",
+     "자전거 이용 활성화에 관한 법률"
+    ],
+    "articles": [
+     "도로교통법 2",
+     "도로교통법 50",
+     "도로교통법 80",
+     "도로교통법 시행규칙 32",
+     "자전거 이용 활성화에 관한 법률 2"
+    ],
+    "track": "실증특례",
+    "field": "rfz",
+    "ministry": "중소벤처기업부(규제자유특구)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=179"
+  },
+  {
+   "id": "sbx-rfz-00051",
+   "title": "(충남) 액체수소드론 제작·충전 및 비행",
+   "field": "rfz",
+   "approved_date": "2020-07-06",
+   "input": "드론용 액화수소 복합재료용기의 성능시험과 안전검사를 위한 시험 및 연료전지 파워팩 액화수소 연료전지 파워팩을 드론에 탑재하여 장시간, 장거리 비행",
+   "gold": {
+    "laws": [
+     "고압가스 안전관리법 시행규칙"
+    ],
+    "articles": [
+     "고압가스 안전관리법 시행규칙 8",
+     "고압가스 안전관리법 시행규칙 9"
+    ],
+    "track": "실증특례",
+    "field": "rfz",
+    "ministry": "중소벤처기업부(규제자유특구)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=282"
+  },
+  {
+   "id": "sbx-rfz-00056",
+   "title": "(경북) 산업용 헴프 원료의약품 제조·수출",
+   "field": "rfz",
+   "approved_date": "2020-07-06",
+   "input": "헴프의 잎 또는 미수정 암꽃에서 원료의약품(CBD Isolate*) 제조 및 수출 * 헴프에서 추출·분리된 순도 99%이상의 칸나비디올(CBD) 대마성분 의료목적 제품 개발을 위한 CBD의 안전성·유효성",
+   "gold": {
+    "laws": [
+     "마약류 관리에 관한 법률"
+    ],
+    "articles": [
+     "마약류 관리에 관한 법률 3"
+    ],
+    "track": "실증특례",
+    "field": "rfz",
+    "ministry": "중소벤처기업부(규제자유특구)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=287"
+  },
+  {
+   "id": "sbx-rnd-00023",
+   "title": "실시간 영상 스트리밍 서비스 기반 통합 관광서비스 플랫폼",
+   "field": "rnd",
+   "approved_date": "2023-12-28",
+   "input": "실시간 스트리밍 서비스를 통해 현재 관광지의 상황 및 기상정보를 하나의 플랫폼으로 제공하고, AI로 관광객의 감정을 분석하여 만족도를 파악하는 기술 해당 신기술 제품을 직접 설치하여, 실시간 관광지 현황, 미세먼지 등 기상정보, 관광객의 감정분석을 통해 얻은 만족도를 어플리케이션으로 제공",
+   "gold": {
+    "laws": [
+     "개인정보 보호법"
+    ],
+    "articles": [
+     "개인정보 보호법 25"
+    ],
+    "track": "실증특례",
+    "field": "rnd",
+    "ministry": "과학기술정보통신부(연구개발특구)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=1124"
+  },
+  {
+   "id": "sbx-rnd-00015",
+   "title": "배 가공부산물 재활용을 통한 식품 원료 개발·제조",
+   "field": "rnd",
+   "approved_date": "2022-12-27",
+   "input": "배 가공 과정에서 폐기되는 부산물을 자체 개발한 공정(전처리-건조-분쇄‧선별-가공처리-살균-포장)을 통해 분말제형의 식품 원료(배 분말)로 제조하는 기술 배 가공 중에 폐기되는 부산물을 수집한 후에 식품 취급기준에 맞게 재활용하여 배 분말 및 식품으로 제조하기 위한 공정 구축 광주특구 내 ㈜루츠바이오 기업부설연구소",
+   "gold": {
+    "laws": [
+     "폐기물관리법"
+    ],
+    "articles": [
+     "폐기물관리법 2"
+    ],
+    "track": "실증특례",
+    "field": "rnd",
+    "ministry": "과학기술정보통신부(연구개발특구)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=841"
+  },
+  {
+   "id": "sbx-rnd-00009",
+   "title": "나선형 소형풍력발전시스템을 적용한 스마트 가로등 및 스마트 폴",
+   "field": "rnd",
+   "approved_date": "2022-12-27",
+   "input": "초소형·저소음 나선형 블레이드 방식의 풍력발전기를 부착하여 도시공원 내에서 운영되는 스마트가로등·스마트폴 기술 나선형 소형 풍력발전 시스템이 부착된 스마트폴 등을 공원에 설치하여 풍황* 조건, 인근 생활소음 수준 등이 상이한 실험군과 대조군을 설정 하여 각 환경에서 발전효율성, 소음 등을 측정 추진 대덕특구 내 근린공원 2개소 및 중앙과학관 인근",
+   "gold": {
+    "laws": [
+     "도시공원 및 녹지 등에 관한 법률",
+     "도시공원 및 녹지 등에 관한 법률 시행령"
+    ],
+    "articles": [
+     "도시공원 및 녹지 등에 관한 법률 24",
+     "도시공원 및 녹지 등에 관한 법률 시행령 23"
+    ],
+    "track": "실증특례",
+    "field": "rnd",
+    "ministry": "과학기술정보통신부(연구개발특구)"
+   },
+   "source_url": "https://www.sandbox.go.kr/sandbox.SandboxTaskSl?task_seq=838"
+  }
+ ]
+}

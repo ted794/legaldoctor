@@ -3,6 +3,8 @@
 
   uv run python scripts/make_eval_set.py      → data/eval/set.json
   uv run python scripts/make_eval_set.py --validation  → data/eval/set_b.json (규칙 조정에 쓰지 않은 검증 세트)
+  uv run python scripts/make_eval_set.py --extra       → data/eval/set_c.json (추가 검증 20건)
+  uv run python scripts/make_eval_set.py --more        → data/eval/set_d.json (확대 검증 60건)
 
 입력 문장에서는 법령명·조문·특례 결과를 지운다. 승인 결과를 보고 맞히는 일을 막기 위해서다.
 """
@@ -107,7 +109,12 @@ def main() -> int:
     rs = {json.loads(l)["id"]: json.loads(l) for l in (ROOT / "data/sandbox/cases.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()}
     validation = "--validation" in sys.argv
     extra = "--extra" in sys.argv  # 세 번째 세트(20건): 평가·검증 세트와 겹치지 않게
-    if extra:
+    more = "--more" in sys.argv  # 네 번째 세트(60건): 앞의 세 세트와 겹치지 않게
+    if more:
+        used = {i["id"] for f in ("set_b", "set_c") for i in json.loads((ROOT / f"data/eval/{f}.json").read_text(encoding="utf-8"))["items"]}
+        picks = validation_picks(rs, seed=20261122, exclude=used,
+                                 want={"ict": 12, "industry": 12, "finance": 12, "mobility": 6, "circular": 6, "smartcity": 6, "rfz": 3, "rnd": 3})
+    elif extra:
         b_ids = {i["id"] for i in json.loads((ROOT / "data/eval/set_b.json").read_text(encoding="utf-8"))["items"]}
         picks = validation_picks(rs, seed=20261115, exclude=b_ids,
                                  want={"ict": 4, "industry": 4, "finance": 4, "mobility": 2, "circular": 2, "smartcity": 2, "rfz": 1, "rnd": 1})
@@ -134,8 +141,9 @@ def main() -> int:
                 "source_url": r.get("source_url"),
             }
         )
-    out = ROOT / ("data/eval/set_c.json" if extra else "data/eval/set_b.json" if validation else "data/eval/set.json")
-    note = ("추가 검증 세트: 평가·검증 세트와 겹치지 않는 공개 승인 사례 20건(고정 시드). 규칙 조정에 쓰지 않음" if extra
+    out = ROOT / ("data/eval/set_d.json" if more else "data/eval/set_c.json" if extra else "data/eval/set_b.json" if validation else "data/eval/set.json")
+    note = ("확대 검증 세트: 앞의 세 세트와 겹치지 않는 공개 승인 사례 60건(고정 시드 20261122). 규칙 조정에 쓰지 않음" if more
+            else "추가 검증 세트: 평가·검증 세트와 겹치지 않는 공개 승인 사례 20건(고정 시드). 규칙 조정에 쓰지 않음" if extra
             else "검증 세트: 평가 세트와 겹치지 않는 공개 승인 사례 10건(고정 시드). 규칙 조정에 쓰지 않음" if validation
             else "공개 승인 사례 10건. 입력에서 법령명·조문·특례 결과를 지움")
     out.write_text(json.dumps({"version": 1, "note": note, "items": items}, ensure_ascii=False, indent=1), encoding="utf-8")
