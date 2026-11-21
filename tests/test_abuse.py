@@ -13,7 +13,7 @@ from legaldoctor.intake.materials import UnsupportedFile, from_file
 
 @pytest.fixture
 def clean(monkeypatch):
-    for q in (web._hits, web._daily, web._recent_heavy, web._rejects, alert._last, alert.SENT):
+    for q in (web._hits, web._daily, web._daily_ips, web._recent_heavy, web._rejects, alert._last, alert.SENT):
         q.clear()
     monkeypatch.delenv("LD_TG_TOKEN", raising=False)
     monkeypatch.delenv("LD_TG_CHAT", raising=False)
@@ -151,3 +151,24 @@ def test_too_many_files(clean):
     sid = clean.post("/api/sessions").json()["id"]
     files = [("files", (f"{k}.txt", b"a", "text/plain")) for k in range(11)]
     assert clean.post(f"/api/sessions/{sid}/materials", files=files).status_code == 400
+
+
+def test_alert_daily_steps_without_cap(clean, monkeypatch):
+    """한도를 꺼 두어도 하루 누적 이용량이 단계를 넘으면 알린다(단계마다 한 번, 이용 IP 수와 비용 추정 포함)"""
+    monkeypatch.setitem(web.LIMITS, "heavy", 0)
+    monkeypatch.setattr(web, "DAILY_HEAVY", 0)
+    monkeypatch.setattr(web, "ALERT_HEAVY_10MIN", 0)
+    monkeypatch.setattr(web, "ALERT_IP_HOUR", 0)
+    monkeypatch.setattr(web, "ALERT_DAILY_STEPS", [3, 6])
+    for k in range(2):
+        _heavy(clean, f"192.0.2.{k}")
+    assert not alert.SENT
+    for k in range(2, 5):
+        _heavy(clean, f"192.0.2.{k % 3}")
+    assert [k for _, k, _ in alert.SENT] == ["day:3"]  # 이어지는 요청은 같은 단계에서 한 번만
+    msg = alert.SENT[0][2]
+    assert "분석·검진·케어가 3건" in msg and "이용한 IP 3곳" in msg and "하루 상한 꺼짐" in msg and "Liner 비용 약 $1" in msg
+    assert "192.0.2" not in msg  # IP 자체는 알림에 싣지 않음
+    for k in range(5, 8):
+        _heavy(clean, f"192.0.2.{k}")
+    assert [k for _, k, _ in alert.SENT] == ["day:3", "day:6"]
