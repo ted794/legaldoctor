@@ -428,6 +428,28 @@ def _clean_refs(refs, limit: int) -> list[dict[str, str]]:
     return out[:limit]
 
 
+_CASE_SIGNAL = re.compile(r"판결|판례|선고|대법원|고등법원|지방법원|법원|결정|처분|과징금|시정명령|의결|소송|분쟁|심결|재결")
+_CASE_STOP = {"개인", "관련", "사항", "조항", "조건", "경우", "여부", "예정", "주어", "병렬", "즉시", "상실", "사전", "협의", "확인", "필요", "기타"}
+
+
+def _case_terms(*texts: str) -> set[str]:
+    """항목 이름에서 주제어를 뽑는다(두 글자 이상 한글 낱말, 흔한 말 제외)"""
+    return {w for t in texts for w in re.findall(r"[가-힣]{2,}", t or "") if w not in _CASE_STOP}
+
+
+def _relevant_refs(refs: list[dict[str, str]], terms: set[str], limit: int = 3) -> list[dict[str, str]]:
+    """실제 판례·처분 사례 표에 넣을 출처만 남긴다. 제목·요약에 항목의 주제어가 있고,
+    판결·처분을 가리키는 말도 있어야 한다(검색이 돌려준 무관한 기사·안내문·법령 목록을 버림)."""
+    out = []
+    for r in refs:
+        text = f"{r.get('title', '')} {r.get('desc', '')}"
+        if not any(t in text for t in terms):
+            continue
+        if _CASE_SIGNAL.search(text):
+            out.append(r)
+    return out[:limit]
+
+
 def search_client():
     global _SEARCH
     if _SEARCH is None:
@@ -832,15 +854,16 @@ def _enrich_cases(cid: str) -> None:
     from legaldoctor import wisdom
 
     def one(i):
-        kept = wisdom.fresh_refs(job["module"].key, i.category)  # 같은 범주에서 30일 안에 찾아 둔 사례가 있으면 다시 검색하지 않음
+        terms = _case_terms(i.label)
+        kept = _relevant_refs(wisdom.fresh_refs(job["module"].key, i.category) or [], terms)  # 같은 범주에서 30일 안에 찾아 둔 사례가 있으면 다시 검색하지 않음
         if kept:
             return i.id, kept
         q = f"한국 법원 판결이나 정부 처분으로 확인된 '{i.label}' 관련 실제 사례(대법원·하급심 판례, 공정위·개인정보위·노동위 결정, 언론 보도): {(i.summary or i.quote)[:120]}"
         try:
-            res = search_client().references(q, min_refs=1)  # 출처만 받고 답변 생성은 기다리지 않음(약 2배 빠름)
+            res = search_client().references(q, min_refs=8)  # 출처만 받고 답변 생성은 기다리지 않음(약 2배 빠름)
         except Exception:  # noqa: BLE001
             return i.id, []
-        refs = _clean_refs(res.references, 3)
+        refs = _relevant_refs(_clean_refs(res.references, 12), terms)
         wisdom.learn_refs(job["module"].key, i.category, refs)
         return i.id, refs
 
