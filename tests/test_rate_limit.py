@@ -185,3 +185,19 @@ def test_head_for_link_previews():
     c = TestClient(web.app)
     for p in ("/", "/og.png", "/og-everyone.png", "/everyone"):
         assert c.head(p).status_code == 200, p  # 텔레그램 등은 미리보기 전에 HEAD로 확인함
+
+
+def test_relevant_refs_keeps_only_on_topic_cases():
+    from legaldoctor.web.app import _case_terms, _relevant_refs
+
+    terms = _case_terms("위약벌·손해배상 예정·지연이자")
+    assert "위약벌" in terms and "예정" not in terms
+    refs = [
+        {"title": "유명 가수 열애설 보도", "host": "news.example.com", "desc": "연예 소식"},
+        {"title": "개인정보처리방침", "host": "khidi.or.kr", "desc": ""},
+        {"title": "대법원 2016. 1. 28. 선고 위약벌 감액 판결", "host": "scourt.go.kr", "desc": "위약벌 약정의 효력"},
+        {"title": "전속계약 해지 분쟁", "host": "news.example.com", "desc": "법원은 위약벌이 과다하다고 보았다"},
+        {"title": "손해배상 보험 상품 안내", "host": "shop.example.com", "desc": "가입 안내"},
+    ]
+    out = _relevant_refs(refs, terms)
+    assert [r["title"] for r in out] == ["대법원 2016. 1. 28. 선고 위약벌 감액 판결", "전속계약 해지 분쟁"]
