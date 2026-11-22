@@ -186,6 +186,52 @@
     "url": "https://www.mt.co.kr/future/2022/02/21/2022021717023282183",
     "kind": "기사"
    }
+  },
+  {
+   "id": "25-13",
+   "type": "사례",
+   "title": "재제출은 완전한 응답이 아니라는 FDA 서한과 회사의 구조조정 검토",
+   "body": "미국 FDA는 2020년 10월 마이크로니들 편두통 치료제 M207 신약허가 신청에 보완요구서를 냈다. Zosano Pharma는 2022년 1월 재제출했고 FDA는 2022년 2월 17일 서한으로 재제출이 보완요구서의 완전한 응답이 아니며 완전한 응답을 받을 때까지 실질 심사를 시작하지 않겠다고 통보했다. 회사는 같은 공시에서 승인 추진을 계속할 수 있다는 보장이 없다고 적고 재무자문사를 선임해 자산 매각과 부채 구조조정을 검토한다고 밝혔다. 보완요구에서 재제출, 재제출 반려까지가 회사의 공시로 이어진다.",
+   "quote": "the FDA will not begin substantive review of the application until a complete response is received.",
+   "quote_lang": "en",
+   "source": {
+    "title": "Zosano Pharma Corp. Form 8-K (사건일 2022. 2. 17.)",
+    "author": "Zosano Pharma Corp.",
+    "publisher": "미국 증권거래위원회(SEC) 공시",
+    "year": "2022",
+    "url": "https://www.sec.gov/Archives/edgar/data/1587221/000119312522046721/d290090d8k.htm",
+    "kind": "공공자료"
+   }
+  },
+  {
+   "id": "25-14",
+   "type": "사례",
+   "title": "웰니스 제품으로 판 의료기기에 FDA 경고장",
+   "body": "FDA는 2021년 10월 5일 정정본 경고장에서 Owlet Smart Sock이 혈중산소와 맥박을 재 저산소증·서맥을 식별하는 용도로 판매되므로 의료기기이며 시판 허가 없이 팔았다고 밝혔다. 2016년부터 회사와 이 제품이 의료기기라는 서신을 주고받았다고도 적었고 15영업일 안에 시정 회신을 요구했다. 회사는 2023년 11월 다른 제품 Dream Sock이 De Novo 허가를 받았다고 발표해 살아 있다. 인증 기간을 일정에서 빼고 웰니스 제품으로 먼저 판 우회로가 막힌 경우다.",
+   "quote": "Since 2016, the FDA has corresponded with Owlet that the Owlet Smart Sock meets the definition of a device",
+   "quote_lang": "en",
+   "source": {
+    "title": "Owlet Baby Care Inc. 경고장 MARCS-CMS 616354 (2021. 10. 5.)",
+    "author": "미국 식품의약국(FDA)",
+    "publisher": "미국 FDA 경고장",
+    "year": "2021",
+    "url": "https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/warning-letters/owlet-baby-care-inc-616354-10052021",
+    "kind": "공공자료"
+   }
+  },
+  {
+   "id": "25-15",
+   "type": "사례",
+   "title": "처리기간 규정은 훈시규정, 기한을 넘긴 처분도 위법이 아니다",
+   "body": "대법원은 2019년 12월 13일 행정절차법과 민원처리법이 처리기간을 정해 공표하게 한 취지가 신청 사무를 빨리 처리하라는 것이라고 보았다. 처리기간 규정은 강행규정이 아니라 훈시규정이어서 기간이 지난 뒤 처분했더라도 취소할 절차상 하자가 아니라고 했다. 진행상황 통지도 민원인 편의를 위한 부가 제도라 하지 않았어도 취소사유가 아니다. 법에 적힌 처리기간은 회사의 재무 계획을 지켜 주는 숫자가 되지 못한다.",
+   "source": {
+    "title": "대법원 2019. 12. 13. 선고 2018두41907 판결",
+    "author": "대법원",
+    "publisher": "법제처 국가법령정보센터 판례",
+    "year": "2019",
+    "url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=225841",
+    "kind": "공공자료"
+   }
   }
  ]
 }

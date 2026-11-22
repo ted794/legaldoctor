@@ -27,7 +27,7 @@
 
 ## 화면
 
-| 첫 화면: 28개 사인(병사·외인사) | 사인 튜토리얼: 사망진단서와 교훈 331건 |
+| 첫 화면: 28개 사인(병사·외인사) | 사인 튜토리얼: 사망진단서와 교훈 369건 |
 |---|---|
 | ![첫 화면](docs/screens/01_home.png) | ![튜토리얼](docs/screens/02_tutorial.png) |
 | **최신 동향: Liner Search** | **검진 완료 창** |
@@ -124,7 +124,7 @@ uv run legaldoctor checkup labor  --file data/checkup/demo_labor.md    # 21장 �
 - 실행 결과 샘플(가상 예시, 6종): `docs/samples/checkup_{invest,labor,privacy,trade,governance,mgmt}.html`
 - **실제 사례 2차 보강:** 검진이 끝나면 위험 높은 항목마다 Liner Search가 실제 판례·처분 사례를 찾아 결과표에 더합니다.
 - **결과표 저장:** 우상단 아이콘으로 인쇄, PDF(인쇄 창에서 PDF로 저장), DOC(워드)로 받습니다.
-- **사인 튜토리얼:** 28개 사인마다 부검보고서 사망진단서(인과 사슬)와 공개 자료에서 출처를 밝혀 정리한 교훈(모두 331건, `data/checkup/lessons/`), Liner Search 최신 동향을 보여 줍니다.
+- **사인 튜토리얼:** 28개 사인마다 부검보고서 사망진단서(인과 사슬)와 공개 자료에서 출처를 밝혀 정리한 교훈(모두 369건, `data/checkup/lessons/`), Liner Search 최신 동향을 보여 줍니다.
 
 ## 메뉴 3. 리걸닥터 케어(2단계 실행 관리)
 
