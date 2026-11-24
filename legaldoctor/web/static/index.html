@@ -54,6 +54,10 @@ header{padding:28px 16px 8px;max-width:1120px;margin:0 auto;text-align:center}
 .logo .wm{text-align:left;line-height:1.1}
 .logo h1{margin:0;font-size:46px;letter-spacing:-1px;color:var(--accent);font-weight:900;line-height:1}
 .logo .en{display:block;font-size:13px;font-weight:600;color:var(--accent);letter-spacing:5px;margin-top:6px}
+.logo h1 .sw{display:inline-grid;justify-items:center}.logo h1 .w{grid-area:1/1}.logo h1 .w2{opacity:0}
+body.home .logo h1 .w1{animation:ldW1 8s ease-in-out infinite}body.home .logo h1 .w2{animation:ldW2 8s ease-in-out infinite}
+@keyframes ldW1{0%,40%{opacity:1}50%,90%{opacity:0}100%{opacity:1}}@keyframes ldW2{0%,40%{opacity:0}50%,90%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){body.home .logo h1 .w1,body.home .logo h1 .w2{animation:none}}
 header p.tag{margin:10px 0 0;color:var(--sub);word-break:keep-all}
 .askh{word-break:keep-all}
 .ask{display:inline-flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 10px;font:inherit;font-size:24px;font-weight:800;margin:24px 0 10px;letter-spacing:-.5px;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:14px 30px;cursor:pointer;box-shadow:0 6px 18px rgba(165,28,48,.25)}
@@ -384,7 +388,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 30px;color:var(--sub);font-
 <header>
   <a class="logo" href="./" aria-label="스타트업 리걸닥터 처음 화면" title="스타트업 리걸닥터">
     <svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M24.3 82.6A40 40 0 1 1 75.7 82.6" stroke-width="5"/><path d="M30.1 68.7A26 26 0 1 1 69.9 68.7" stroke-width="5"/><path d="M50 43v16M42 51h16" stroke-width="5.5"/><path d="M45.5 61L32.5 78M48.5 63L36 79.5M54.5 61L67.5 78M51.5 63L64 79.5" stroke-width="2.6"/></svg>
-    <span class="wm"><span class="pre">스타트업</span><h1>리걸닥터</h1><span class="en">LEGAL DOCTOR</span></span>
+    <span class="wm"><span class="pre">스타트업</span><h1 aria-label="리걸닥터"><span class="sw" aria-hidden="true"><span class="w w1">리걸</span><span class="w w2">법률</span></span><span aria-hidden="true">닥터</span></h1><span class="en">LEGAL DOCTOR</span></span>
   </a>
   <p class="tag">스타트업이 죽는 28가지 사인을 죽기 전에 검진합니다.</p>
   <p class="pmh">노네임 모드 · 가입 없이 써요 · 공용 PC에서는 넘어갈 때 지우기를 골라 주세요</p>
