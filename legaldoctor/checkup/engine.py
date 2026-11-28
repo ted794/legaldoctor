@@ -25,6 +25,27 @@ RISK_ORDER = {"높음": 0, "중간": 1, "낮음": 2}
 # 창업자 개인 책임을 제한하는 보호 법령(적용 대상 투자자 범위가 정해져 있음)
 PROTECTIVE_LAWS = {"벤처투자 촉진에 관한 법률", "벤처투자 촉진에 관한 법률 시행령", "벤처기업육성에 관한 특별법"}
 
+# 개인 책임 범주로 뽑혔지만 문언이 오히려 개인 책임을 없애거나 회사로 한정하는 조항(재검진에서 고친 조항)
+_PERSON = r"(이해관계인|대표이사|창업자|주주|경영진)"
+_DUTY = r"(책임|의무|상환|배상|매수|연대)"
+_DENY = r"(지지\s*(않|아니)|부담하지\s*(않|아니)|면제|면한다|면책|제외|배제|없다|없음|아니한다|않는다)"
+LIABILITY_EXCLUDED = re.compile(_PERSON + r"[^.。\n]{0,40}?" + _DUTY + r"[^.。\n]{0,25}?" + _DENY)
+COMPANY_ONLY = re.compile(r"회사(만|가\s*단독으로|에\s*한하여|에\s*한정)[^.。\n]{0,25}?(부담|책임|진다|지며|상환)")
+LIABILITY_CONDITION = re.compile(r"경우에는?\s*그러하지|고의\s*(또는|나)\s*중(대한\s*)?과실|경우에\s*한하여|경우를\s*제외")
+
+
+def liability_relief(quote: str) -> str | None:
+    """개인 책임 조항 문언이 책임을 없애면 '낮음', 조건을 붙여 남기면 '중간'. 해당 없으면 None."""
+    q = re.sub(r"\s+", " ", quote or "")
+    # 개인에게 의무를 지우는 문언이 함께 있으면 완전히 없앤 것으로 보지 않음
+    affirmative = bool(re.search(_PERSON + r"[^.。\n]{0,40}?" + _DUTY + r"[^.。\n]{0,15}?(진다|지며|부담한다|부담하며|있다|있으며|하여야|지급한다|상환한다|배상한다|매수한다)", q))
+    excluded = bool(LIABILITY_EXCLUDED.search(q))
+    company_only = bool(COMPANY_ONLY.search(q)) and not affirmative
+    if not (excluded or company_only):
+        # 권하는 협상 결과(고의·중과실 요건, 사유 한정)대로 좁힌 개인 책임은 '중간'
+        return "중간" if affirmative and LIABILITY_CONDITION.search(q) else None
+    return "중간" if affirmative or LIABILITY_CONDITION.search(q) else "낮음"
+
 EXTRACT_SYSTEM = """너는 스타트업 법률 검진을 돕는 보조자다. 창업자가 낸 {input_label}에서 아래 범주에 해당하는 조항이나 사실을 뽑는다.
 
 {guide}
@@ -146,6 +167,13 @@ def grade_item(item: CheckItem, module: Module) -> None:
         else:
             item.verdict = "보호 규정 못 찾음: 계약대로 개인에게 집행될 수 있음(27장)"
         risk = "높음"
+        relief = liability_relief(item.quote) if item.category == "personal_liability" else None
+        if relief == "낮음":
+            item.verdict = "개인 책임을 지우지 않는 문언으로 보임: 다른 조항에 개인 의무가 남았는지 확인"
+            risk = "낮음"
+        elif relief == "중간":
+            item.verdict = "개인 책임을 조건부로 좁힌 문언으로 보임: 남은 사유와 한도를 확인"
+            risk = "중간"
     item.risk = risk
     item.lawyer = risk == "높음"
 

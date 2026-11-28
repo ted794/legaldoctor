@@ -74,12 +74,14 @@ class LinerModel:
             raise LinerModelError("max_tokens 부족으로 본문이 비었음(reasoning 토큰 소진)")
         return content
 
-    def chat_json(self, messages: list[dict[str, Any]], **kw: Any) -> Any:
+    def chat_json(self, messages: list[dict[str, Any]], *, variant: int = 0, **kw: Any) -> Any:
         """JSON 응답을 받는다. 파싱에 실패하면 한 번 더 묻는다(응답이 잘리거나 형식이 깨지는 경우).
-        같은 질문의 답은 캐시에서 바로 꺼낸다(legaldoctor.cache)."""
+        같은 질문의 답은 캐시에서 바로 꺼낸다(legaldoctor.cache).
+        variant: 같은 질문을 여러 번 물어 다수결할 때 답마다 캐시 칸을 나눈다(0이면 기존 칸)."""
         from legaldoctor import cache
 
-        ck = cache.key("chat_json", self._settings.liner_model, messages, kw)
+        parts: tuple[Any, ...] = ("chat_json", self._settings.liner_model, messages, kw) + ((variant,) if variant else ())
+        ck = cache.key(*parts)
         hit = cache.get("model", ck)
         if hit is not None:
             cache.HITS["model"] += 1

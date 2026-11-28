@@ -69,20 +69,28 @@ def grounded(quote: str, text: str) -> bool:
     return all(p in src for p in parts)
 
 
-def judge(model, activity: str, source_title: str, text: str, kind: str = "조문") -> Verdict | None:
-    """판정을 돌려준다. 형식 오류나 근거 구절 불일치면 None."""
+def judge(model, activity: str, source_title: str, text: str, kind: str = "조문", votes: int = 1) -> Verdict | None:
+    """판정을 돌려준다. 형식 오류나 근거 구절 불일치면 None.
+    votes가 2 이상이면 같은 질문을 그만큼 물어 다수결로 정한다(모델 답이 실행마다 갈리는 것을 줄임)."""
     if not text.strip():
         return None
-    data = model.chat_json(
-        [
-            {"role": "system", "content": INTERP_SYSTEM if kind == "해석" else SYSTEM},
-            {
-                "role": "user",
-                "content": f"행위: {activity}\n\n원문 종류: {_KIND.get(kind, kind)}\n원문 출처: {source_title}\n원문:\n{text[:6000]}",
-            },
-        ],
-        max_tokens=4000,
-    )
+    messages = [
+        {"role": "system", "content": INTERP_SYSTEM if kind == "해석" else SYSTEM},
+        {
+            "role": "user",
+            "content": f"행위: {activity}\n\n원문 종류: {_KIND.get(kind, kind)}\n원문 출처: {source_title}\n원문:\n{text[:6000]}",
+        },
+    ]
+    if votes <= 1:
+        return _ask(model, messages, text)
+    from concurrent.futures import ThreadPoolExecutor
+
+    with ThreadPoolExecutor(votes) as ex:
+        return majority(list(ex.map(lambda k: _ask(model, messages, text, k), range(votes))))
+
+
+def _ask(model, messages: list[dict], text: str, variant: int = 0) -> Verdict | None:
+    data = model.chat_json(messages, max_tokens=4000, **({"variant": variant} if variant else {}))
     if not isinstance(data, dict):
         return None
     result = data.get("판정")
@@ -92,3 +100,19 @@ def judge(model, activity: str, source_title: str, text: str, kind: str = "조�
     if result != "아니오" and not grounded(quote, text):
         return None
     return Verdict(result=result, quote=quote, point=str(data.get("요지") or "").strip())
+
+
+def majority(votes: list[Verdict | None]) -> Verdict | None:
+    """유효한 답의 다수결. 동률이면 '불명확'(단정하지 않음). 유효한 답이 없으면 None."""
+    valid = [v for v in votes if v is not None]
+    if not valid:
+        return None
+    counts = {r: sum(1 for v in valid if v.result == r) for r in ("예", "불명확", "아니오")}
+    top = max(counts.values())
+    winners = [r for r, n in counts.items() if n == top]
+    result = winners[0] if len(winners) == 1 else "불명확"
+    pick = next((v for v in valid if v.result == result), None)
+    if pick is None:  # 예·아니오 동률: 근거 구절은 '예' 쪽 것을 씀
+        src = next(v for v in valid if v.result == "예")
+        pick = Verdict(result="불명확", quote=src.quote, point=src.point)
+    return pick

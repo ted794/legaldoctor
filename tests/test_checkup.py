@@ -55,3 +55,41 @@ def test_run_checkup_protection_gap_is_high_risk():
 def test_labor_module_categories():
     assert LABOR.category("worker_status").risk == "높음"
     assert 21 in LABOR.causes
+
+
+def test_liability_relief_reads_negated_personal_liability():
+    """재검진에서 고친 조항: '이해관계인'이 남아 있어도 책임을 없애면 높음으로 두지 않음."""
+    from legaldoctor.checkup.engine import liability_relief as f
+
+    assert f("투자대상기업 또는 이해관계인이 본 계약을 위반한 경우 이해관계인은 투자금 전액을 연대하여 상환한다") is None
+    assert f("회사와 이해관계인은 연대하여 손해를 배상할 책임을 진다") is None
+    assert f("본 계약상 상환 의무는 회사만 부담하며, 이해관계인은 어떠한 책임도 지지 아니한다") == "낮음"
+    assert f("이해관계인은 본 계약에 따른 상환 및 손해배상 책임을 지지 않는다") == "낮음"
+    assert f("본 계약에 따른 의무는 회사가 단독으로 부담한다") == "낮음"
+    assert f("이해관계인은 고의 또는 중대한 과실이 없는 한 손해배상 책임을 지지 아니한다") == "중간"
+    assert f("이해관계인은 주식을 매수할 의무가 있으며 투자자의 청구를 거부하지 않는다") == "중간"
+    assert f("다만 이해관계인은 고의 또는 중대한 과실로 위반한 경우에 한하여 그 금액을 연대하여 지급한다") == "중간"
+    assert f("다만 이해관계인은 투자대상기업과 연대하여 상환금액을 지급한다") is None
+
+
+def test_grade_item_lowers_relieved_personal_liability():
+    from legaldoctor.checkup import MODULES
+    from legaldoctor.checkup.engine import CheckItem, grade_item
+
+    m = MODULES["invest"]
+    i = CheckItem("C1", "personal_liability", "개인 책임", "이해관계인은 본 계약에 따른 상환 및 손해배상 책임을 지지 않는다", "", "")
+    grade_item(i, m)
+    assert i.risk == "낮음" and not i.lawyer
+    j = CheckItem("C2", "personal_liability", "개인 책임", "회사 및 이해관계인은 연대하여 상환한다", "", "")
+    grade_item(j, m)
+    assert j.risk == "높음"
+
+
+def test_majority_vote():
+    from legaldoctor.explore.judge import Verdict, majority
+
+    y, u, n = Verdict("예", "a", ""), Verdict("불명확", "b", ""), Verdict("아니오", "", "")
+    assert majority([y, y, n]).result == "예"
+    assert majority([y, u, n]).result == "불명확"
+    assert majority([y, n, None]).result == "불명확" and majority([y, n, None]).quote == "a"
+    assert majority([None, None, None]) is None

@@ -265,7 +265,8 @@ class Explore:
 
         out, rej = [], []
         for loc, text, kind in targets:
-            v = judge(self.model, action, f"{doc.meta.name} {loc}", text, kind)
+            # 검진 모듈이 고정으로 대조하는 법령은 판정이 결과(보호 규정 있음/못 찾음)를 바로 바꾸므로 3번 물어 다수결함
+            v = judge(self.model, action, f"{doc.meta.name} {loc}", text, kind, votes=3 if c.origin == "고정 대조" else 1)
             if v is None:
                 rej.append(Rejected(c.activity_id, f"{doc.meta.name} {loc}", "판정 근거가 원문과 일치하지 않음"))
                 continue
